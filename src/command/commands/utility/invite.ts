@@ -12,7 +12,7 @@ export const inviteCommand: Command<"env" | "createEmbed" | "code"> = {
   dependencies: ["env", "createEmbed", "code"],
   execute: async ({ message, deps }) => {
     const { env, createEmbed, code } = deps;
-    const invite = env["OPT_DISCORD_BOT_INVITE_URL"];
+    const invite = env["opt_discord_bot_invite_url"];
     if (invite === undefined || invite === "") return [code.InternalError, "Invite URL is not configured."];
     await message.reply({
       embeds: [createEmbed({
