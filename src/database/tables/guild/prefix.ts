@@ -1,7 +1,7 @@
-import { getDatabase } from "@database/index";
-import type { GuildId, GuildPrefix } from "@tables/types/guild";
-import { setPrefixStmt } from "@tables/guild/_statements";
-import { clearGuildCache, getOrCreateGuild, upsertGuild } from "@tables/guild/id";
+import { getDatabase } from "@database/index.js";
+import type { GuildId, GuildPrefix } from "@tables/types/guild/index.js";
+import { setPrefixStmt } from "@tables/guild/_statements.js";
+import { clearGuildCache, getOrCreateGuild, upsertGuild } from "@tables/guild/id.js";
 
 const database = getDatabase();
 

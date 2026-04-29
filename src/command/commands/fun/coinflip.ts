@@ -1,5 +1,5 @@
-import type { CodeNumber } from "@command/dependencies";
-import type { Command } from "@command/types/command";
+import type { CodeNumber } from "@dependencies";
+import type { Command } from "@command/types/command.js";
 
 export default {
   name: "coinflip",
@@ -14,7 +14,7 @@ export default {
   execute: async ({ message, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
     const { code, createEmbed } = deps;
     const result = Math.random() < 0.5 ? "Heads" : "Tails";
-    
+
     const embed = createEmbed({
       title: "Coin Flip",
       description: `The coin landed on: **${result}**!`,

@@ -34,4 +34,4 @@ export const buildPvpEventEmbed = (events: EventInput | Error): EmbedBuilder => 
   });
 };
 
-export {calcPvpEvent, scrapPvpEvent} from "./pvpEvent";
+export {calcPvpEvent, scrapPvpEvent} from "@handlers/pvpEventTracker/pvpEvent.js";

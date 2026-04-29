@@ -6,9 +6,9 @@ import { commands } from "@/command/_commands.js";
 import { code, getDeps, type CodeNumber } from "@dependencies";
 import { formatCommandPermission, hasCommandPermission } from "@command/shared.js";
 import { createLogger } from "@utilities/logger.js";
-import { getRemainingCooldown, setCooldown } from "@database/tables/cooldown";
-import { getPrefix, upsertGuild } from "@database/tables/guild";
-import { upsertUser } from "@database/tables/user";
+import { getRemainingCooldown, setCooldown } from "@tables/cooldown/index.js";
+import { getPrefix, upsertGuild } from "@tables/guild/index.js";
+import { upsertUser } from "@tables/user/index.js";
 import type { Message } from "discord.js";
 
 const log = createLogger("Command");

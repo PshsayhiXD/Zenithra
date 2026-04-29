@@ -1,6 +1,6 @@
-import { MISSION } from "@config/mission";
-import { missionStore } from "@handlers/missionTracker/store";
-import type { FutureMission, MissionState } from "@handlers/missionTracker/type";
+import { MISSION } from "@config/mission.js";
+import { missionStore } from "@handlers/missionTracker/store.js";
+import type { FutureMission, MissionState } from "@handlers/missionTracker/type.js";
 
 const normalize = (ts: number): number => ts > 1_000_000_000_000 ? Math.floor(ts / 1000) : ts;
 

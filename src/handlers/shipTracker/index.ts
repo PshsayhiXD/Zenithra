@@ -26,6 +26,6 @@ export const buildPublicCombinedShips = async (): Promise<Buffer> => {
   return png;
 };
 
-export {getShipFromLink, getPublicPersistentShips, getPublicEphemeralShips} from "./shipTracker.js";
-export {drawShipWallSvg, drawShipWallPng, mergeShipLists} from "./draw.js";
-export {type PublicShip, type PublicShipList, type PublicPersistentShips, type PublicEphemeralShips} from "./type.js";
+export {getShipFromLink, getPublicPersistentShips, getPublicEphemeralShips} from "@handlers/shipTracker/shipTracker.js";
+export {drawShipWallSvg, drawShipWallPng, mergeShipLists} from "@handlers/shipTracker/draw.js";
+export {type PublicShip, type PublicShipList, type PublicPersistentShips, type PublicEphemeralShips} from "@handlers/shipTracker/type.js";

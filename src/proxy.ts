@@ -1,5 +1,5 @@
-import { PROXY } from "@config/proxy";
-import { createLogger } from "@utilities/logger";
+import { PROXY } from "@config/proxy.js";
+import { createLogger } from "@utilities/logger.js";
 import http, { type IncomingMessage } from "node:http";
 import net, { type Socket } from "node:net";
 

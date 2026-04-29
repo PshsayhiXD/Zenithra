@@ -1,4 +1,4 @@
-import { getDatabase } from "@database/index";
+import { getDatabase } from "@database/index.js";
 import type {
     GuildChannelEnabled,
     GuildChannelId,
@@ -12,7 +12,7 @@ import type {
     GuildRow,
     GuildSlashCommand,
     GuildUpdatedAt,
-} from "@database/types/guild";
+} from "@tables/types/guild/index.js";
 import type { Statement } from "better-sqlite3";
 
 const database = getDatabase();

@@ -2,8 +2,8 @@ import {
   ApplicationCommandOptionType,
   MessageFlags,
 } from "discord.js";
-import type { SlashCommand } from "@command/types/slashCommand";
-import type { CodeNumber } from "@command/dependencies";
+import type { SlashCommand } from "@command/types/slashCommand.js";
+import type { CodeNumber } from "@dependencies";
 
 export default {
   shouldRegister: true,

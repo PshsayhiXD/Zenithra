@@ -1,5 +1,5 @@
-import type { CodeNumber } from "@command/dependencies";
-import type { Command } from "@command/types/command";
+import type { CodeNumber } from "@dependencies";
+import type { Command } from "@command/types/command.js";
 import { version as djsVersion } from "discord.js";
 import os from "node:os";
 
@@ -17,11 +17,11 @@ export default {
     const { code, createEmbed } = deps;
     const { client } = message;
     const user = client.user;
-    
+
     const uptime = process.uptime();
     const uptimeString = `${String(Math.floor(uptime / 3600))}h ${String(Math.floor((uptime % 3600) / 60))}m ${String(Math.floor(uptime % 60))}s`;
     const memoryUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
-    
+
     const embed = createEmbed({
       title: "Bot Information",
       thumbnail: user.displayAvatarURL(),

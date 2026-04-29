@@ -1,7 +1,7 @@
-import type { EconomyStreakRow, EconomyUserId } from "@tables/types/economy";
-import { DAY } from "@utilities/time";
-import { getStreakStmt, upsertStreakStmt } from "@tables/economy/_statements";
-import { getOrCreateEconomy } from "@tables/economy/userId";
+import type { EconomyStreakRow, EconomyUserId } from "@tables/types/economy/index.js";
+import { DAY } from "@utilities/time.js";
+import { getStreakStmt, upsertStreakStmt } from "@tables/economy/_statements.js";
+import { getOrCreateEconomy } from "@tables/economy/userId.js";
 
 export const addStreak = (userId: EconomyUserId): EconomyStreakRow => {
   getOrCreateEconomy(userId);

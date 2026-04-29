@@ -1,5 +1,5 @@
 import type { Shard } from "discord.js";
-import { createLogger } from "@utilities/logger";
+import { createLogger } from "@utilities/logger.js";
 
 const log = createLogger("Shard");
 

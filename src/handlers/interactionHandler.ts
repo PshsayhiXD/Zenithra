@@ -1,5 +1,5 @@
 import type { Interaction } from "discord.js";
-import { handleSlashCommand } from "@command/_slashCommandHandler";
+import { handleSlashCommand } from "@command/_slashCommandHandler.js";
 
 const buttonCache = new Map<string, { onClick: (interaction: Interaction) => void; options?: { single?: boolean } }>();
 

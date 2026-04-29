@@ -1,4 +1,4 @@
-import type { DeepKeys, DeepValue } from "@command/types/dependency";
+import type { DeepKeys, DeepValue } from "@command/types/dependency.js";
 
 export const resolveDependency = <T extends object, P extends DeepKeys<T>>(
   object: T,

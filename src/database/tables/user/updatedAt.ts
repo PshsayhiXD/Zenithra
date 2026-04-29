@@ -1,9 +1,9 @@
 import type {
   UserId,
   UserRow,
-} from "@tables/types/user";
-import { upsertUserStmt } from "@tables/user/_statements";
-import { getUser, setUserCache } from "@tables/user/id";
+} from "@tables/types/user/index.js";
+import { upsertUserStmt } from "@tables/user/_statements.js";
+import { getUser, setUserCache } from "@tables/user/id.js";
 
 export const upsertUser = (userId: UserId): UserRow => {
   const cached = getUser(userId);

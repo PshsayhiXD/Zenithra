@@ -1,5 +1,5 @@
-import type { CodeNumber } from "@command/dependencies";
-import type { Command } from "@command/types/command";
+import type { CodeNumber } from "@dependencies";
+import type { Command } from "@command/types/command.js";
 
 export default {
   name: "meme",
@@ -13,7 +13,7 @@ export default {
   dependencies: ["code", "createEmbed"],
   execute: async ({ message, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
     const { code, createEmbed } = deps;
-    
+
     try {
       const response = await fetch("https://meme-api.com/gimme");
       const data = await response.json() as {

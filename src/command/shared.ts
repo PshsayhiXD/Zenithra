@@ -3,7 +3,7 @@ import {
   type GuildMember,
   type PermissionResolvable,
 } from "discord.js";
-import type { CommandPermission } from "@command/types/command";
+import type { CommandPermission } from "@command/types/command.js";
 
 const toArray = <T>(v?: T | T[]): T[] =>
   // eslint-disable-next-line no-nested-ternary

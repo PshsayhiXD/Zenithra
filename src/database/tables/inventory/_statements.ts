@@ -1,10 +1,10 @@
-import { getDatabase } from "@database/index";
+import { getDatabase } from "@database/index.js";
 import type {
   InventoryItemId,
   InventoryQuantity,
   InventoryRow,
   InventoryUserId,
-} from "@database/types/inventory";
+} from "@tables/types/inventory/index.js";
 import type { RunResult, Statement } from "better-sqlite3";
 
 const database = getDatabase();

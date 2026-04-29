@@ -4,7 +4,7 @@ import type {
   CooldownExpiresAt,
   CooldownPrunedCount,
   CooldownUserId,
-} from "@database/tables/types/cooldown";
+} from "@tables/types/cooldown/index.js";
 import { clearCooldown, getCooldown } from "@tables/cooldown/userId.js";
 import { pruneExpiredStmt, setCooldownStmt } from "@tables/cooldown/_statements.js";
 

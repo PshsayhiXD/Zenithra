@@ -5,13 +5,13 @@ import {
   type GuildMember,
   type InteractionReplyOptions,
 } from "discord.js";
-import type { SlashCommandResult } from "@command/types/slashCommand";
+import type { SlashCommandResult } from "@command/types/slashCommand.js";
 
-import { COMMANDS } from "@config/commands";
-import { getRemainingCooldown, setCooldown } from "@database/tables/cooldown";
-import { upsertGuild } from "@database/tables/guild";
-import { upsertUser } from "@database/tables/user";
-import { time } from "@utilities/index.js";
+import { COMMANDS } from "@config/commands.js";
+import { getRemainingCooldown, setCooldown } from "@tables/cooldown/index.js";
+import { upsertGuild } from "@tables/guild/index.js";
+import { upsertUser } from "@tables/user/index.js";
+import { msTo } from "@utilities/time.js";
 import { createLogger } from "@utilities/logger.js";
 import createEmbed from "@utilities/ui/embed.js";
 import { slashCommands } from "@command/_slashCommands.js";
@@ -46,7 +46,7 @@ export const handleSlashCommand = async (interaction: ChatInputCommandInteractio
   if (cmd.cooldown !== undefined && cmd.cooldown > 0) {
     const remaining = getRemainingCooldown(interaction.user.id, cmd.name);
     if (remaining > 0) {
-      const seconds = time.msTo(remaining, "sec");
+      const seconds = msTo(remaining, "sec");
 
       await send({
         embeds: [

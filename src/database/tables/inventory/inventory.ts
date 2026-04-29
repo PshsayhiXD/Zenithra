@@ -3,7 +3,7 @@ import type {
     InventoryQuantity,
     InventoryRow,
     InventoryUserId,
-} from "@tables/types/inventory";
+} from "@tables/types/inventory/index.js";
 import {
     addItemStmt,
     deleteEmptyStackStmt,

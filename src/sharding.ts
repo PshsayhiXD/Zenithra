@@ -1,7 +1,7 @@
 import "@environment";
 import { ShardingManager } from "discord.js";
-import { onShardCreate } from "@events/_shard";
-import { createLogger } from "@utilities/logger";
+import { onShardCreate } from "@events/_shard.js";
+import { createLogger } from "@utilities/logger.js";
 
 const logger = createLogger("Sharding");
 

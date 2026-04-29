@@ -1,8 +1,8 @@
 import { readdir } from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
-import type { Item, ItemContext } from "@modules/types/item";
-import { createLogger } from "@utilities/logger";
+import type { Item, ItemContext } from "@modules/types/item.js";
+import { createLogger } from "@utilities/logger.js";
 
 const log = createLogger("Items");
 

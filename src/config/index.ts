@@ -1,7 +1,7 @@
-import { COMMANDS } from "@config/commands";
-import { CURRENCY } from "@config/currency";
-import { MISSION } from "@config/mission";
-import { PROXY } from "@config/proxy";
+import { COMMANDS } from "@config/commands.js";
+import { CURRENCY } from "@config/currency.js";
+import { MISSION } from "@config/mission.js";
+import { PROXY } from "@config/proxy.js";
 
 export interface Config {
   MISSION: typeof MISSION;

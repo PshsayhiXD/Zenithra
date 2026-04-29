@@ -1,4 +1,4 @@
-import { getDatabase } from "@database/index";
+import { getDatabase } from "@database/index.js";
 import type { Database } from "better-sqlite3";
 
 const database: Database = getDatabase();

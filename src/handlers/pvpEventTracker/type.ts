@@ -1,6 +1,6 @@
-import type { time } from "@utilities/index.js";
+import type { WEEK_DAYS } from "@utilities/time.js";
 
-export type WeekDay = (typeof time.WEEK_DAYS)[number];
+export type WeekDay = (typeof WEEK_DAYS)[number];
 
 export interface ScrapedEntry { date: string }
 export interface ScheduleEntry { date: string | number | (string | number)[] }

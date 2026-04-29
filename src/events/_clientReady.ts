@@ -1,13 +1,13 @@
 import type { Client } from "discord.js";
-import type { ScheduleEntry } from "@handlers/pvpEventTracker/type";
+import type { ScheduleEntry } from "@handlers/pvpEventTracker/type.js";
 
-import { buildMissionTrackerEmbed } from "@handlers/missionTracker";
-import { buildPvpEventEmbed, calcPvpEvent } from "@handlers/pvpEventTracker";
-import { buildPublicCombinedShips } from "@handlers/shipTracker";
+import { buildMissionTrackerEmbed } from "@handlers/missionTracker/index.js";
+import { buildPvpEventEmbed, calcPvpEvent } from "@handlers/pvpEventTracker/index.js";
+import { buildPublicCombinedShips } from "@handlers/shipTracker/index.js";
 
 import { updateCache } from "@/client.js";
 import { Cache } from "@utilities/cache.js";
-import { time } from "@utilities/index.js";
+import { loop, MINUTE } from "@utilities/time.js";
 import { createLogger } from "@utilities/logger.js";
 
 import { registerSlashCommands } from "@command/_registerSlashCommand.js";
@@ -72,7 +72,7 @@ export const onClientReady = async (client: Client): Promise<void> => {
       startShipTracker(shipPng),
     ]);
     log.info("Initial services started", { shardId });
-    time.loop(async (): Promise<void> => {
+    loop(async (): Promise<void> => {
       const [newEventEmbed, newShipPng] = await Promise.all([
         buildMissionTrackerEmbed(15),
         buildPublicCombinedShips(),
@@ -82,9 +82,9 @@ export const onClientReady = async (client: Client): Promise<void> => {
         startShipTracker(newShipPng),
       ]);
       log.info("Periodic mission/ship update", { shardId });
-    }, time.MINUTE / 2);
+    }, MINUTE / 2);
 
-    time.loop(async (): Promise<void> => {
+    loop(async (): Promise<void> => {
       updateCache();
       const newPvpResult = calcPvpEvent("all");
       if (!(newPvpResult instanceof Error)) {
@@ -100,7 +100,7 @@ export const onClientReady = async (client: Client): Promise<void> => {
           upcomingCount: upcoming.length,
         });
       }
-    }, time.MINUTE * 5);
+    }, MINUTE * 5);
 
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));

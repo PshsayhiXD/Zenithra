@@ -1,6 +1,6 @@
 import type { Interaction } from "discord.js";
-import handleInteraction from "@handlers/interactionHandler";
-import { createLogger } from "@utilities/logger";
+import handleInteraction from "@handlers/interactionHandler.js";
+import { createLogger } from "@utilities/logger.js";
 
 const log = createLogger("Interaction");
 

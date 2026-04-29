@@ -2,7 +2,7 @@ import { getDatabase } from "@database/index.js";
 import type {
     GlobalSlashCommandHashCache,
     GlobalSlashCommandRow,
-} from "@database/tables/types/globalSlashCommands";
+} from "@tables/types/globalSlashCommands/index.js";
 import {
     deleteGlobalSlashCommandStmt,
     getGlobalSlashCommandStmt,

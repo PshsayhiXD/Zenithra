@@ -3,9 +3,9 @@ import type {
   EconomyFeePercent,
   EconomyRow,
   EconomyUserId,
-} from "@tables/types/economy";
-import { updateBalancesStmt } from "@tables/economy/_statements";
-import { getEconomy, getOrCreateEconomy } from "@tables/economy/userId";
+} from "@tables/types/economy/index.js";
+import { updateBalancesStmt } from "@tables/economy/_statements.js";
+import { getEconomy, getOrCreateEconomy } from "@tables/economy/userId.js";
 import { CURRENCY } from "@config/currency.js";
 
 const assertPositiveAmount = (amount: EconomyCurrency, action: "Deposit" | "Withdraw"): void => {

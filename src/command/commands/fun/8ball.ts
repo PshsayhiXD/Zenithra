@@ -1,5 +1,5 @@
-import type { CodeNumber } from "@command/dependencies";
-import type { Command } from "@command/types/command";
+import type { CodeNumber } from "@dependencies";
+import type { Command } from "@command/types/command.js";
 
 export default {
   name: "8ball",
@@ -21,14 +21,14 @@ export default {
   execute: async ({ message, args, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
     const { code, createEmbed } = deps;
     if (args.length === 0) return [code.UserDefinedError, "Please ask a question!"];
-    
+
     const responses = [
-      "It is certain.", 
+      "It is certain.",
       "Yes, definitely.",
-      "Most likely.", 
-      "Yes.", 
+      "Most likely.",
+      "Yes.",
       "Ask again later.",
-      "Better not tell you now.", 
+      "Better not tell you now.",
       "Very doubtful."
     ];
     const response = responses[Math.floor(Math.random() * responses.length)] ?? "Reply hazy, try again.";

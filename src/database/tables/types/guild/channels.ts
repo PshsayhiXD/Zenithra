@@ -1,8 +1,8 @@
-import type { GuildId } from "@tables/types/guild/id";
-import type { GuildChannelEnabled } from "@tables/types/guild/channelEnabled";
-import type { GuildChannelId } from "@tables/types/guild/channelId";
-import type { GuildChannelMessage } from "@tables/types/guild/channelMessage";
-import type { GuildChannelType } from "@tables/types/guild/channelType";
+import type { GuildId } from "@tables/types/guild/id.js";
+import type { GuildChannelEnabled } from "@tables/types/guild/channelEnabled.js";
+import type { GuildChannelId } from "@tables/types/guild/channelId.js";
+import type { GuildChannelMessage } from "@tables/types/guild/channelMessage.js";
+import type { GuildChannelType } from "@tables/types/guild/channelType.js";
 
 export type GuildChannels = Record<GuildChannelType, boolean> & Record<`${GuildChannelType}Channel`, GuildChannelId> & Record<`${GuildChannelType}Message`, GuildChannelMessage>;
 

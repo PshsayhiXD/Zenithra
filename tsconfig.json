@@ -75,7 +75,6 @@
       "@database/*": ["./src/database/*"],
       "@getDatabase": ["./src/database/index.ts"],
       "@tables/*": ["./src/database/tables/*"],
-      "@database/types/*": ["./src/database/tables/types/*/index.ts"],
       "@migrations/*": ["./src/database/migrations/*"],
     }
   },

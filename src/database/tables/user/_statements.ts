@@ -1,5 +1,5 @@
-import { getDatabase } from "@database/index";
-import type { UserCreatedAt, UserId, UserRow, UserUpdatedAt } from "@database/types/user";
+import { getDatabase } from "@database/index.js";
+import type { UserCreatedAt, UserId, UserRow, UserUpdatedAt } from "@tables/types/user/index.js";
 import type { Statement } from "better-sqlite3";
 
 const database = getDatabase();

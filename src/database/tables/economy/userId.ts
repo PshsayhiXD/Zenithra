@@ -2,8 +2,8 @@ import type {
   EconomyCurrency,
   EconomyRow,
   EconomyUserId,
-} from "@tables/types/economy";
-import { getEconomyStmt, upsertEconomyStmt } from "@tables/economy/_statements";
+} from "@tables/types/economy/index.js";
+import { getEconomyStmt, upsertEconomyStmt } from "@tables/economy/_statements.js";
 
 export const getEconomy = (userId: EconomyUserId): EconomyRow | undefined => getEconomyStmt.get(userId) ?? undefined;
 

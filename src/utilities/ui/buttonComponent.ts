@@ -1,6 +1,6 @@
 import { ActionRowBuilder, ButtonBuilder } from "discord.js";
-import { addButtonRecord } from "@handlers/interactionHandler";
-import type { ButtonComponentOptions } from "@utilities/ui/types/buttonComponent";
+import { addButtonRecord } from "@handlers/interactionHandler.js";
+import type { ButtonComponentOptions } from "@utilities/ui/types/buttonComponent.js";
 
 export const createButtonComponent = (options: ButtonComponentOptions): ActionRowBuilder<ButtonBuilder> => {
   const button = new ButtonBuilder()

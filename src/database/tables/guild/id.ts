@@ -2,8 +2,8 @@ import {
     DEFAULT_PREFIX,
     type GuildId,
     type GuildRow,
-} from "@tables/types/guild";
-import { getGuildStmt, upsertGuildStmt } from "@tables/guild/_statements";
+} from "@tables/types/guild/index.js";
+import { getGuildStmt, upsertGuildStmt } from "@tables/guild/_statements.js";
 
 const guildCache = new Map<GuildId, GuildRow>();
 

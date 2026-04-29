@@ -2,7 +2,7 @@ import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v
 import { REST, Routes, type Client } from "discord.js";
 
 import { readSlashCommands } from "@command/_slashCommands.js";
-import { crypto } from "@utilities/index.js";
+import { createHash } from "@utilities/crypto";
 import { createLogger } from "@utilities/logger.js";
 import { serializeSlashCommand } from "@command/slashCommandHelper.js";
 import { readSlashCommandHashCache, writeSlashCommandHashCache } from "@command/slashCommandCache.js";
@@ -48,7 +48,7 @@ export const registerSlashCommands = async (client: Client): Promise<void> => {
   let guilds = cache.guilds ?? (cache.guilds = {});
   const failedGuilds = new Set<string>();
 
-  const globalHash = crypto.createHash(globalCommands);
+  const globalHash = createHash(globalCommands);
 
   if (force || cache.global !== globalHash) {
     log.info("Updating global commands", { count: globalCommands.length, force });
@@ -63,7 +63,7 @@ export const registerSlashCommands = async (client: Client): Promise<void> => {
       continue;
     }
 
-    const guildHash = crypto.createHash(guildCommands);
+    const guildHash = createHash(guildCommands);
 
     if (!force && cache.guilds[guildId] === guildHash) {
       log.info("Guild unchanged", { guildId });

@@ -1,6 +1,6 @@
-import type { DependencyKey, ResolvedDeps } from "@command/types/dependency";
-import { availableDependencies } from "@command/dependency/index";
-import { resolveDependency } from "@command/dependency/resolver";
+import type { DependencyKey, ResolvedDeps } from "@command/types/dependency.js";
+import { availableDependencies } from "@command/dependency/index.js";
+import { resolveDependency } from "@command/dependency/resolver.js";
 
 export const getDeps = <const T extends DependencyKey>(
   dependencies?: T[],

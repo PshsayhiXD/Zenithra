@@ -6,10 +6,10 @@ import type {
   EconomyStreakRow,
   EconomyUpdatedAt,
   EconomyUserId,
-} from "@database/types/economy";
+} from "@tables/types/economy/index.js";
 import { CURRENCY } from "@config/currency.js";
 import type { RunResult, Statement } from "better-sqlite3";
-import { getDatabase } from "@database/index";
+import { getDatabase } from "@database/index.js";
 
 const database = getDatabase();
 

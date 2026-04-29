@@ -1,4 +1,4 @@
-import { getDatabase } from "@database/index";
+import { getDatabase } from "@database/index.js";
 import {
     DEFAULT_CHANNELS,
     GUILD_CHANNEL_TYPES,
@@ -7,8 +7,8 @@ import {
     type GuildChannelType,
     type GuildChannels,
     type GuildId,
-} from "@tables/types/guild";
-import { deleteChannelsStmt, getChannelsStmt, setChannelStmt } from "@tables/guild/_statements";
+} from "@tables/types/guild/index.js";
+import { deleteChannelsStmt, getChannelsStmt, setChannelStmt } from "@tables/guild/_statements.js";
 
 const database = getDatabase();
 

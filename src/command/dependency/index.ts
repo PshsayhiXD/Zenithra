@@ -47,13 +47,13 @@ export type {
   CommandDependencies,
   StaticDependencies,
   DependencyKey,
-} from "@command/types/dependency";
+} from "@command/types/dependency.js";
 
-export { resolveDependency } from "@command/dependency/resolver";
+export { resolveDependency } from "@dependency/resolver.js";
 
-export * from "./core.js";
-export * from "./deps/code.js";
-export * from "./deps/guild.js";
-export * from "./deps/pvp.js";
-export * from "./deps/eventTracker.js";
-export * from "./deps/items.js";
+export * from "@dependency/core.js";
+export * from "@dependency/deps/code.js";
+export * from "@dependency/deps/guild.js";
+export * from "@dependency/deps/pvp.js";
+export * from "@dependency/deps/eventTracker.js";
+export * from "@dependency/deps/items.js";

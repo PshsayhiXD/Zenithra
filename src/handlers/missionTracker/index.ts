@@ -69,6 +69,6 @@ export const buildMissionTrackerEmbed = async (count = 3): Promise<EmbedBuilder>
   const { state, futureMissions } = await getMissionTrackerData(count);
   return createMissionTrackerEmbed(state, futureMissions);
 };
-export {getFutureMissions, getMissionState, getMissionTrackerData} from "./missions.js";
-export {missionStore as missionCache} from "./store.js";
-export {type MissionData, type FutureMission, type MissionState} from "./type.js";
+export {getFutureMissions, getMissionState, getMissionTrackerData} from "@/handlers/missionTracker/missions.js";
+export {missionStore as missionCache} from "@/handlers/missionTracker/store.js";
+export {type MissionData, type FutureMission, type MissionState} from "@/handlers/missionTracker/type.js";

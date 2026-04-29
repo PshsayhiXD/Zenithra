@@ -5,7 +5,7 @@ import {
   upcomingIndex
 } from "@handlers/pvpEventTracker/type.js";
 
-import { time } from "@utilities/index.js";
+import { WEEK_DAYS, WEEK } from "@utilities/time.js";
 
 let schedule: ScrapedEntry[] = [];
 
@@ -27,7 +27,7 @@ const filterToday = <T>(array: T[], getDate: (v: T) => Date): T[] => {
   return array.filter((v: T): boolean => getDate(v).setHours(0, 0, 0, 0) === t);
 };
 const filterWeekday = <T>(array: T[], getDate: (v: T) => Date, q: string): T[] => {
-  const index = time.WEEK_DAYS.indexOf(q as WeekDay);
+  const index = WEEK_DAYS.indexOf(q as WeekDay);
   return array.filter((v: T): boolean => getDate(v).getDay() === index);
 };
 const fetchSchedule = async (): Promise<void> => {
@@ -68,7 +68,7 @@ const scrapPvpEvent = async (rawQuery: unknown): Promise<string | string[] | Err
     if (event === undefined) return new Error("No upcoming events.");
     return event.date;
   }
-  if (time.WEEK_DAYS.includes(q as WeekDay)) {
+  if (WEEK_DAYS.includes(q as WeekDay)) {
     const result = filterWeekday(schedule, (v) => new Date(v.date), q);
     return result.length > 0 ? result.map((v) => v.date) : new Error(`No events on ${q}.`);
   }
@@ -93,7 +93,7 @@ const buildDate = (base: Date, event: ScheduleCalc): number => {
   d.setDate(d.getDate() + diff);
   d.setHours(event.hour, event.minute, 0, 0);
   let t = d.getTime();
-  if (t <= Date.now()) t += time.WEEK;
+  if (t <= Date.now()) t += WEEK;
   return t;
 };
 
@@ -105,7 +105,7 @@ const calcPvpEvent = (rawQuery: unknown): number[] | number => {
     .flatMap((event) =>
       Array.from(
         { length: 5 },
-        (_, index) => buildDate(base, event) + (index - 2) * time.WEEK,
+        (_, index) => buildDate(base, event) + (index - 2) * WEEK,
       ),
     )
     .sort((a, b) => a - b);
@@ -123,8 +123,8 @@ const calcPvpEvent = (rawQuery: unknown): number[] | number => {
     const d = new Date(now).getDay();
     return all.filter((t) => new Date(t).getDay() === d);
   }
-  if (time.WEEK_DAYS.includes(q as WeekDay)) {
-    const index = time.WEEK_DAYS.indexOf(q as WeekDay);
+  if (WEEK_DAYS.includes(q as WeekDay)) {
+    const index = WEEK_DAYS.indexOf(q as WeekDay);
     return all.filter((t) => new Date(t).getDay() === index);
   }
   throw new Error("Invalid query.");

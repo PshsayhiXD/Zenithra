@@ -1,5 +1,5 @@
-import type { CodeNumber } from "@command/dependencies";
-import type { Command } from "@command/types/command";
+import type { CodeNumber } from "@dependencies";
+import type { Command } from "@command/types/command.js";
 import { time } from "discord.js";
 
 export default {

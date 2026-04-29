@@ -1,7 +1,7 @@
 import type { RESTPostAPIApplicationCommandsJSONBody, APIApplicationCommandOption } from "discord-api-types/v10";
 import { ApplicationCommandType, ApplicationCommandOptionType } from "discord.js";
 
-import type { SlashCommand } from "@command/types/slashCommand";
+import type { SlashCommand } from "@command/types/slashCommand.js";
 
 type SlashArgument = NonNullable<SlashCommand["args"]>[number];
 

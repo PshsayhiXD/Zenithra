@@ -1,5 +1,5 @@
 import sharp from "sharp";
-import type { PublicShipList, PublicShip } from "@handlers/shipTracker/type";
+import type { PublicShipList, PublicShip } from "@handlers/shipTracker/type.js";
 
 type ShipSource = "persisted" | "ephemeral";
 type DrawShip = PublicShip & { shipId: string; source?: ShipSource };

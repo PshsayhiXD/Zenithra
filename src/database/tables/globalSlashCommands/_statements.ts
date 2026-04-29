@@ -1,8 +1,8 @@
-import { getDatabase } from "@database/index";
+import { getDatabase } from "@database/index.js";
 import type {
     GlobalSlashCommandHashCache,
     GlobalSlashCommandRow,
-} from "@database/types/globalSlashCommands";
+} from "@tables/types/globalSlashCommands/index.js";
 import type { Statement } from "better-sqlite3";
 
 const database = getDatabase();

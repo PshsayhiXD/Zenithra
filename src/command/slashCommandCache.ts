@@ -5,10 +5,10 @@ import {
   getGlobalSlashCommand,
   setGlobalSlashCommand,
   setGuildSlashCommand,
-} from "@tables/index";
+} from "@tables/index.js";
 
-import type { GuildSlashCommand } from "@tables/types/guild/index";
-import type { SlashCommandHashCache } from "@command/types/slashCommandHashCache";
+import type { GuildSlashCommand } from "@tables/types/guild/index.js";
+import type { SlashCommandHashCache } from "@command/types/slashCommandHashCache.js";
 
 export const readSlashCommandHashCache = (): SlashCommandHashCache => {
   const global = getGlobalSlashCommand();

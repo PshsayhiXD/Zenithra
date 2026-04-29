@@ -1,5 +1,5 @@
-import { Cache } from "@utilities/cache";
-import type { MissionData } from "@handlers/missionTracker/type";
+import { Cache } from "@utilities/cache.js";
+import type { MissionData } from "@handlers/missionTracker/type.js";
 
 const cache = new Cache<MissionData>("mission", "file");
 const KEY = "current";

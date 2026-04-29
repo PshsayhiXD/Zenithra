@@ -1,4 +1,4 @@
-import type { Command } from "@command/types/command";
+import type { Command } from "@command/types/command.js";
 
 export const inviteCommand: Command<"env" | "createEmbed" | "code"> = {
   name: "invite",

@@ -1,4 +1,4 @@
-import { getDatabase } from "@database/index";
+import { getDatabase } from "@database/index.js";
 import fs from "node:fs";
 import path from "node:path";
 const database = getDatabase();

@@ -1,5 +1,5 @@
-import type { UserId, UserRow } from "@tables/types/user";
-import { getUserStmt } from "@tables/user/_statements";
+import type { UserId, UserRow } from "@tables/types/user/index.js";
+import { getUserStmt } from "@tables/user/_statements.js";
 
 const userCache = new Map<UserId, UserRow>();
 

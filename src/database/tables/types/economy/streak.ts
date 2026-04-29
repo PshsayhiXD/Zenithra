@@ -1,4 +1,4 @@
-import type { EconomyUpdatedAt, EconomyUserId } from "@tables/types/economy";
+import type { EconomyUpdatedAt, EconomyUserId } from "@tables/types/economy/index.js";
 
 export interface EconomyStreakRow {
   userId: EconomyUserId;

@@ -5,7 +5,7 @@ import type {
   CooldownExpiresAt,
   CooldownRow,
   CooldownUserId,
-} from "@database/types/cooldown";
+} from "@tables/types/cooldown/index.js";
 
 const database = getDatabase();
 

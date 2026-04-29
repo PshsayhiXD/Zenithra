@@ -1,12 +1,12 @@
-import { getDatabase } from "@database/index";
-import type { GuildHashCache, GuildId, GuildSlashCommand } from "@tables/types/guild";
+import { getDatabase } from "@database/index.js";
+import type { GuildHashCache, GuildId, GuildSlashCommand } from "@tables/types/guild/index.js";
 import {
   deleteGuildSlashCommandStmt,
   getAllGuildSlashCommandsStmt,
   getGuildSlashCommandStmt,
   setGuildSlashCommandStmt,
-} from "@tables/guild/_statements";
-import { upsertGuild } from "@tables/guild/id";
+} from "@tables/guild/_statements.js";
+import { upsertGuild } from "@tables/guild/id.js";
 
 const database = getDatabase();
 

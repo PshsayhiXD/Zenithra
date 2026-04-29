@@ -1,7 +1,7 @@
-import type { CodeNumber } from "@command/dependencies";
+import type { CodeNumber } from "@dependencies";
 import type { Command } from "@command/types/command.js";
 import type { GuildChannels  } from "@tables/types/guild/index.js";
-  
+
 export default {
   name: "setchannel",
   id: 1,

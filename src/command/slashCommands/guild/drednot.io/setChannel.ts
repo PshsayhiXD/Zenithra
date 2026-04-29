@@ -1,6 +1,6 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import type { CodeNumber } from "@command/dependencies";
-import type { SlashCommand } from "@command/types/slashCommand";
+import type { CodeNumber } from "@dependencies";
+import type { SlashCommand } from "@command/types/slashCommand.js";
 
 import { GUILD_CHANNEL_TYPES, type GuildChannels } from "@tables/types/guild/index.js";
 const channelTypeChoices = GUILD_CHANNEL_TYPES.map(k => ({

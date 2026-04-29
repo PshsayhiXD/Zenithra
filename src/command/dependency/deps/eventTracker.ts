@@ -4,7 +4,7 @@ import {
   getMissionState,
   getMissionTrackerData,
   missionCache,
-} from "@handlers/missionTracker";
+} from "@handlers/missionTracker/index.js";
 
 export const eventTracker = {
   buildMissionTrackerEmbed,

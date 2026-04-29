@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
-import type { SlashCommand } from "@command/types/slashCommand";
-import { createLogger } from "@utilities/logger";
+import type { SlashCommand } from "@command/types/slashCommand.js";
+import { createLogger } from "@utilities/logger.js";
 
 export const slashCommands: SlashCommand[] = [];
 const log = createLogger("SlashLoader");
