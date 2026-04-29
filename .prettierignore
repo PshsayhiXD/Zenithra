@@ -1,0 +1,8 @@
+node_modules/
+dist/
+.cache/
+.env
+package-lock.json
+logs/
+data/
+assets/

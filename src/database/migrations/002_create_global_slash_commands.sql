@@ -1,0 +1,4 @@
+CREATE TABLE IF NOT EXISTS globalSlashCommands (
+  id INTEGER NOT NULL PRIMARY KEY CHECK (id = 1),
+  hashCache TEXT NOT NULL
+);

@@ -1,0 +1,1 @@
+export * from "@tables/inventory/inventory.js";

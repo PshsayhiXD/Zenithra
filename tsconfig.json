@@ -1,0 +1,84 @@
+{
+  "compilerOptions": {
+    "target": "ES2023",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+
+    "rootDir": "./src",
+    "outDir": "./dist",
+
+    "strict": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "useUnknownInCatchVariables": true,
+    "strictBuiltinIteratorReturn": true,
+
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "allowUnreachableCode": false,
+    "allowUnusedLabels": false,
+
+    "verbatimModuleSyntax": false,
+    "isolatedModules": true,
+
+    "types": ["node"],
+    "resolveJsonModule": false,
+
+    "noEmitOnError": true,
+    "declaration": true,
+    "emitDeclarationOnly": false,
+
+    "forceConsistentCasingInFileNames": true,
+
+    "skipLibCheck": false,
+
+    "sourceMap": false,
+    "removeComments": true,
+
+    "alwaysStrict": true,
+    "noUncheckedSideEffectImports": true,
+
+    "incremental": false,
+
+    "paths": {
+      "@/*": ["./src/*"],
+      "@utilities/*": ["./src/utilities/*"],
+      "@ui/*": ["./src/utilities/ui/*"],
+
+      "@environment": ["./src/environment.ts"],
+      "@config": ["./src/config/index.ts"],
+      "@config/*": ["./src/config/*"],
+
+      "@command/*": ["./src/command/*"],
+      "@slashCommands/*": ["./src/command/slashCommands/*"],
+
+      "@services/*": ["./src/services/*"],
+      "@handlers/*": ["./src/handlers/*"],
+      "@events/*": ["./src/events/*"],
+
+      "@dependencies": ["./src/command/dependencies.ts"],
+      "@dependency/*": ["./src/command/dependency/*"],
+      "@modules/*": ["./src/modules/*"],
+
+      "@database/*": ["./src/database/*"],
+      "@getDatabase": ["./src/database/index.ts"],
+      "@tables/*": ["./src/database/tables/*"],
+      "@database/types/*": ["./src/database/tables/types/*/index.ts"],
+      "@migrations/*": ["./src/database/migrations/*"],
+    }
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist", "data", "assets", "logs", ".cache"]
+}
