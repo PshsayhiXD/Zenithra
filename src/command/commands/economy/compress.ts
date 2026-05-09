@@ -2,7 +2,7 @@ import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "compress",
-  id: 17,
+  id: 23,
   category: "economy",
   description: "Compress resources into higher tiers.",
   aliases: [],

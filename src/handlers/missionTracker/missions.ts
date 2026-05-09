@@ -28,7 +28,7 @@ export const getMissionState = (): MissionState => {
     state: openState ? "OPEN" : "CLOSED",
     timeLeft: openState ? open - elapsed : cycle - elapsed,
     nextChange: now + (openState ? open - elapsed : cycle - elapsed),
-    missionName: meta.mission,
+    missionName: openState ? meta.mission : null,
   };
 };
 

@@ -2,7 +2,7 @@ import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "avatar",
-  id: 18,
+  id: 22,
   category: "utility",
   description: "Display a user's avatar",
   aliases: ["av", "pfp"],
