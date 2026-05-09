@@ -32,12 +32,10 @@ A Discord bot built for the [Drednot.io](https://drednot.io) community. It integ
    ```
 
 3. **Configure environment variables**
-
-   Copy `.env.example` to `.env` and fill in the required values
-   Please note that UPPERCASE variables are require, otherwise it will not start properly
+   To convert `.env.example` to `.env`, make sure to fill out all the UPPERCASE variables, otherwise it will not start properly
 
    ```bash
-   cp .env.example .env
+   npm run env:copy
    ```
 
 ## Build
