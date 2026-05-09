@@ -46,7 +46,7 @@ A Discord bot built for the [Drednot.io](https://drednot.io) community. It integ
 npm run build:clean
 ```
 
-This runs the linter, cleans the `dist/` folder, compiles TypeScript, and copies the database.
+This cleans the `dist/` folder, compiles TypeScript, and copies the database.
 
 **Start after building:**
 
