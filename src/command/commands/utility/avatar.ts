@@ -1,9 +1,8 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "avatar",
-  id: 16,
+  id: 18,
   category: "utility",
   description: "Display a user's avatar",
   aliases: ["av", "pfp"],
@@ -11,7 +10,7 @@ export default {
   args: [],
   permission: {},
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, deps }): Promise<CommandResult> => {
     const { code, createEmbed } = deps;
     const user = message.mentions.users.first() ?? message.author;
     const avatarURL = user.displayAvatarURL({ size: 1024, extension: "png" });

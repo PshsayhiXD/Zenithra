@@ -5,6 +5,7 @@ import {
   config,
   formatter,
   number as numberUtility,
+  currency as currencyUtility,
   createEmbed,
 } from "@dependency/core.js";
 import { code } from "@/command/dependency/deps/code.js";
@@ -29,6 +30,7 @@ export const availableDependencies: StaticDependencies = {
   formatter,
   config,
   number: numberUtility,
+  currency: currencyUtility,
   code,
   isGuildChannelType,
   pvpEvent,

@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "daily",
@@ -11,7 +10,7 @@ export default {
   permission: {},
   cooldown: 86_400, // 24 hours
   dependencies: ["code", "createEmbed", "tables"],
-  execute: async ({ message, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, deps }): Promise<CommandResult> => {
     const { code, createEmbed, tables } = deps;
     const amount = 500;
 

@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 import { PermissionFlagsBits } from "discord.js";
 
 export default {
@@ -21,7 +20,7 @@ export default {
   cooldown: 10,
   description: "Sets the current mission name while preserving the timer and location. (Admins only)",
   dependencies: ["eventTracker", "createEmbed", "code"],
-  execute: async ({ message, args, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, args, deps }): Promise<CommandResult> => {
     const { eventTracker, createEmbed, code } = deps;
     const { missionCache } = eventTracker;
 

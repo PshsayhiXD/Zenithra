@@ -1,9 +1,8 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "coinflip",
-  id: 13,
+  id: 16,
   category: "fun",
   description: "Flip a coin",
   aliases: ["cf", "flip"],
@@ -11,7 +10,7 @@ export default {
   permission: {},
   args: [],
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, deps }): Promise<CommandResult> => {
     const { code, createEmbed } = deps;
     const result = Math.random() < 0.5 ? "Heads" : "Tails";
 

@@ -33,6 +33,24 @@ server.on("connect", (request: IncomingMessage, clientSocket: Socket, head: Buff
   serverSocket.once("close", cleanup);
   clientSocket.once("close", cleanup);
 });
+
+server.on("error", (error: unknown): void => {
+  if (
+    error instanceof Error &&
+    "code" in error &&
+    error.code === "EADDRINUSE"
+  ) {
+    logger.warn("Proxy port already in use", {
+      host: PROXY.HOST,
+      port: PROXY.PORT,
+    });
+    return;
+  }
+  logger.error(error instanceof Error ? error : new Error(String(error)), { event: "ProxyListenError" });
+});
 server.listen(PROXY.PORT, PROXY.HOST, (): void => {
-  logger.info("listening on", { host: PROXY.HOST, port: PROXY.PORT });
+  logger.info("listening on", {
+    host: PROXY.HOST,
+    port: PROXY.PORT,
+  });
 });

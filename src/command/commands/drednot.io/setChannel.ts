@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult  } from "@command/types/command.js";
 import type { GuildChannels  } from "@tables/types/guild/index.js";
 
 export default {
@@ -26,7 +25,7 @@ export default {
   description: "Sets the channel for event tracker messages.",
   dependencies: ["tables", "createEmbed", "isGuildChannelType", "code"],
 
-  execute: async ({ message, args, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, args, deps }): Promise<CommandResult> => {
     const { tables, createEmbed, isGuildChannelType, code } = deps;
     if (message.guildId === null) return [code.InternalError, "Couldnt find guild."];
     const typeArgument = args[0];

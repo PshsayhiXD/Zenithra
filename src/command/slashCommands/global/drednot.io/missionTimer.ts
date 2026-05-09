@@ -2,8 +2,7 @@ import {
   ApplicationCommandOptionType,
   MessageFlags,
 } from "discord.js";
-import type { SlashCommand } from "@command/types/slashCommand.js";
-import type { CodeNumber } from "@dependencies";
+import type { SlashCommand, SlashCommandResult } from "@command/types/slashCommand.js";
 
 export default {
   shouldRegister: true,
@@ -29,7 +28,7 @@ export default {
   dependencies: ["eventTracker", "code"],
   dmPermission: true,
   groupPermission: true,
-  execute: async ({ interaction, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ interaction, deps }): Promise<SlashCommandResult> => {
     const { eventTracker, code } = deps;
     const count = interaction.options.getInteger("count") ?? 3;
     const ephemeral = interaction.options.getBoolean("ephemeral") ?? false;

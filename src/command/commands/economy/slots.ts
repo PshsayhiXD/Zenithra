@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "slots",
@@ -17,16 +16,12 @@ export default {
       required: true,
     },
   ],
-  dependencies: ["code", "createEmbed", "tables", "config.CURRENCY", "number"],
-  execute: async ({ message, args, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
-    const { code, createEmbed, tables, "config.CURRENCY": CURRENCY, number: numberUtilities } = deps;
+  dependencies: ["code", "createEmbed", "tables", "config.CURRENCY", "number", "currency"],
+  execute: async ({ message, args, deps }): Promise<CommandResult> => {
+    const { code, createEmbed, tables, currency } = deps;
 
-    const amountInput = args[0];
-    if (amountInput === undefined)
-      return [code.UserDefinedError, "Please provide a valid bet amount."];
-
-    const amountRaw = numberUtilities.parseNumber(amountInput);
-    if (amountRaw === undefined || amountRaw <= 0)
+    const amountRaw = Number(currency.parseCurrency(args.join(" ")));
+    if (amountRaw <= 0)
       return [code.UserDefinedError, "Please provide a valid bet amount."];
 
     const amount = amountRaw;
@@ -35,7 +30,7 @@ export default {
     if (amount > wallet)
       return [
         code.UserDefinedError,
-        `You only have **${numberUtilities.formatNumber(wallet)}${CURRENCY.SYMBOL}** in your wallet.`,
+        `You only have **${currency.formatCurrency(wallet)}** in your wallet.`,
       ];
 
     const symbols = ["🍒", "🍋", "🍇", "🍊", "💎", "🔔"];
@@ -66,8 +61,8 @@ export default {
       description:
         `${resultString}\n\n${
           win > 0
-            ? `You won **${numberUtilities.formatNumber(win)}${CURRENCY.SYMBOL}**! (${String(multiplier)}x)`
-            : `You lost **${numberUtilities.formatNumber(amount)}${CURRENCY.SYMBOL}**.`}`,
+            ? `You won **${currency.formatCurrency(win)}**! (${String(multiplier)}x)`
+            : `You lost **${currency.formatCurrency(amount)}**.`}`,
       color: win > 0 ? "Green" : "Red",
       options: { message, timestamp: new Date() },
     });
@@ -76,4 +71,4 @@ export default {
 
     return code.Success;
   },
-} satisfies Command<"code" | "createEmbed" | "tables" | "config.CURRENCY" | "number">;
+} satisfies Command<"code" | "createEmbed" | "tables" | "config.CURRENCY" | "number" | "currency">;

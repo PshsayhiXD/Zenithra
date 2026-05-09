@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import type { CodeNumber } from "@dependencies";
-import type { SlashCommand } from "@command/types/slashCommand.js";
+import type { SlashCommand, SlashCommandResult } from "@command/types/slashCommand.js";
 
 import { GUILD_CHANNEL_TYPES, type GuildChannels } from "@tables/types/guild/index.js";
 const channelTypeChoices = GUILD_CHANNEL_TYPES.map(k => ({
@@ -31,7 +30,7 @@ export default {
   ],
   permission: {},
   dependencies: ["tables", "createEmbed", "isGuildChannelType", "code"],
-  execute: async ({ interaction, options, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ interaction, options, deps }): Promise<SlashCommandResult> => {
     const { tables, createEmbed, isGuildChannelType, code } = deps;
 
     const channel = options.getChannel("channel", true);

@@ -1,5 +1,4 @@
 export const CURRENCY = {
-  NAME: "dredcoin",
-  SYMBOL: "⚡",
+  NAME: "currency",
   FEE_PERCENT: 0.05, // 5%
 } as const;

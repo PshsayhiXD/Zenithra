@@ -1,6 +1,5 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
-import type { SlashCommand } from "@command/types/slashCommand.js";
-import type { CodeNumber } from "@dependencies";
+import type { SlashCommand, SlashCommandResult } from "@command/types/slashCommand.js";
 
 export default {
   shouldRegister: true,
@@ -32,7 +31,7 @@ export default {
   dependencies: ["pvpEvent", "createEmbed", "code"],
   dmPermission: true,
   groupPermission: true,
-  execute: async ({ interaction, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ interaction, deps }): Promise<SlashCommandResult> => {
     const { pvpEvent, createEmbed, code } = deps;
     const query = interaction.options.getString("query") ?? "next";
     const ephemeral = interaction.options.getBoolean("ephemeral") ?? false;

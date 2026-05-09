@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 import { version as djsVersion } from "discord.js";
 import os from "node:os";
 
@@ -13,7 +12,7 @@ export default {
   args: [],
   permission: {},
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, deps }): Promise<CommandResult> => {
     const { code, createEmbed } = deps;
     const { client } = message;
     const user = client.user;

@@ -6,7 +6,7 @@ export const MISSION = {
   OFFSET: 27,
 
   TRACKER: {
-    USE_INTERSTELLAR: true,
+    USE_INTERSTELLAR: true as boolean,
     INTERSTELLAR_WS_URL: "wss://interstellarbackend.fomx.dev/ws",
   }
 } as const;

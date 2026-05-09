@@ -9,8 +9,11 @@ export const getMissionState = (): MissionState => {
   const open = MISSION.OPEN_DURATION;
   const close = MISSION.CLOSE_DURATION;
   const cycle = open + close;
-  const base = normalize(MISSION.PERSISTENT_START_TS) + MISSION.OFFSET;
   const now = Math.floor(Date.now() / 1000);
+
+  let base = normalize(MISSION.PERSISTENT_START_TS) + MISSION.OFFSET;
+  if (MISSION.TRACKER.USE_INTERSTELLAR && meta?.startTime !== undefined) base = normalize(meta.startTime);
+
   if (meta === null) {
     return {
       state: "CLOSED",
@@ -30,11 +33,17 @@ export const getMissionState = (): MissionState => {
 };
 
 export const getFutureMissions = (count = 3): FutureMission[] => {
+  const meta = missionStore.get();
   const open = MISSION.OPEN_DURATION;
   const close = MISSION.CLOSE_DURATION;
   const cycle = open + close;
   const now = Math.floor(Date.now() / 1000);
-  const base = normalize(MISSION.PERSISTENT_START_TS) + MISSION.OFFSET;
+
+  let base = normalize(MISSION.PERSISTENT_START_TS) + MISSION.OFFSET;
+  if (MISSION.TRACKER.USE_INTERSTELLAR && meta?.startTime !== undefined) {
+    base = normalize(meta.startTime);
+  }
+
   const next = now < base ? base : base + Math.ceil((now - base) / cycle) * cycle;
   const out: FutureMission[] = [];
   for (let index = 0; index < count; index++) {

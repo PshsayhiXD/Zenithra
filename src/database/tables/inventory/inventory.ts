@@ -10,14 +10,21 @@ import {
     getUserInventoryStmt,
     getUserItemStmt,
     removeItemStmt,
+    updateDurabilityStmt,
 } from "@tables/inventory/_statements.js";
 
 export const getUserInventory = (userId: InventoryUserId): InventoryRow[] => getUserInventoryStmt.all(userId);
 
 export const getUserItem = (userId: InventoryUserId, itemId: InventoryItemId): InventoryRow | undefined => getUserItemStmt.get(userId, itemId) ?? undefined;
 
-export const addItem = (userId: InventoryUserId, itemId: InventoryItemId, quantity: InventoryQuantity = 1): void => {
-  addItemStmt.run(userId, itemId, quantity);
+export const addItem = (
+  userId: InventoryUserId,
+  itemId: InventoryItemId,
+  quantity: InventoryQuantity = 1,
+  durability: number | null = null,
+  maxDurability: number | null = null
+): void => {
+  addItemStmt.run(userId, itemId, quantity, durability, maxDurability);
 };
 
 export const removeItem = (userId: InventoryUserId, itemId: InventoryItemId, quantity: InventoryQuantity = 1): boolean => {
@@ -26,4 +33,12 @@ export const removeItem = (userId: InventoryUserId, itemId: InventoryItemId, qua
 
   deleteEmptyStackStmt.run(userId, itemId);
   return true;
+};
+
+export const updateDurability = (
+  userId: InventoryUserId,
+  itemId: InventoryItemId,
+  durability: number | null
+): void => {
+  updateDurabilityStmt.run(durability, userId, itemId);
 };

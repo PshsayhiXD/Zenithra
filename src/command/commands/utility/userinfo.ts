@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 import { time } from "discord.js";
 
 export default {
@@ -12,7 +11,7 @@ export default {
   permission: {},
   args: [],
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, deps }): Promise<CommandResult> => {
     const { code, createEmbed } = deps;
     const member = message.mentions.members?.first() ?? message.member;
     if (!member) return [code.UserDefinedError, "Member not found."];

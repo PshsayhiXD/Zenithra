@@ -1,1 +1,1 @@
-export * as items from "@/modules/items/inventory.js";
+export * as items from "@/modules/items/index.js";

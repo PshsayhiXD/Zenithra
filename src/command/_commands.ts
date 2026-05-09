@@ -25,7 +25,11 @@ const isCommand = (value: unknown): value is Command => {
 const getDefaultExport = (module_: unknown): unknown => {
   if (module_ === null || typeof module_ !== "object") return module_;
   const levelOne = module_ as { default?: unknown };
-  if (levelOne.default !== undefined && levelOne.default !== null && typeof levelOne.default === "object") {
+  if (
+    levelOne.default !== undefined &&
+    levelOne.default !== null &&
+    typeof levelOne.default === "object"
+  ) {
     const levelTwo = levelOne.default as { default?: unknown };
     return levelTwo.default ?? levelOne.default;
   }
@@ -60,38 +64,56 @@ export const readCommands = async (): Promise<Command[]> => {
     log.warn("Failed to read commands directory", { error: error_.message });
   }
 
-  const names = new Set<string>();
-  const aliases = new Set<string>();
-  const ids = new Set<number>();
+  const names = new Map<string, Command>();
+  const aliases = new Map<string, Command>();
+  const ids = new Map<number, Command>();
 
   for (const cmd of cmds) {
-    if (names.has(cmd.name)) {
+    const existingName = names.get(cmd.name);
+    if (existingName !== undefined) {
       const newName = `${cmd.name}_${String(cmd.id)}`;
-      log.warn("Duplicate command name", { original: cmd.name, renamed: newName });
+      log.warn("Duplicate command name", {
+        value: cmd.name,
+        originalCommand: existingName.name,
+        originalId: existingName.id,
+        duplicateCommand: cmd.name,
+        duplicateId: cmd.id,
+        renamed: newName,
+      });
       cmd.name = newName;
     }
-    names.add(cmd.name);
-
+    names.set(cmd.name, cmd);
     cmd.aliases = cmd.aliases.map(alias => {
-      if (aliases.has(alias)) {
+      const existingAlias = aliases.get(alias);
+      if (existingAlias !== undefined) {
         const newAlias = `${alias}_${cmd.name}`;
-        log.warn("Duplicate alias", { original: alias, renamed: newAlias });
-        aliases.add(newAlias);
+        log.warn("Duplicate alias", {
+          value: alias,
+          originalCommand: existingAlias.name,
+          originalId: existingAlias.id,
+          duplicateCommand: cmd.name,
+          duplicateId: cmd.id,
+          renamed: newAlias,
+        });
+        aliases.set(newAlias, cmd);
         return newAlias;
       }
-      aliases.add(alias);
+      aliases.set(alias, cmd);
       return alias;
     });
-
-    if (ids.has(cmd.id)) {
+    const existingId = ids.get(cmd.id);
+    if (existingId !== undefined) {
       const newId = Math.sqrt(cmd.id);
-      log.warn("Duplicate command id", { original: cmd.id, reassigned: newId });
+      log.warn("Duplicate command id", {
+        value: cmd.id,
+        originalCommand: existingId.name,
+        duplicateCommand: cmd.name,
+        reassigned: newId,
+      });
       cmd.id = newId;
     }
-    ids.add(cmd.id);
+    ids.set(cmd.id, cmd);
   }
-
   log.info("Commands read complete", { count: cmds.length });
-
   return cmds;
 };

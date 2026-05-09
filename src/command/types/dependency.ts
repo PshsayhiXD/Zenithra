@@ -5,22 +5,46 @@ import type * as tables from "@tables/index.js";
 import type * as databaseTypes from "@tables/types/index.js";
 
 import { type Config } from "@config";
-import type { formatter, number } from "@utilities/index.js";
+import type { formatter, number, currency } from "@utilities/index.js";
 import type { code } from "@/command/dependency/deps/code.js";
 import type { isGuildChannelType } from "@/command/dependency/deps/guild.js";
 import type { pvpEvent } from "@/command/dependency/deps/pvp.js";
 import type { eventTracker } from "@/command/dependency/deps/eventTracker.js";
 import type { items } from "@/command/dependency/deps/items.js";
 
-export type DeepKeys<T> = {
-  [K in keyof T & string]: T[K] extends (...arguments_: never[]) => unknown
-    ? K
-    : T[K] extends readonly unknown[]
-      ? K
-      : T[K] extends object
-        ? K | `${K}.${DeepKeys<T[K]>}`
-        : K;
-}[keyof T & string];
+type Primitive =
+  | string
+  | number
+  | boolean
+  | bigint
+  | symbol
+  | null
+  | undefined;
+
+type Previous = [never, 0, 1, 2, 3, 4, 5];
+
+type IsPlainObject<T> =
+  T extends Primitive ? false
+  : T extends (...arguments_: never[]) => unknown ? false
+  : T extends readonly unknown[] ? false
+  : T extends object ? true
+  : false;
+
+export type DeepKeys<
+  T,
+  D extends number = 5,
+  Seen = never
+> =
+  [D] extends [never]
+    ? never
+    : T extends Seen
+      ? never
+      : {
+          [K in keyof T & string]:
+            IsPlainObject<T[K]> extends true
+              ? K | `${K}.${DeepKeys<T[K], Previous[D], Seen | T>}`
+              : K;
+        }[keyof T & string];
 
 export type DeepValue<T, Path extends string> =
   Path extends `${infer K}.${infer Rest}`
@@ -45,6 +69,7 @@ export interface CommandDependencies {
   pvpEvent: typeof pvpEvent;
   eventTracker: typeof eventTracker;
   items: typeof items;
+  currency: typeof currency;
   message: Message;
 }
 

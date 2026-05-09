@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "transfer",
@@ -24,7 +23,7 @@ export default {
   aliases: ["pay", "give"],
   cooldown: 10,
   dependencies: ["code", "createEmbed", "tables"],
-  execute: async ({ message, args, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, args, deps }): Promise<CommandResult> => {
     const { code, createEmbed, tables } = deps;
 
     const target = message.mentions.users.first();

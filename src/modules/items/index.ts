@@ -1,8 +1,11 @@
 export {
   createItem,
-  setItem,
   getItem,
   getAllItems,
-  hasItem,
-  loadAllItems,
-} from "@modules/items/inventory.js";
+  loadItems,
+  readItems,
+} from "@modules/items/_items.js";
+
+export {
+    useItem
+} from "@modules/items/itemHandler.js";

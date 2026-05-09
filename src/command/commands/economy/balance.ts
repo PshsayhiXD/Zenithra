@@ -1,5 +1,5 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
+import type { Item } from "@modules/types/item.js";
 
 export default {
   name: "balance",
@@ -10,19 +10,47 @@ export default {
   args: [],
   aliases: [],
   cooldown: 10,
-  dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code"],
-  execute: async ({ message, deps, cmd }): Promise<CodeNumber | [CodeNumber, string]> => {
-    const { tables, createEmbed, number, "config.CURRENCY": CURRENCY, code } = deps;
-    const wallet = tables.Economy.getWallet(message.author.id);
-    const bank = tables.Economy.getBank(message.author.id);
+  dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code", "items", "currency"],
+  execute: async ({ message, deps }): Promise<CommandResult> => {
+    const { tables, createEmbed, number, code, items, currency } = deps;
+    const getItem = items.getItem as (query: string | number) => Item | undefined;
+    const userId = message.author.id;
+    const wallet = tables.Economy.getWallet(userId);
+    const bank = tables.Economy.getBank(userId);
+
+    const currencyItems = [
+      "currency.fluxCrystal",
+      "currency.hyperRubber",
+      "currency.silicaCrystal",
+      "currency.compressedMetal",
+      "currency.metal",
+      "currency.compressedExplosive",
+      "currency.explosive",
+      "currency.lootbox",
+    ];
+
+    const inventory = tables.Inventory.getUserInventory(userId);
+    const heldCurrency = currencyItems
+      .map(itemId => {
+        const entry = inventory.find(index => index.itemId === itemId);
+        if (!entry || entry.quantity <= 0) return null;
+        const item = getItem(itemId);
+        return `**${item?.name ?? itemId}**: ${number.formatNumber(entry.quantity)}`;
+      })
+      .filter(Boolean);
+
+    const itemsSection = heldCurrency.length > 0
+      ? `\n\n**Currency Items:**\n${heldCurrency.join("\n")}`
+      : "";
 
     await message.reply({
       embeds: [
         createEmbed({
-          title: cmd.name,
+          title: `${message.author.username}'s Balance`,
           description: `
-            Wallet: **${number.formatNumber(wallet)}${CURRENCY.SYMBOL}**
-            Bank: **${number.formatNumber(bank.bank)}** / **${number.formatNumber(bank.bankCapacity)}${CURRENCY.SYMBOL}**
+            **Wallet:** ${currency.formatCurrency(wallet)}
+            **Bank:** ${currency.formatCurrency(bank.bank)} / ${currency.formatCurrency(bank.bankCapacity)}
+            ${itemsSection}
           `.trim(),
           color: "Green",
           options: { timestamp: new Date() },
@@ -31,4 +59,4 @@ export default {
     });
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code">;
+} satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code" | "items" | "currency">;

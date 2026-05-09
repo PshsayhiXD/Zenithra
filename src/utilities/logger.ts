@@ -12,7 +12,7 @@ const transport = pino.transport({
         translateTime: "SYS:HH:MM:ss",
         ignore: "pid,hostname",
         // [12:34:56.789] INFO  [CommandHandler] › Command loaded
-        messageFormat: "[{prefix}] \u203A {msg}",
+        messageFormat: "[{prefix}]> {msg}",
       },
       level: isDevelopment ? "trace" : "info",
     },
@@ -67,7 +67,7 @@ const wrap = (inst: pino.Logger): Logger => {
     messageOrError: string | Error,
     context?: Record<string, unknown>,
   ): void => {
-    if (messageOrError instanceof Error) 
+    if (messageOrError instanceof Error)
       inst[level]({ err: messageOrError, ...context }, messageOrError.message);
     else if (context) inst[level](context, messageOrError);
     else inst[level](messageOrError);

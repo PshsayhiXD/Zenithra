@@ -1,9 +1,8 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "8ball",
-  id: 12,
+  id: 13,
   category: "fun",
   description: "Ask the magic 8-ball a question",
   cooldown: 3,
@@ -18,7 +17,7 @@ export default {
   ],
   permission: {},
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, args, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, args, deps }): Promise<CommandResult> => {
     const { code, createEmbed } = deps;
     if (args.length === 0) return [code.UserDefinedError, "Please ask a question!"];
 

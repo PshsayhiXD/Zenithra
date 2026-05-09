@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 import { time } from "discord.js";
 
 export default {
@@ -12,7 +11,7 @@ export default {
   args: [],
   permission: {},
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, deps }): Promise<CommandResult> => {
     const { code, createEmbed } = deps;
     const { guild } = message;
     if (!guild) return [code.UserDefinedError, "This command can only be used in a server."];

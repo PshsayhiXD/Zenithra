@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "deposit",
@@ -17,25 +16,24 @@ export default {
   ],
   permission: {},
   cooldown: 5,
-  dependencies: ["tables", "createEmbed", "config.CURRENCY", "code", "number"],
-  execute: async ({ message, args, deps, cmd }): Promise<CodeNumber | [CodeNumber, string]> => {
-    const { tables, createEmbed, "config.CURRENCY": CURRENCY, code, number: numberUtilities } = deps;
+  dependencies: ["tables", "createEmbed", "config.CURRENCY", "code", "number", "currency"],
+  execute: async ({ message, args, deps, cmd }): Promise<CommandResult> => {
+    const { tables, createEmbed, "config.CURRENCY": CURRENCY, code, currency } = deps;
     const userId = message.author.id;
     const wallet = tables.Economy.getWallet(userId);
     const bank = tables.Economy.getBank(userId);
-    const raw = args[0] ?? "";
-    const amount = numberUtilities.parseNumber(raw);
-    if (amount === undefined || amount <= 0)
+    const amount = Number(currency.parseCurrency(args.join(" ")));
+    if (amount <= 0)
       return [code.UserDefinedError, "Please specify a valid amount to deposit."];
     if (amount > wallet)
       return [
         code.UserDefinedError,
-        `You only have **${numberUtilities.formatNumber(wallet)}${CURRENCY.SYMBOL}** in your wallet.`,
+        `You only have **${currency.formatCurrency(wallet)}** in your wallet.`,
       ];
     if (bank.bank + amount * (1 - CURRENCY.FEE_PERCENT) > bank.bankCapacity)
       return [
         code.UserDefinedError,
-        `Your bank capacity is only **${numberUtilities.formatNumber(bank.bankCapacity)}${CURRENCY.SYMBOL}**.`,
+        `Your bank capacity is only **${currency.formatCurrency(bank.bankCapacity)}**.`,
       ];
 
     const fee = CURRENCY.FEE_PERCENT * 100;
@@ -46,9 +44,9 @@ export default {
         createEmbed({
           title: cmd.name,
           description:
-            `Deposited **${numberUtilities.formatNumber(amount)}${CURRENCY.SYMBOL}** (after ${String(fee)}% fee).\n` +
-            `Wallet: **${numberUtilities.formatNumber(result.currency)}${CURRENCY.SYMBOL}**\n` +
-            `Bank: **${numberUtilities.formatNumber(result.bank)}${CURRENCY.SYMBOL}**`,
+            `Deposited **${currency.formatCurrency(amount)}** (after ${String(fee)}% fee).\n` +
+            `Wallet: **${currency.formatCurrency(result.currency)}**\n` +
+            `Bank: **${currency.formatCurrency(result.bank)}**`,
           color: "Green",
           options: { timestamp: new Date() },
         }),
@@ -57,4 +55,4 @@ export default {
 
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "config.CURRENCY" | "code" | "number">;
+} satisfies Command<"tables" | "createEmbed" | "config.CURRENCY" | "code" | "number" | "currency">;

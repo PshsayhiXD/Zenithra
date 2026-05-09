@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "withdraw",
@@ -17,25 +16,23 @@ export default {
     },
   ],
   cooldown: 5,
-  dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code"],
-  execute: async ({ message, args, deps, cmd }): Promise<CodeNumber | [CodeNumber, string]> => {
-    const { tables, createEmbed, number, "config.CURRENCY": CURRENCY, code } = deps;
+  dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code", "currency"],
+  execute: async ({ message, args, deps, cmd }): Promise<CommandResult> => {
+    const { tables, createEmbed, code, currency } = deps;
     const userId = message.author.id;
     const bank = tables.Economy.getBank(userId).bank;
-    const amountInput = args[0];
-    if (amountInput === undefined) return [code.UserDefinedError, "Please specify a valid amount to withdraw."];
-    const amount = number.parseNumber(amountInput);
-    if (amount === undefined || amount <= 0) return [code.UserDefinedError, "Please specify a valid amount to withdraw."];
-    if (amount > bank) return [code.UserDefinedError, `You only have **${number.formatNumber(bank)}${CURRENCY.SYMBOL}** in your bank.`];
+    const amount = Number(currency.parseCurrency(args.join(" ")));
+    if (amount <= 0) return [code.UserDefinedError, "Please specify a valid amount to withdraw."];
+    if (amount > bank) return [code.UserDefinedError, `You only have **${currency.formatCurrency(bank)}** in your bank.`];
     const result = tables.Economy.withdraw(userId, amount);
     await message.reply({
       embeds: [
         createEmbed({
           title: cmd.name,
           description: `
-            Withdrew **${number.formatNumber(amount)}${CURRENCY.SYMBOL}** from your bank.
-            Wallet: **${number.formatNumber(result.currency)}${CURRENCY.SYMBOL}**
-            Bank: **${number.formatNumber(result.bank)}${CURRENCY.SYMBOL}**
+            Withdrew **${currency.formatCurrency(amount)}** from your bank.
+            Wallet: **${currency.formatCurrency(result.currency)}**
+            Bank: **${currency.formatCurrency(result.bank)}**
           `.trim(),
           color: "Green",
           options: { timestamp: new Date() },
@@ -44,4 +41,4 @@ export default {
     });
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code">;
+} satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code" | "currency">;

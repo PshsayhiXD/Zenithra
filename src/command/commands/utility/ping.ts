@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "ping",
@@ -11,7 +10,7 @@ export default {
   args: [],
   permission: {},
   dependencies: ["code"],
-  execute: async ({ message, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, deps }): Promise<CommandResult> => {
     const { code } = deps;
     const message_ = await message.reply("Pinging...");
     const latency = message_.createdTimestamp - message.createdTimestamp;

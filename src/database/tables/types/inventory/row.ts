@@ -6,4 +6,7 @@ export interface InventoryRow {
   userId: InventoryUserId;
   itemId: InventoryItemId;
   quantity: InventoryQuantity;
+  metadata: string;
+  durability: number | null;
+  maxDurability: number | null;
 }

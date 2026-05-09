@@ -4,6 +4,7 @@ import type {
   ApplicationCommandOptionType as OptionType,
 } from "discord.js";
 import type {
+  CodeNumber,
   CommandDependencies,
   DependencyKey,
   ResolvedDeps,
@@ -54,7 +55,7 @@ export type SlashCommandOption =
 
 export type SlashOptionResolver = ChatInputCommandInteraction["options"];
 
-export type SlashCommandResult = 1 | 0 | [number, string];
+export type SlashCommandResult = CodeNumber | [CodeNumber, string];
 
 export interface SlashCommandContext<T extends DependencyKey = DependencyKey> {
   interaction: ChatInputCommandInteraction;

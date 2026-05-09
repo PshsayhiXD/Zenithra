@@ -18,14 +18,14 @@ export const getEconomyStmt: Statement<[EconomyUserId], EconomyRow> = database.p
 );
 
 export const getStreakStmt: Statement<[EconomyUserId], EconomyStreakRow> = database.prepare(
-  "SELECT * FROM streak WHERE userId = ?",
+  "SELECT streak, updatedAt FROM economy WHERE userId = ?",
 );
 
 export const upsertStreakStmt: Statement<
   [EconomyUserId, EconomyStreak, EconomyUpdatedAt],
   RunResult
 > = database.prepare(`
-  INSERT INTO streak (userId, streak, updatedAt)
+  INSERT INTO economy (userId, streak, updatedAt)
   VALUES (?, ?, ?)
   ON CONFLICT (userId) DO UPDATE SET
     streak = excluded.streak,

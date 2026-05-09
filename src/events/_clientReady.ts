@@ -14,6 +14,8 @@ import { registerSlashCommands } from "@command/_registerSlashCommand.js";
 import { startMissionTracker } from "@services/missionTracker.js";
 import { startPvpEventTracker } from "@services/pvpEventTracker.js";
 import { startShipTracker } from "@services/shipTracker.js";
+import { MISSION } from "@config/mission.js";
+import { interstellarTracker } from "@handlers/missionTracker/interstellarTracker.js";
 
 let hasStarted = false;
 const log = createLogger("Ready");
@@ -46,6 +48,7 @@ export const onClientReady = async (client: Client): Promise<void> => {
     log.info("Starting services", { shardId });
     client.user?.setPresence({ status: "idle" });
     updateCache();
+    if (MISSION.TRACKER.USE_INTERSTELLAR) interstellarTracker.start();
     const pvpCache = new Cache<ScheduleEntry>("pvpEventSchedule", "file");
     const pvpResult = calcPvpEvent("all");
 
@@ -81,7 +84,6 @@ export const onClientReady = async (client: Client): Promise<void> => {
         startMissionTracker(newEventEmbed),
         startShipTracker(newShipPng),
       ]);
-      log.info("Periodic mission/ship update", { shardId });
     }, MINUTE / 2);
 
     loop(async (): Promise<void> => {
@@ -95,10 +97,6 @@ export const onClientReady = async (client: Client): Promise<void> => {
         pvpCache.set("pvpEventSchedule", { date: upcoming });
         const pvpEmbed = buildPvpEventEmbed(upcoming);
         await startPvpEventTracker(pvpEmbed);
-        log.info("Periodic PVP update", {
-          shardId,
-          upcomingCount: upcoming.length,
-        });
       }
     }, MINUTE * 5);
 

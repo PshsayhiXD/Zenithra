@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "roll",
@@ -18,7 +17,7 @@ export default {
   ],
   cooldown: 3,
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, args, deps }): Promise<CodeNumber | [CodeNumber, string]> => {
+  execute: async ({ message, args, deps }): Promise<CommandResult> => {
     const { code, createEmbed } = deps;
     const firstArgument = args[0];
     if (firstArgument === undefined) return [code.UserDefinedError, "Please provide a valid number of sides (greater than 1)."];

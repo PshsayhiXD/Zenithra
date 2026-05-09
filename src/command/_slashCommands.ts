@@ -21,7 +21,11 @@ const isSlashCommand = (value: unknown): value is SlashCommand => {
 const getDefaultExport = (module_: unknown): unknown => {
   if (module_ === null || typeof module_ !== "object") return module_;
   const levelOne = module_ as { default?: unknown };
-  if (levelOne.default !== undefined && levelOne.default !== null && typeof levelOne.default === "object") {
+  if (
+    levelOne.default !== undefined &&
+    levelOne.default !== null &&
+    typeof levelOne.default === "object"
+  ) {
     const levelTwo = levelOne.default as { default?: unknown };
     return levelTwo.default ?? levelOne.default;
   }
@@ -37,19 +41,15 @@ export const loadSlashCommands = (loadedCommands: SlashCommand[]): Promise<void>
 
 const collectJsFiles = async (directory: string): Promise<string[]> => {
   const results: string[] = [];
-  let entries;
-  try {
-    entries = await fs.readdir(directory, { withFileTypes: true });
-  } catch {
-    log.warn("Directory read failed", { directory });
-    return results;
-  }
-
+  const entries = await fs.readdir(directory, { withFileTypes: true });
   for (const entry of entries) {
     const full = path.join(directory, entry.name);
 
-    if (entry.isDirectory()) results.push(...(await collectJsFiles(full)));
-    else if (entry.isFile() && entry.name.endsWith(".js")) results.push(full);
+    if (entry.isDirectory()) {
+      results.push(...(await collectJsFiles(full)));
+    } else if (entry.isFile() && entry.name.endsWith(".js")) {
+      results.push(full);
+    }
   }
 
   return results;
@@ -75,41 +75,45 @@ export const readSlashCommands = async (): Promise<{
       return { global: globalCmds, guild: guildCmds };
     }
 
-    const names = new Set<string>();
-    const ids = new Set<number>();
+    const names = new Map<string, SlashCommand>();
+    const ids = new Map<number, SlashCommand>();
 
     for (const filePath of globalFiles) {
       const module_: unknown = await import(pathToFileURL(filePath).href);
       const resolved = getDefaultExport(module_);
-
       if (!isSlashCommand(resolved) || resolved.name === "") {
         log.warn("Invalid slash command skipped", { filePath });
         continue;
       }
-
       const cmd = resolved;
-
-      if (names.has(cmd.name)) {
+      const existingName = names.get(cmd.name);
+      if (existingName !== undefined) {
         const newName = `${cmd.name}_${String(cmd.id)}`;
         log.warn("Duplicate slash command name", {
-          original: cmd.name,
+          value: cmd.name,
+          originalCommand: existingName.name,
+          originalId: existingName.id,
+          duplicateCommand: cmd.name,
+          duplicateId: cmd.id,
           renamed: newName,
         });
         cmd.name = newName;
       }
-
-      names.add(cmd.name);
-
-      if (ids.has(cmd.id)) {
+      names.set(cmd.name, cmd);
+      const existingId = ids.get(cmd.id);
+      if (existingId !== undefined) {
         const newId = Math.sqrt(cmd.id);
         log.warn("Duplicate slash command id", {
-          original: cmd.id,
+          value: cmd.id,
+          originalCommand: existingId.name,
+          originalId: existingId.id,
+          duplicateCommand: cmd.name,
+          duplicateId: cmd.id,
           reassigned: newId,
         });
         cmd.id = newId;
       }
-
-      ids.add(cmd.id);
+      ids.set(cmd.id, cmd);
       globalCmds.push(cmd);
     }
 
@@ -124,7 +128,6 @@ export const readSlashCommands = async (): Promise<{
 
       guildCmds.push(resolved);
     }
-
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
     log.warn("Failed to read slash command directories", { error: error_.message });

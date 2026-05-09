@@ -8,6 +8,7 @@ const environmentExamplePath = path.resolve(__dirname, "../.env.example");
 type EnvironmentValue = string | number | boolean | string[];
 
 let cachedEnvironment: Record<string, EnvironmentValue> | null = null;
+
 const parseValue = (type: string, value: string): EnvironmentValue => {
   if (type === "string") return value;
   if (type === "number") return Number(value);
@@ -27,18 +28,28 @@ export const loadEnvironment = (): Record<string, EnvironmentValue> => {
   const schema = environmentExample
     .split("\n")
     .map(l => l.trim())
-    .filter(l => l.length > 0 && !l.startsWith("#"))
-    .map(l => {
-      const [key, type] = l.split("=");
+    .filter((l): boolean => l !== "" && !l.startsWith("#"))
+    .map(line => {
+      const [left, ...rest] = line.split("=");
+      if (left === undefined || left === "") return null;
+      const [key, type] = left.split(":");
+      if (key === undefined || key === "" || type === undefined || type === "") return null;
       return {
-        key: key?.trim(),
-        type: type?.trim(),
+        key: key.trim(),
+        type: type.trim(),
+        defaultValue: rest.join("=").trim(),
       };
-    });
+    })
+    .filter(Boolean) as {
+    key: string;
+    type: string;
+    defaultValue?: string;
+  }[];
   const result: Record<string, EnvironmentValue> = {};
-  for (const { key, type } of schema) {
-    if (key === undefined || type === undefined) continue;
-    const raw = process.env[key];
+  for (const { key, type, defaultValue } of schema) {
+    if (key === "" || type === "") continue;
+    if (type.startsWith("_")) continue;
+    const raw = process.env[key] ?? defaultValue;
     if (raw === undefined || raw.length === 0) throw new Error(`Missing required env: ${key}`);
     result[key] = parseValue(type, raw);
   }

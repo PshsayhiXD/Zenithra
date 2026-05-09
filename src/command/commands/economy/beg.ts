@@ -1,5 +1,4 @@
-import type { CodeNumber } from "@dependencies";
-import type { Command } from "@command/types/command.js";
+import type { Command, CommandResult } from "@command/types/command.js";
 
 export default {
   name: "beg",
@@ -10,9 +9,9 @@ export default {
   permission: {},
   args: [],
   cooldown: 10,
-  dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code"],
-  execute: async ({ message, deps, cmd }): Promise<CodeNumber | [CodeNumber, string]> => {
-    const { tables, createEmbed, number, "config.CURRENCY": CURRENCY, code } = deps;
+  dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code", "currency"],
+  execute: async ({ message, deps, cmd }): Promise<CommandResult> => {
+    const { tables, createEmbed, code, currency } = deps;
     const random = Math.floor(Math.random() * 100) + 30;
     const result = tables.Economy.addWallet(message.author.id, random);
     const username = message.author.id;
@@ -21,8 +20,8 @@ export default {
         createEmbed({
           title: cmd.name,
           description: `
-            Added **${number.formatNumber(random)}${CURRENCY.SYMBOL}** to **<@${username}>**.
-            New balance: **${number.formatNumber(result.currency)}${CURRENCY.SYMBOL}**
+            Added **${currency.formatCurrency(random)}** to **<@${username}>**.
+            New balance: **${currency.formatCurrency(result.currency)}**
           `.trim(),
           color: "Green",
           options: { timestamp: new Date() },
@@ -31,4 +30,4 @@ export default {
     });
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code">;
+} satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code" | "currency">;
