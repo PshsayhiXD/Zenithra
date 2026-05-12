@@ -32,70 +32,146 @@ jobs:
           const serverUrl = github.server_url ?? "https://github.com";
           const runId = github.run_id ?? "";
           const workflowUrl = runId ? `${serverUrl}/${repo}/actions/runs/${runId}` : serverUrl;
+          const sender = github.event?.sender?.avatar_url ?? github.event?.pull_request?.user?.avatar_url ?? "";
 
-          let title = `Repository update in ${repo}`;
-          let description = `Event: ${eventName}`;
-          let url = workflowUrl;
-          const fields = [
-            { name: "Actor", value: actor },
-            { name: "Workflow Run", value: workflowUrl },
-          ];
+          const colors = {
+            push: 3447003,
+            opened: 5763719,
+            reopened: 15548997,
+            synchronize: 16753920,
+            closed: 10038562,
+            merged: 2067276,
+            default: 5814783,
+          };
+
+          const send = async (payload) => {
+            const response = await fetch(webhook, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(payload),
+            });
+
+            if (!response.ok) {
+              const text = await response.text();
+              throw new Error(`${response.status} ${text}`);
+            }
+          };
+
+          const baseEmbed = {
+            author: {
+              name: actor,
+              icon_url: sender || undefined,
+            },
+            footer: {
+              text: repo,
+            },
+            timestamp: new Date().toISOString(),
+          };
+
+          let embeds = [];
 
           if (eventName === "push") {
             const ref = github.ref ?? "";
             const branch = ref.replace("refs/heads/", "");
-            const compare = github.event?.compare ?? "";
             const commits = Array.isArray(github.event?.commits) ? github.event.commits : [];
-            const headCommit = github.event?.head_commit;
-            title = `Push to ${branch || "unknown branch"}`;
-            description = headCommit?.message ?? `Pushed ${commits.length} commit(s)`;
-            url = compare || workflowUrl;
-            fields.push(
-              { name: "Branch", value: branch || "unknown" },
-              { name: "Commits", value: String(commits.length) },
-              { name: "Commit", value: headCommit?.id?.slice(0, 7) ?? "unknown" },
-            );
+            const compare = github.event?.compare ?? workflowUrl;
+            const headCommit = github.event?.head_commit ?? {};
+            const headId = headCommit.id?.slice(0, 7) ?? "unknown";
+            const headMsg = headCommit.message?.split("\n")[0] ?? "Pushed updates";
+            const commitLines = commits.slice(0, 6).map((commit) => {
+              const id = commit.id?.slice(0, 7) ?? "unknown";
+              const msg = commit.message?.split("\n")[0] ?? "No message";
+              return `• \`${id}\` ${msg}`;
+            }).join("\n");
+
+            embeds = [
+              {
+                ...baseEmbed,
+                color: colors.push,
+                title: `🚀 Push to ${branch || "unknown branch"}`,
+                url: compare,
+                description: [
+                  `**${actor}** pushed **${commits.length}** commit(s).`,
+                  "",
+                  `**Latest:** ${headMsg}`,
+                ].join("\n"),
+                fields: [
+                  { name: "Branch", value: `\`${branch || "unknown"}\``, inline: true },
+                  { name: "Commit", value: `\`${headId}\``, inline: true },
+                  { name: "Compare", value: `[Open diff](${compare})`, inline: true },
+                ],
+                thumbnail: sender ? { url: sender } : undefined,
+              },
+              {
+                ...baseEmbed,
+                color: colors.default,
+                title: "📝 Recent commits",
+                description: commitLines || "No commit details available.",
+              },
+            ];
           } else if (eventName === "pull_request") {
             const pr = github.event?.pull_request ?? {};
             const action = github.event?.action ?? "updated";
-            title = `Pull request ${action}: #${pr.number ?? "?"}`;
-            description = pr.title ?? "Pull request update";
-            url = pr.html_url ?? workflowUrl;
-            fields.push(
-              { name: "State", value: pr.state ?? "unknown" },
-              { name: "Merged", value: String(Boolean(pr.merged)) },
-              { name: "Source", value: pr.head?.ref ?? "unknown" },
-              { name: "Target", value: pr.base?.ref ?? "unknown" },
-            );
+            const merged = Boolean(pr.merged);
+            const stateColor = merged ? colors.merged : (colors[action] ?? colors.default);
+            const changedFiles = pr.changed_files ?? 0;
+            const additions = pr.additions ?? 0;
+            const deletions = pr.deletions ?? 0;
+            const body = pr.body?.trim() || "No description provided.";
+
+            embeds = [
+              {
+                ...baseEmbed,
+                color: stateColor,
+                title: `🔀 PR #${pr.number ?? "?"} ${action}`,
+                url: pr.html_url ?? workflowUrl,
+                description: [
+                  `**${pr.title ?? "Pull request update"}**`,
+                  "",
+                  body.length > 220 ? `${body.slice(0, 220)}...` : body,
+                ].join("\n"),
+                fields: [
+                  { name: "State", value: merged ? "✅ Merged" : `🟡 ${pr.state ?? "unknown"}`, inline: true },
+                  { name: "Source", value: `\`${pr.head?.ref ?? "unknown"}\``, inline: true },
+                  { name: "Target", value: `\`${pr.base?.ref ?? "unknown"}\``, inline: true },
+                  { name: "Files", value: String(changedFiles), inline: true },
+                  { name: "Adds", value: `+${additions}`, inline: true },
+                  { name: "Deletes", value: `-${deletions}`, inline: true },
+                ],
+                thumbnail: pr.user?.avatar_url ? { url: pr.user.avatar_url } : undefined,
+              },
+              {
+                ...baseEmbed,
+                color: colors.default,
+                title: "📌 Workflow",
+                description: `[Open run](${workflowUrl})`,
+                fields: [
+                  { name: "Repository", value: repo, inline: true },
+                  { name: "Actor", value: actor, inline: true },
+                  { name: "Event", value: eventName, inline: true },
+                ],
+              },
+            ];
+          } else {
+            embeds = [
+              {
+                ...baseEmbed,
+                color: colors.default,
+                title: `ℹ️ Repository update`,
+                description: `Event: **${eventName}**`,
+                fields: [
+                  { name: "Actor", value: actor, inline: true },
+                  { name: "Repository", value: repo, inline: true },
+                  { name: "Workflow", value: `[Open run](${workflowUrl})`, inline: true },
+                ],
+              },
+            ];
           }
 
-          const payload = {
-            embeds: [
-              {
-                title,
-                description,
-                url,
-                color: 5814783,
-                fields,
-                footer: {
-                  text: `${repo} • ${eventName}`,
-                },
-                timestamp: new Date().toISOString(),
-              },
-            ],
-          };
-
-          fetch(webhook, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-          }).then(async (response) => {
-            if (!response.ok) {
-              const text = await response.text();
-              throw new Error(`Discord webhook failed: ${response.status} ${text}`);
-            }
-          }).catch((error) => {
-            console.error(error);
-            process.exit(1);
+          await send({
+            username: "GitHub",
+            embeds,
           });
           NODE
