@@ -13,7 +13,7 @@ import { upsertGuild } from "@tables/guild/index.js";
 import { upsertUser } from "@tables/user/index.js";
 import { msTo } from "@utilities/time.js";
 import { createLogger } from "@utilities/logger.js";
-import createEmbed from "@utilities/ui/embed.js";
+import createEmbed from "@/utilities/components/embedComponent.js";
 import { slashCommands } from "@command/_slashCommands.js";
 import { code, getDeps, type CodeNumber } from "@dependencies";
 import { formatCommandPermission, hasCommandPermission } from "@command/shared.js";

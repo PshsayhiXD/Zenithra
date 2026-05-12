@@ -66,6 +66,7 @@ export default [
       "unicorn/no-array-sort": "off",
       "unicorn/no-array-reverse": "off",
       "unicorn/prefer-export-from": "off",
+      "unicorn/prefer-string-replace-all": "off",
       "unicorn/better-regex": "error",
       "unicorn/consistent-function-scoping": "error",
       "unicorn/isolated-functions": "error",

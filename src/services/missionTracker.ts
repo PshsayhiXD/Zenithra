@@ -1,4 +1,4 @@
-import type { EmbedBuilder, TextChannel } from "discord.js";
+import { type EmbedBuilder, type TextChannel, ChannelType } from "discord.js";
 import { getGuild, getChannels, updateChannels } from "@tables/guild/index.js";
 import { cache } from "@/client.js";
 
@@ -11,7 +11,8 @@ export const startMissionTracker = async (embed: EmbedBuilder): Promise<void> =>
     const channel = await guild.channels
       .fetch(channels.eventTrackerChannel)
       .catch((): undefined => undefined);
-    if (channel?.isTextBased() !== true) continue;
+    if (channel?.type !== ChannelType.GuildText) continue;
+    if (!channel.isTextBased()) continue;
     if (typeof channels.eventTrackerMessage !== "string") continue;
     if (channels.eventTrackerMessage) {
       try {

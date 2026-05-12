@@ -1,4 +1,4 @@
-import type { TextChannel } from "discord.js";
+import { type TextChannel, ChannelType } from "discord.js";
 import { getGuild, getChannels, updateChannels } from "@tables/guild/index.js";
 import { cache } from "@/client.js";
 
@@ -12,7 +12,8 @@ export const startShipTracker = async (png: Buffer): Promise<void> => {
     const channel = await guild.channels
       .fetch(channels.shipTrackerChannel)
       .catch((): undefined => undefined);
-    if (channel?.isTextBased() !== true) continue;
+    if (channel?.type !== ChannelType.GuildText) continue;
+    if (!channel.isTextBased()) continue;
     if (typeof channels.shipTrackerMessage !== "string" || !channels.shipTrackerMessage) continue;
     const fileName = `ships_${String(Date.now())}.png`;
     if (channels.shipTrackerMessage) {

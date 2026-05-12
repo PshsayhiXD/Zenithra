@@ -7,10 +7,7 @@ import { missionStore } from "@handlers/missionTracker/store.js";
 import { createLogger } from "@utilities/logger.js";
 import { MINUTE } from "@utilities/time.js";
 
-type MissionTrackerState = Record<string, {
-  event: string;
-  time: number;
-}>;
+type MissionTrackerState = Record<string, { event: string; time: number }>;
 
 interface InterstellarMessage {
   type: number;
@@ -22,16 +19,10 @@ const log = createLogger("Interstellar");
 const pickMission = (
   state: MissionTrackerState,
 ): { event: string; time: number } | undefined => {
-  const priority = [
-    "psis-tracker",
-    "wipe-tracker",
-    "test-tracker",
-  ];
-
+  const priority = ["psis-tracker", "wipe-tracker", "test-tracker"];
   for (const key of priority) {
     if (state[key] !== undefined) return state[key];
   }
-
   return Object.values(state)[0];
 };
 
@@ -40,22 +31,21 @@ class InterstellarTracker {
   private reconnectTimer: NodeJS.Timeout | null = null;
   private alive = false;
   private lastMission = "";
+  /** Set to true by stop() so the close handler knows not to reconnect. */
+  private stopped = false;
 
   start(): void {
+    this.stopped = false;
     this.connect();
   }
 
   private connect(): void {
     const agent = new HttpsProxyAgent(
-      `http://${PROXY.HOST}:${String(PROXY.PORT)}`
+      `http://${PROXY.HOST}:${String(PROXY.PORT)}`,
     );
-    log.info("ws.connect.start", {
-      url: MISSION.TRACKER.INTERSTELLAR_WS_URL,
-    });
-    this.ws = new WebSocket(
-      MISSION.TRACKER.INTERSTELLAR_WS_URL,
-      { agent },
-    );
+    log.info("ws.connect.start", { url: MISSION.TRACKER.INTERSTELLAR_WS_URL });
+    this.ws = new WebSocket(MISSION.TRACKER.INTERSTELLAR_WS_URL, { agent });
+
     this.ws.on("open", () => {
       log.info("ws.connect.success");
       this.alive = true;
@@ -70,13 +60,12 @@ class InterstellarTracker {
         }),
       );
     });
+
     this.ws.on("message", (d: WebSocket.RawData): void => {
       const data = decode(d as Buffer) as InterstellarMessage;
       if (data.type !== 2 || data.event_state === undefined) {
         if (data.type !== 3) {
-          log.warn("ws.message.unknown", {
-            type: data.type,
-          });
+          log.warn("ws.message.unknown", { type: data.type });
         }
         return;
       }
@@ -100,28 +89,23 @@ class InterstellarTracker {
         version: 0,
       });
     });
+
     this.ws.on("close", () => {
       log.warn("ws.close");
-      this.reconnect();
+      this.alive = false;
+      if (!this.stopped) this.scheduleReconnect();
     });
+
     this.ws.on("error", (error: unknown) => {
       const error_ =
-        error instanceof Error
-          ? error
-          : new Error(String(error));
-      log.error(error_, {
-        phase: "ws.error",
-      });
-      this.reconnect();
+        error instanceof Error ? error : new Error(String(error));
+      log.error(error_, { phase: "ws.error" });
     });
   }
 
-  private reconnect(): void {
+  private scheduleReconnect(): void {
     if (this.reconnectTimer !== null) return;
-    this.alive = false;
-    log.info("ws.reconnect.scheduled", {
-      delayMs: MINUTE,
-    });
+    log.info("ws.reconnect.scheduled", { delayMs: MINUTE });
     this.reconnectTimer = setTimeout((): void => {
       this.reconnectTimer = null;
       log.info("ws.reconnect.attempt");
@@ -130,11 +114,17 @@ class InterstellarTracker {
   }
 
   stop(): void {
-    this.ws?.close();
+    this.stopped = true;
     this.alive = false;
+    if (this.reconnectTimer !== null) {
+      clearTimeout(this.reconnectTimer);
+      this.reconnectTimer = null;
+    }
+    this.ws?.close();
     log.info("ws.stop");
   }
-  get status(): boolean {
+
+  isAlive(): boolean {
     return this.alive;
   }
 }

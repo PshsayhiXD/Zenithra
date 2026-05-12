@@ -1,4 +1,5 @@
 import type { Command, CommandResult } from "@command/types/command.js";
+import { Decimal } from "decimal.js";
 
 export default {
   name: "beg",
@@ -12,7 +13,7 @@ export default {
   dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code", "currency"],
   execute: async ({ message, deps, cmd }): Promise<CommandResult> => {
     const { tables, createEmbed, code, currency } = deps;
-    const random = Math.floor(Math.random() * 100) + 30;
+    const random = new Decimal(Math.floor(Math.random() * 100) + 30).mul("1e-16").toNumber();
     const result = tables.Economy.addWallet(message.author.id, random);
     const username = message.author.id;
     await message.reply({

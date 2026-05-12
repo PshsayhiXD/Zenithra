@@ -3,7 +3,7 @@ import {
   getFutureMissions,
   getMissionState,
   getMissionTrackerData,
-  missionCache,
+  missionStore,
 } from "@handlers/missionTracker/index.js";
 
 export const eventTracker = {
@@ -11,5 +11,5 @@ export const eventTracker = {
   getMissionTrackerData,
   getFutureMissions,
   getMissionState,
-  missionCache,
+  missionStore,
 };

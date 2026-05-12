@@ -1,4 +1,5 @@
 import type { Command, CommandResult } from "@command/types/command.js";
+import { PermissionsBitField } from "discord.js";
 
 export default {
   name: "addresource",
@@ -6,7 +7,7 @@ export default {
   category: "admin",
   description: "Add any resource to a user (Admin only)",
   aliases: ["addres"],
-  permission: { discord: "Administrator" },
+  permission: { discord: [PermissionsBitField.Flags.Administrator] },
   args: [
     {
       name: "target",
@@ -46,7 +47,7 @@ export default {
 
     const resourceInput = args.slice(resourceStartIndex).join(" ");
     if (resourceInput === "") return [code.UserDefinedError, "Please provide a resource amount."];
-    const amount = Number(currency.parseCurrency(resourceInput));
+    const amount = currency.parseCurrency(resourceInput);
     if (amount === 0) return [code.UserDefinedError, "Invalid resource amount or type."];
 
     const result = tables.Economy.addWallet(targetId, amount);

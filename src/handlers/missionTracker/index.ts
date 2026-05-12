@@ -1,21 +1,24 @@
 import type { EmbedBuilder } from "discord.js";
-import createEmbed from "@utilities/ui/embed.js";
-import {
-  getMissionTrackerData,
-} from "@handlers/missionTracker/missions.js";
+import createEmbed from "@/utilities/components/embedComponent.js";
+import { getMissionTrackerData } from "@handlers/missionTracker/missions.js";
+import type { MissionState, FutureMission } from "@handlers/missionTracker/type.js";
 
-import type {
-  MissionState,
-  FutureMission,
-} from "@handlers/missionTracker/type.js";
+export const createMissionTrackerEmbed = (
+  data: MissionState,
+  futureMissions: FutureMission[] = [],
+): EmbedBuilder => {
+  const futureValue =
+    futureMissions.length > 0
+      ? futureMissions
+          .map(
+            (m, index) =>
+              `**#${String(index + 1)}**: 🟢 Open: <t:${String(m.open)}:R> | 🔴 Close: <t:${String(m.close)}:R>`,
+          )
+          .join("\n")
+      : "No future missions available.";
 
-export const createMissionTrackerEmbed = (data: MissionState, futureMissions: FutureMission[] = []): EmbedBuilder => {
-  const futureValue = futureMissions.length > 0
-    ? futureMissions
-        .map((m, index) => `**#${String(index + 1)}**: 🟢 Open: <t:${String(m.open)}:R> | 🔴 Close: <t:${String(m.close)}:R>`)
-        .join("\n")
-    : "No future missions available.";
-  const parsedState = data.state === "OPEN" ? "🟢 Open" : "🔴 Close";
+  const parsedState = data.state === "OPEN" ? "🟢 Open" : "🔴 Closed";
+
   const fields = [
     {
       name: "State",
@@ -24,8 +27,18 @@ export const createMissionTrackerEmbed = (data: MissionState, futureMissions: Fu
     },
     {
       name: "Time Left",
+      value: `<t:${String(Math.floor(Date.now() / 1000) + data.timeLeft)}:R>`,
+      inline: true,
+    },
+    {
+      name: "Next Change",
       value: `<t:${String(data.nextChange)}:R>`,
       inline: true,
+    },
+    {
+      name: "Future Missions",
+      value: futureValue,
+      inline: false,
     },
   ];
 
@@ -37,21 +50,11 @@ export const createMissionTrackerEmbed = (data: MissionState, futureMissions: Fu
     });
   }
 
-  fields.push(
-    {
-      name: "Next Change",
-      value: `<t:${String(data.nextChange)}:R>`,
-      inline: true,
-    },
-    {
-      name: "Future Missions",
-      value: futureValue,
-      inline: false,
-    }
-  );
-
-  const embed = createEmbed({
-    title: data.missionName === null ? "Mission Tracker" : `Mission Tracker: ${data.missionName}`,
+  return createEmbed({
+    title:
+      data.missionName === null
+        ? "Mission Tracker"
+        : `Mission Tracker: ${data.missionName}`,
     description: "Real-time mission status based on game calculations.",
     color: data.state === "OPEN" ? "Green" : "Red",
     fields,
@@ -62,13 +65,21 @@ export const createMissionTrackerEmbed = (data: MissionState, futureMissions: Fu
       timestamp: new Date(),
     },
   });
-  return embed;
 };
 
-export const buildMissionTrackerEmbed = async (count = 3): Promise<EmbedBuilder> => {
-  const { state, futureMissions } = await getMissionTrackerData(count);
+export const buildMissionTrackerEmbed = (count = 3): EmbedBuilder => {
+  const { state, futureMissions } = getMissionTrackerData(count);
   return createMissionTrackerEmbed(state, futureMissions);
 };
-export {getFutureMissions, getMissionState, getMissionTrackerData} from "@/handlers/missionTracker/missions.js";
-export {missionStore as missionCache} from "@/handlers/missionTracker/store.js";
-export {type MissionData, type FutureMission, type MissionState} from "@/handlers/missionTracker/type.js";
+
+export {
+  getFutureMissions,
+  getMissionState,
+  getMissionTrackerData,
+} from "@/handlers/missionTracker/missions.js";
+export { missionStore } from "@/handlers/missionTracker/store.js";
+export type {
+  MissionData,
+  FutureMission,
+  MissionState,
+} from "@/handlers/missionTracker/type.js";

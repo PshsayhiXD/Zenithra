@@ -55,7 +55,6 @@
     "paths": {
       "@/*": ["./src/*"],
       "@utilities/*": ["./src/utilities/*"],
-      "@ui/*": ["./src/utilities/ui/*"],
 
       "@environment": ["./src/environment.ts"],
       "@config": ["./src/config/index.ts"],

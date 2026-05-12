@@ -38,7 +38,7 @@ export default {
     });
 
     try {
-      const embed = await eventTracker.buildMissionTrackerEmbed(count);
+      const embed = eventTracker.buildMissionTrackerEmbed(count);
       await interaction.editReply({ embeds: [embed] });
       return code.Success;
     } catch (error: unknown) {

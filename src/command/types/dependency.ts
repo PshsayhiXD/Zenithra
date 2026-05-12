@@ -1,11 +1,11 @@
 import type { Message, EmbedBuilder } from "discord.js";
 import type { Database } from "better-sqlite3";
-import type { CreateEmbedOptions } from "@utilities/ui/types/embed.js";
+import type { CreateEmbedOptions } from "@/utilities/components/types/embedComponent.js";
 import type * as tables from "@tables/index.js";
 import type * as databaseTypes from "@tables/types/index.js";
 
 import { type Config } from "@config";
-import type { formatter, number, currency } from "@utilities/index.js";
+import type { number, currency } from "@utilities/index.js";
 import type { code } from "@/command/dependency/deps/code.js";
 import type { isGuildChannelType } from "@/command/dependency/deps/guild.js";
 import type { pvpEvent } from "@/command/dependency/deps/pvp.js";
@@ -61,7 +61,6 @@ export interface CommandDependencies {
   tables: typeof tables;
   dbTypes: typeof databaseTypes;
   env: typeof process.env;
-  formatter: typeof formatter;
   config: Config;
   code: typeof code;
   number: typeof number;

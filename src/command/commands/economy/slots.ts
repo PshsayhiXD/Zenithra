@@ -1,4 +1,5 @@
 import type { Command, CommandResult } from "@command/types/command.js";
+import { Decimal } from "decimal.js";
 
 export default {
   name: "slots",
@@ -20,7 +21,7 @@ export default {
   execute: async ({ message, args, deps }): Promise<CommandResult> => {
     const { code, createEmbed, tables, currency } = deps;
 
-    const amountRaw = Number(currency.parseCurrency(args.join(" ")));
+    const amountRaw = currency.parseCurrency(args.join(" "));
     if (amountRaw <= 0)
       return [code.UserDefinedError, "Please provide a valid bet amount."];
 
@@ -44,16 +45,13 @@ export default {
 
     if (slot1 === slot2 && slot2 === slot3) {
       multiplier = 5;
-      if (amount > Number.MAX_SAFE_INTEGER / multiplier)
-        return [code.UserDefinedError, "Bet amount is too high."];
-      win = amount * multiplier;
+      win = new Decimal(amount).mul(multiplier).toNumber();
     } else if (slot1 === slot2 || slot2 === slot3 || slot1 === slot3) {
       multiplier = 2;
-      if (amount > Number.MAX_SAFE_INTEGER / multiplier) return [code.UserDefinedError, "Bet amount is too high."];
-      win = amount * multiplier;
+      win = new Decimal(amount).mul(multiplier).toNumber();
     }
 
-    if (win > 0) tables.Economy.addWallet(message.author.id, win - amount);
+    if (win > 0) tables.Economy.addWallet(message.author.id, new Decimal(win).sub(amount).toNumber());
     else tables.Economy.addWallet(message.author.id, -amount);
     const resultString = `[ ${String(slot1)} | ${String(slot2)} | ${String(slot3)} ]`;
     const embed = createEmbed({

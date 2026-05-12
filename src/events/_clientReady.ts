@@ -1,12 +1,10 @@
 import type { Client } from "discord.js";
-import type { ScheduleEntry } from "@handlers/pvpEventTracker/type.js";
 
 import { buildMissionTrackerEmbed } from "@handlers/missionTracker/index.js";
 import { buildPvpEventEmbed, calcPvpEvent } from "@handlers/pvpEventTracker/index.js";
 import { buildPublicCombinedShips } from "@handlers/shipTracker/index.js";
 
 import { updateCache } from "@/client.js";
-import { Cache } from "@utilities/cache.js";
 import { loop, MINUTE } from "@utilities/time.js";
 import { createLogger } from "@utilities/logger.js";
 
@@ -49,15 +47,13 @@ export const onClientReady = async (client: Client): Promise<void> => {
     client.user?.setPresence({ status: "idle" });
     updateCache();
     if (MISSION.TRACKER.USE_INTERSTELLAR) interstellarTracker.start();
-    const pvpCache = new Cache<ScheduleEntry>("pvpEventSchedule", "file");
     const pvpResult = calcPvpEvent("all");
 
     if (!(pvpResult instanceof Error)) {
       const now = Date.now();
       const upcoming = (Array.isArray(pvpResult) ? pvpResult : [pvpResult])
-        .filter(t => t > now)
+        .filter((t): t is number => typeof t === "number" && t > now)
         .slice(0, 4);
-      pvpCache.set("pvpEventSchedule", { date: upcoming });
       const pvpEmbed = buildPvpEventEmbed(upcoming);
       await startPvpEventTracker(pvpEmbed);
       log.info("PVP tracker initialized", {
@@ -66,40 +62,33 @@ export const onClientReady = async (client: Client): Promise<void> => {
       });
     }
 
-    const [eventEmbed, shipPng] = await Promise.all([
-      buildMissionTrackerEmbed(15),
-      buildPublicCombinedShips(),
-    ]);
-    await Promise.all([
-      startMissionTracker(eventEmbed),
-      startShipTracker(shipPng),
-    ]);
+    const eventEmbed = buildMissionTrackerEmbed(15);
+    const shipPng = await buildPublicCombinedShips();
+    await Promise.all([startMissionTracker(eventEmbed), startShipTracker(shipPng)]);
     log.info("Initial services started", { shardId });
     loop(async (): Promise<void> => {
-      const [newEventEmbed, newShipPng] = await Promise.all([
-        buildMissionTrackerEmbed(15),
-        buildPublicCombinedShips(),
-      ]);
-      await Promise.all([
-        startMissionTracker(newEventEmbed),
-        startShipTracker(newShipPng),
-      ]);
+      const newEventEmbed = buildMissionTrackerEmbed(15);
+      const newShipPng = await buildPublicCombinedShips();
+      await Promise.all([startMissionTracker(newEventEmbed), startShipTracker(newShipPng)]);
     }, MINUTE / 2);
 
     loop(async (): Promise<void> => {
       updateCache();
-      const newPvpResult = calcPvpEvent("all");
+      const newPvpResult = await calcPvpEvent("all");
       if (!(newPvpResult instanceof Error)) {
         const now = Date.now();
-        const upcoming = (Array.isArray(newPvpResult) ? newPvpResult : [newPvpResult])
-          .filter((t: number): boolean => t > now)
-          .slice(0, 4);
-        pvpCache.set("pvpEventSchedule", { date: upcoming });
+        const list = Array.isArray(newPvpResult) ? newPvpResult : [newPvpResult];
+        const upcoming = list.filter(event => event.time > now).slice(0, 4);
+
         const pvpEmbed = buildPvpEventEmbed(upcoming);
         await startPvpEventTracker(pvpEmbed);
+
+        log.info("PVP tracker initialized", {
+          shardId,
+          upcomingCount: upcoming.length,
+        });
       }
     }, MINUTE * 5);
-
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
     log.error(error_, { shardId, phase: "service_start" });

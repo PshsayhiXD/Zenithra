@@ -5,77 +5,106 @@ type ShipSource = "persisted" | "ephemeral";
 type DrawShip = PublicShip & { shipId: string; source?: ShipSource };
 type DrawShipInput = PublicShipList | DrawShip[];
 
-const escapeXml = (text: string | number | null | undefined): string => String(text ?? "")
+const escapeXml = (text: string | number | null | undefined): string =>
+  String(text ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&apos;");
 
-const clamp = (value: number, min: number, max: number): number => Math.max(min, Math.min(max, value));
-const getShipColor = (color: string): string => /^#([\da-f]{3}|[\da-f]{6})$/i.test(color) ? color : "#3b82f6";
-const truncateText = (text: string, maxLength: number): string => text.length <= maxLength ? text : `${text.slice(0, maxLength - 3)}...`;
+const clamp = (value: number, min: number, max: number): number =>
+  Math.max(min, Math.min(max, value));
 
-const getLayout = (shipCount: number): { width: number; paddingX: number; paddingTop: number; paddingBottom: number; cols: number; tileSize: number; rowGap: number; colGap: number } => {
+const getShipColor = (color: string): string =>
+  /^#([\da-f]{3}|[\da-f]{6})$/i.test(color) ? color : "#3b82f6";
+
+const truncateText = (text: string, maxLength: number): string =>
+  text.length <= maxLength ? text : `${text.slice(0, maxLength - 3)}...`;
+
+interface Layout {
+  width: number;
+  paddingX: number;
+  paddingTop: number;
+  paddingBottom: number;
+  cols: number;
+  tileSize: number;
+  rowGap: number;
+  colGap: number;
+}
+
+const getLayout = (shipCount: number): Layout => {
   const width = 1280;
   const paddingX = 14;
   const paddingTop = 14;
   const paddingBottom = 18;
   const safeCount = clamp(shipCount, 1, 50);
-  if (safeCount <= 6) return { width, paddingX, paddingTop, paddingBottom, cols: 3, tileSize: 284, rowGap: 12, colGap: 12 };
+  if (safeCount <= 6)  return { width, paddingX, paddingTop, paddingBottom, cols: 3, tileSize: 284, rowGap: 12, colGap: 12 };
   if (safeCount <= 12) return { width, paddingX, paddingTop, paddingBottom, cols: 4, tileSize: 216, rowGap: 10, colGap: 10 };
-  if (safeCount <= 20) return { width, paddingX, paddingTop, paddingBottom, cols: 5, tileSize: 172, rowGap: 9, colGap: 9 };
-  if (safeCount <= 30) return { width, paddingX, paddingTop, paddingBottom, cols: 6, tileSize: 138, rowGap: 7, colGap: 7 };
-  if (safeCount <= 40) return { width, paddingX, paddingTop, paddingBottom, cols: 7, tileSize: 118, rowGap: 6, colGap: 6 };
-  return { width, paddingX, paddingTop, paddingBottom, cols: 8, tileSize: 102, rowGap: 5, colGap: 5 };
+  if (safeCount <= 20) return { width, paddingX, paddingTop, paddingBottom, cols: 5, tileSize: 172, rowGap: 9,  colGap: 9  };
+  if (safeCount <= 30) return { width, paddingX, paddingTop, paddingBottom, cols: 6, tileSize: 138, rowGap: 7,  colGap: 7  };
+  if (safeCount <= 40) return { width, paddingX, paddingTop, paddingBottom, cols: 7, tileSize: 118, rowGap: 6,  colGap: 6  };
+  return                      { width, paddingX, paddingTop, paddingBottom, cols: 8, tileSize: 102, rowGap: 5,  colGap: 5  };
 };
-const normalizeShips = (shipList: PublicShipList, source?: ShipSource): DrawShip[] => {
-  const ships = Object.entries(shipList.ships).map(([shipId, ship]) => ({
+
+const normalizeShips = (shipList: PublicShipList, source?: ShipSource): DrawShip[] =>
+  Object.entries(shipList.ships).map(([shipId, ship]) => ({
     ...ship,
     shipId,
-    ...(source === undefined ? {} : { source })
+    ...(source === undefined ? {} : { source }),
   }));
-  return ships;
-};
-const drawShipCellSvg = (ship: DrawShip, index: number, x: number, y: number, tileSize: number, imageMap: Map<string, string>): string => {
-  const shipImage = escapeXml(
-    imageMap.has(ship.icon_path) ? imageMap.get(ship.icon_path) ?? "" : ""
-  );
+
+const drawShipCellSvg = (
+  ship: DrawShip,
+  index: number,
+  x: number,
+  y: number,
+  tileSize: number,
+  imageMap: Map<string, string>,
+): string => {
+  const shipImage = escapeXml(imageMap.get(ship.icon_path) ?? "");
   const clipId = `shipTileClip${String(index)}`;
   const color = getShipColor(ship.color);
+
   let maxTeamNameLength = 9;
   if (tileSize >= 220) maxTeamNameLength = 16;
   else if (tileSize >= 160) maxTeamNameLength = 12;
-  const teamName = escapeXml(truncateText(ship.team_name, maxTeamNameLength));
-  const shipId = escapeXml(ship.shipId);
+
+  const teamName    = escapeXml(truncateText(ship.team_name, maxTeamNameLength));
+  const shipId      = escapeXml(ship.shipId);
   const playerCount = escapeXml(ship.player_count);
-  const hexCode = escapeXml(ship.hex_code);
-  const radius = clamp(tileSize * 0.12, 12, 22);
+  const hexCode     = escapeXml(ship.hex_code);
+
+  const radius       = clamp(tileSize * 0.12, 12, 22);
   const footerHeight = clamp(tileSize * 0.24, 24, 44);
-  const badgeWidth = clamp(tileSize * 0.28, 34, 56);
-  const badgeHeight = clamp(tileSize * 0.14, 18, 28);
-  const badgePad = clamp(tileSize * 0.05, 6, 10);
-  const chipGap = clamp(tileSize * 0.03, 4, 8);
-  const chipHeight = clamp(tileSize * 0.13, 16, 24);
-  const savedWidth = clamp(tileSize * 0.26, 34, 58);
-  const ownedWidth = clamp(tileSize * 0.26, 34, 58);
-  const sourceWidth = clamp(tileSize * 0.34, 42, 72);
+  const badgeWidth   = clamp(tileSize * 0.28, 34, 56);
+  const badgeHeight  = clamp(tileSize * 0.14, 18, 28);
+  const badgePad     = clamp(tileSize * 0.05, 6, 10);
+  const chipGap      = clamp(tileSize * 0.03, 4, 8);
+  const chipHeight   = clamp(tileSize * 0.13, 16, 24);
+  const savedWidth   = clamp(tileSize * 0.26, 34, 58);
+  const ownedWidth   = clamp(tileSize * 0.26, 34, 58);
+  const sourceWidth  = clamp(tileSize * 0.34, 42, 72);
   const sourceHeight = clamp(tileSize * 0.12, 16, 22);
-  const nameFontSize = clamp(tileSize * 0.08, 9, 16);
-  const metaFontSize = clamp(tileSize * 0.048, 7, 11);
-  const badgeFontSize = clamp(tileSize * 0.07, 9, 14);
-  const chipFontSize = clamp(tileSize * 0.042, 7, 10);
-  const sourceFontSize = clamp(tileSize * 0.04, 7, 10);
+
+  const nameFontSize   = clamp(tileSize * 0.08,  9, 16);
+  const metaFontSize   = clamp(tileSize * 0.048, 7, 11);
+  const badgeFontSize  = clamp(tileSize * 0.07,  9, 14);
+  const chipFontSize   = clamp(tileSize * 0.042, 7, 10);
+  const sourceFontSize = clamp(tileSize * 0.04,  7, 10);
+
   let sourceLabel = "";
-  let sourceFill = "";
+  let sourceFill  = "";
   if (ship.source === "ephemeral") {
     sourceLabel = "EPHEMERAL";
-    sourceFill = "#a855f7";
+    sourceFill  = "#a855f7";
   } else if (ship.source === "persisted") {
     sourceLabel = "PERSISTED";
-    sourceFill = "#10b981";
+    sourceFill  = "#10b981";
   }
+
   const sourceY = y + badgePad + ((ship.saved || ship.owned) ? chipHeight + chipGap : 0);
+
   return `
     <defs>
       <clipPath id="${clipId}">
@@ -106,7 +135,13 @@ const drawShipCellSvg = (ship: DrawShip, index: number, x: number, y: number, ti
     </g>
   `.trim();
 };
-const drawShipWallSvg = (shipInput: DrawShipInput, title = "Ship List", description = "Crowded view of the current fleet.", imageMap = new Map<string, string>()): string => {
+
+export const drawShipWallSvg = (
+  shipInput: DrawShipInput,
+  title = "Ship List",
+  description = "Crowded view of the current fleet.",
+  imageMap = new Map<string, string>(),
+): string => {
   const ships = Array.isArray(shipInput) ? shipInput : normalizeShips(shipInput);
   const shipCount = Math.max(ships.length, 1);
   const layout = getLayout(shipCount);
@@ -118,13 +153,14 @@ const drawShipWallSvg = (shipInput: DrawShipInput, title = "Ship List", descript
   const height = Math.ceil(layout.paddingTop + headerHeight + contentHeight + layout.paddingBottom);
   const baseX = (layout.width - (layout.cols * layout.tileSize + (layout.cols - 1) * layout.colGap)) / 2;
   const baseY = layout.paddingTop + headerHeight;
-  const shipCells = ships.map((ship, index) => {
-    const row = Math.floor(index / layout.cols);
-    const col = index % layout.cols;
-    const x = baseX + col * stepX;
-    const y = baseY + row * stepY;
-    return drawShipCellSvg(ship, index, x, y, layout.tileSize, imageMap);
-  }).join("\n");
+
+  const shipCells = ships
+    .map((ship, index) => {
+      const row = Math.floor(index / layout.cols);
+      const col = index % layout.cols;
+      return drawShipCellSvg(ship, index, baseX + col * stepX, baseY + row * stepY, layout.tileSize, imageMap);
+    })
+    .join("\n");
 
   return `
     <svg width="${String(layout.width)}" height="${String(height)}" viewBox="0 0 ${String(layout.width)} ${String(height)}" xmlns="http://www.w3.org/2000/svg">
@@ -153,16 +189,9 @@ const drawShipWallSvg = (shipInput: DrawShipInput, title = "Ship List", descript
     </svg>
   `.trim();
 };
-const drawShipWallPng = async (shipInput: DrawShipInput, title: string, description: string): Promise<Buffer> => {
-  const ships = Array.isArray(shipInput) ? shipInput : normalizeShips(shipInput);
-  const imageMap = await resolveShipImages(ships);
-  const svg = drawShipWallSvg(ships, title, description, imageMap);
-  return sharp(Buffer.from(svg)).png().toBuffer();
-};
-const mergeShipLists = (persistedShipList: PublicShipList, ephemeralShipList: PublicShipList): DrawShip[] => [
-    ...normalizeShips(persistedShipList, "persisted"),
-    ...normalizeShips(ephemeralShipList, "ephemeral")
-  ];
+
+const CONCURRENT_IMAGE_FETCHES = 10;
+
 const fetchImageAsBase64 = async (url: string): Promise<string> => {
   try {
     const response = await fetch(url);
@@ -174,16 +203,44 @@ const fetchImageAsBase64 = async (url: string): Promise<string> => {
     return "data:image/png;base64,";
   }
 };
+
 const resolveShipImages = async (ships: DrawShip[]): Promise<Map<string, string>> => {
-  const urls = [...new Set(ships.map((s: DrawShip): string => s.icon_path).filter((v): v is string => v !== ""))];
-  const entries = await Promise.all(
-    urls.map(async (url: string): Promise<readonly [string, string]> => [url, await fetchImageAsBase64(url)] as const)
-  );
-  return new Map(entries);
+  const urls = [
+    ...new Set(
+      ships.map((s: DrawShip): string => s.icon_path).filter((v): v is string => v !== ""),
+    ),
+  ];
+
+  const result = new Map<string, string>();
+
+  for (let index = 0; index < urls.length; index += CONCURRENT_IMAGE_FETCHES) {
+    const batch = urls.slice(index, index + CONCURRENT_IMAGE_FETCHES);
+    const entries = await Promise.all(
+      batch.map(async (url): Promise<readonly [string, string]> =>
+        [url, await fetchImageAsBase64(url)] as const,
+      ),
+    );
+    for (const [url, data] of entries) result.set(url, data);
+  }
+
+  return result;
 };
 
-export {
-  drawShipWallSvg,
-  drawShipWallPng,
-  mergeShipLists
+export const drawShipWallPng = async (
+  shipInput: DrawShipInput,
+  title: string,
+  description: string,
+): Promise<Buffer> => {
+  const ships = Array.isArray(shipInput) ? shipInput : normalizeShips(shipInput);
+  const imageMap = await resolveShipImages(ships);
+  const svg = drawShipWallSvg(ships, title, description, imageMap);
+  return sharp(Buffer.from(svg)).png().toBuffer();
 };
+
+export const mergeShipLists = (
+  persistedShipList: PublicShipList,
+  ephemeralShipList: PublicShipList,
+): DrawShip[] => [
+  ...normalizeShips(persistedShipList, "persisted"),
+  ...normalizeShips(ephemeralShipList, "ephemeral"),
+];

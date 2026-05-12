@@ -2,135 +2,165 @@ import {
   type ScrapedEntry,
   type WeekDay,
   type UpcomingKey,
-  upcomingIndex
+  type PvpEventResult,
+  upcomingIndex,
 } from "@handlers/pvpEventTracker/type.js";
 
-import { WEEK_DAYS, WEEK } from "@utilities/time.js";
+import { Cache } from "@utilities/cache.js";
+import { createLogger } from "@utilities/logger.js";
+import { WEEK_DAYS, WEEK, HOUR } from "@utilities/time.js";
 
-let schedule: ScrapedEntry[] = [];
+const log = createLogger("PvpEventTracker");
+const SCHEDULE_TTL_MS = HOUR;
+const scheduleCache = new Cache<ScrapedEntry[]>("pvpSchedule", "memory");
+const SCHEDULE_CACHE_KEY = "schedule";
 
 const normalizeQuery = (raw: unknown): string => {
-  if (Array.isArray(raw)) return raw.join(" ").toLowerCase();
-  if (typeof raw === "object" && raw !== null) return JSON.stringify(raw).toLowerCase();
-  return String(raw).toLowerCase();
+  if (Array.isArray(raw)) return raw.join(" ").trim().toLowerCase();
+  if (typeof raw === "object" && raw !== null) return JSON.stringify(raw).trim().toLowerCase();
+  return String(raw).trim().toLowerCase();
 };
+
 const isUpcomingQuery = (q: string): q is UpcomingKey => q in upcomingIndex;
-const getUpcoming = <T>(
-  array: T[],
-  getTime: (v: T) => number,
-  now: number,
-): T[] => array
-  .filter((v: T): boolean => getTime(v) > now)
-  .sort((a: T, b: T): number => getTime(a) - getTime(b));
-const filterToday = <T>(array: T[], getDate: (v: T) => Date): T[] => {
-  const t = new Date().setHours(0, 0, 0, 0);
-  return array.filter((v: T): boolean => getDate(v).setHours(0, 0, 0, 0) === t);
+
+const parseCountdown = (value: string): number => {
+  const parts = value.split(":").map(Number);
+  if (parts.length !== 3 || parts.some(element => Number.isNaN(element))) throw new Error(`Invalid countdown: "${value}"`);
+  const [totalHours, minutes, seconds] = parts;
+  if (totalHours === undefined || minutes === undefined || seconds === undefined)   throw new Error(`Invalid countdown: "${value}"`);
+  return (totalHours * 60 * 60 + minutes * 60 + seconds) * 1000;
 };
-const filterWeekday = <T>(array: T[], getDate: (v: T) => Date, q: string): T[] => {
-  const index = WEEK_DAYS.indexOf(q as WeekDay);
-  return array.filter((v: T): boolean => getDate(v).getDay() === index);
+
+const buildOccurrences = (entry: ScrapedEntry, now: number): PvpEventResult[] => {
+  const base = now + parseCountdown(entry.countdownText);
+  return Array.from(
+    { length: 4 },
+    (_, index): PvpEventResult => ({
+      time: base + index * WEEK,
+      server: entry.server,
+    }),
+  );
 };
-const fetchSchedule = async (): Promise<void> => {
+
+const parseScheduleTable = (html: string): ScrapedEntry[] => {
+  const table = html.match(/<table[^>]*id="pvp-schedule"[^>]*>[\S\s]*?<\/table>/i)?.[0];
+  if (table === undefined) throw new Error("PvP schedule table not found.");
+  const rows = [...table.matchAll(/<tr[^>]*>([\S\s]*?)<\/tr>/gi)]
+    .map(match => match[1] ?? "")
+    .filter(row => /<td/i.test(row));
+  return rows.map((rowHtml): ScrapedEntry => {
+    const cells = [...rowHtml.matchAll(/<t[dh][^>]*>([\S\s]*?)<\/t[dh]>/gi)].map(match =>
+      (match[1] ?? "")
+        .replace(/<[^>]*>/g, "")
+        .replaceAll("&nbsp;", " ")
+        .replace(/\s+/g, " ")
+        .trim(),
+    );
+    if (cells.length < 4) throw new Error("Invalid PvP schedule row.");
+    const [serverText, dayText, timeText, countdownText] = cells as [
+      string,
+      string,
+      string,
+      string,
+    ];
+    const serverMatch = /(persistent|ephemeral).*server\s*(\d)/i.exec(serverText);
+    if (serverMatch === null) throw new Error(`Invalid server: "${serverText}"`);
+    const [, rawType, rawId] = serverMatch;
+    if (rawType === undefined || rawId === undefined) throw new Error(`Invalid server: "${serverText}"`);
+    const id = Number(rawId);
+    if (id !== 1 && id !== 2) throw new Error(`Invalid server id: "${rawId}"`);
+    return {
+      server: {
+        id,
+        type: rawType.toLowerCase() as "persistent" | "ephemeral",
+      },
+      dayText,
+      timeText,
+      countdownText,
+    };
+  });
+};
+
+const fetchSchedule = async (): Promise<ScrapedEntry[]> => {
+  const cached = scheduleCache.get(SCHEDULE_CACHE_KEY);
+  if (cached !== undefined) return cached;
   try {
-    const r = await fetch("https://drednot.io/pvp-events", {
-      headers: { Accept: "application/json" },
+    const response = await fetch("https://drednot.io/pvp-events/", {
+      headers: {
+        Accept: "text/html",
+      },
     });
-    if (!r.ok) throw new Error("Failed to fetch PvP events schedule");
-    const b = await r.text();
-    const s = b
-      .match(/<script[^>]*>(.*?)<\/script>/g)
-      ?.find((v: string): boolean => v.includes("SCHEDULE="));
-    if (s === undefined) throw new Error("Failed to find schedule script");
-    const index = s
-      .replaceAll(/<script[^>]*>|<\/script>/g, "")
-      .trim()
-      .replace("SCHEDULE=", "");
-    const parsed: unknown = JSON.parse(index);
-    if (!Array.isArray(parsed)) throw new Error("Failed to parse schedule");
-    schedule = parsed as ScrapedEntry[];
-  } catch {
-    schedule = [];
+    if (!response.ok) throw new Error(`HTTP ${String(response.status)}: Failed to fetch PvP events`);
+    const body = await response.text();
+    const schedule = parseScheduleTable(body);
+    scheduleCache.set(SCHEDULE_CACHE_KEY, schedule, SCHEDULE_TTL_MS);
+    log.debug("pvpSchedule.fetched", {
+      count: schedule.length,
+    });
+    return schedule;
+  } catch (error: unknown) {
+    const error_ = error instanceof Error ? error : new Error(String(error));
+    log.error(error_, {
+      phase: "fetchSchedule",
+    });
+    return [];
   }
 };
 
-const scrapPvpEvent = async (rawQuery: unknown): Promise<string | string[] | Error> => {
-  await fetchSchedule();
+const formatEntry = (entry: ScrapedEntry): string =>
+  `${entry.dayText} ${entry.timeText} (${entry.server.type} Server ${String(entry.server.id)})`;
+
+export const scrapPvpEvent = async (rawQuery: unknown): Promise<string | string[] | Error> => {
+  const schedule = await fetchSchedule();
   const q = normalizeQuery(rawQuery);
-  const now = Date.now();
-  if (q === "all") return schedule.map((v) => v.date);
-  if (q === "today") {
-    const result = filterToday(schedule, (v) => new Date(v.date));
-    return result.length > 0 ? result.map((v) => v.date) : new Error("No events today.");
-  }
+  if (q === "all") return schedule.map((entry): string => formatEntry(entry));
   if (isUpcomingQuery(q)) {
-    const upcoming = getUpcoming(schedule, (v) => new Date(v.date).getTime(), now);
-    const event = upcoming.at(upcomingIndex[q]);
+    const sorted = [...schedule].sort(
+      (a, b): number => parseCountdown(a.countdownText) - parseCountdown(b.countdownText),
+    );
+    const event = sorted.at(upcomingIndex[q]);
     if (event === undefined) return new Error("No upcoming events.");
-    return event.date;
+    return formatEntry(event);
   }
   if (WEEK_DAYS.includes(q as WeekDay)) {
-    const result = filterWeekday(schedule, (v) => new Date(v.date), q);
-    return result.length > 0 ? result.map((v) => v.date) : new Error(`No events on ${q}.`);
+    const result = schedule.filter((entry): boolean => entry.dayText.toLowerCase().includes(q));
+    return result.length > 0
+      ? result.map((entry): string => formatEntry(entry))
+      : new Error(`No events on ${q}.`);
   }
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  if (new Date(q) < today) return new Error("Cannot query past events.");
-  const result = schedule.filter((v) => v.date === q);
-  return result.length > 0 ? result.map((v) => v.date) : new Error(`No events on ${q}.`);
+  return new Error(`Invalid PvP event query: "${q}"`);
 };
 
-interface ScheduleCalc { day: number; hour: number; minute: number }
-const calcSchedule: ScheduleCalc[] = [
-  { day: 0, hour: 2, minute: 0 },
-  { day: 1, hour: 0, minute: 0 },
-  { day: 3, hour: 6, minute: 0 },
-  { day: 4, hour: 23, minute: 0 },
-];
-
-const buildDate = (base: Date, event: ScheduleCalc): number => {
-  const d = new Date(base);
-  const diff = (event.day - d.getDay() + 7) % 7;
-  d.setDate(d.getDate() + diff);
-  d.setHours(event.hour, event.minute, 0, 0);
-  let t = d.getTime();
-  if (t <= Date.now()) t += WEEK;
-  return t;
-};
-
-const calcPvpEvent = (rawQuery: unknown): number[] | number => {
+export const calcPvpEvent = async (
+  rawQuery: unknown,
+): Promise<PvpEventResult[] | PvpEventResult | Error> => {
+  const schedule = await fetchSchedule();
   const q = normalizeQuery(rawQuery);
   const now = Date.now();
-  const base = new Date(now);
-  const all = calcSchedule
-    .flatMap((event) =>
-      Array.from(
-        { length: 5 },
-        (_, index) => buildDate(base, event) + (index - 2) * WEEK,
-      ),
-    )
-    .sort((a, b) => a - b);
-  if (isUpcomingQuery(q)) {
-    const f = all.filter((t: number): boolean => t > now);
-    return f[upcomingIndex[q]] ?? 0;
-  }
-  const past = /^past\[(\d+)]$/.exec(q);
-  if (past !== null) {
-    const p = all.filter((t) => t < now).reverse();
-    return p[Number(past[1])] ?? 0;
-  }
+  const all = schedule
+    .flatMap(entry => buildOccurrences(entry, now))
+    .sort((a, b): number => a.time - b.time);
   if (q === "all") return all;
   if (q === "today") {
-    const d = new Date(now).getDay();
-    return all.filter((t) => new Date(t).getDay() === d);
+    const day = new Date(now).getDay();
+    return all.filter((entry): boolean => new Date(entry.time).getDay() === day);
   }
+
+  if (isUpcomingQuery(q)) {
+    const future = all.filter((entry): boolean => entry.time > now);
+    return future[upcomingIndex[q]] ?? new Error("No upcoming events.");
+  }
+
+  const past = /^past\[(\d+)]$/.exec(q);
+  if (past !== null) {
+    const previous = all.filter((entry): boolean => entry.time < now).reverse();
+    return previous[Number(past[1])] ?? new Error("No past events.");
+  }
+
   if (WEEK_DAYS.includes(q as WeekDay)) {
     const index = WEEK_DAYS.indexOf(q as WeekDay);
-    return all.filter((t) => new Date(t).getDay() === index);
+    return all.filter((entry): boolean => new Date(entry.time).getDay() === index);
   }
-  throw new Error("Invalid query.");
-};
 
-export {
-  scrapPvpEvent,
-  calcPvpEvent
+  return new Error(`Invalid PvP event query: "${q}"`);
 };

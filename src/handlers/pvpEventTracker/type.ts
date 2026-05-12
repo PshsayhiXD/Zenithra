@@ -2,10 +2,27 @@ import type { WEEK_DAYS } from "@utilities/time.js";
 
 export type WeekDay = (typeof WEEK_DAYS)[number];
 
-export interface ScrapedEntry { date: string }
-export interface ScheduleEntry { date: string | number | (string | number)[] }
+export type PvpServer =
+  | "persistent"
+  | "ephemeral";
 
-export interface ScheduleCalc { day: number; hour: number; minute: number }
+export interface ScrapedEntry {
+  server: {
+    id: 1 | 2;
+    type: PvpServer;
+  };
+  dayText: string;
+  timeText: string;
+  countdownText: string;
+}
+
+export interface PvpEventResult {
+  time: number;
+  server: {
+    id: 1 | 2;
+    type: PvpServer;
+  };
+}
 
 export const upcomingIndex = {
   next: 0,
@@ -15,11 +32,3 @@ export const upcomingIndex = {
 } as const;
 
 export type UpcomingKey = keyof typeof upcomingIndex;
-
-export type ScrapQuery = string;
-
-export type CalcQuery = string;
-
-export type ScrapResult = string[] | string | Error;
-
-export type CalcResult = number[] | number;

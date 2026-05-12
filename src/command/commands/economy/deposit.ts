@@ -22,7 +22,7 @@ export default {
     const userId = message.author.id;
     const wallet = tables.Economy.getWallet(userId);
     const bank = tables.Economy.getBank(userId);
-    const amount = Number(currency.parseCurrency(args.join(" ")));
+    const amount = currency.parseCurrency(args.join(" "));
     if (amount <= 0)
       return [code.UserDefinedError, "Please specify a valid amount to deposit."];
     if (amount > wallet)

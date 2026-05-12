@@ -1,5 +1,6 @@
-import type { Command, CommandResult  } from "@command/types/command.js";
-import type { GuildChannels  } from "@tables/types/guild/index.js";
+import type { Command, CommandResult } from "@command/types/command.js";
+import type { GuildChannels } from "@tables/types/guild/index.js";
+import { isTrackerKey, TRACKERS } from "@tables/types/guild/channels.js";
 
 export default {
   name: "setchannel",
@@ -23,38 +24,28 @@ export default {
   permission: {},
   cooldown: 10,
   description: "Sets the channel for event tracker messages.",
-  dependencies: ["tables", "createEmbed", "isGuildChannelType", "code"],
-
-  execute: async ({ message, args, deps }): Promise<CommandResult> => {
-    const { tables, createEmbed, isGuildChannelType, code } = deps;
-    if (message.guildId === null) return [code.InternalError, "Couldnt find guild."];
+  dependencies: ["tables", "createEmbed", "code"],
+  execute: async ({ message, args, deps, cmd }): Promise<CommandResult> => {
+    const { tables, createEmbed, code } = deps;
+    if (message.guildId === null)
+      return [code.InternalError, "Couldnt find guild."];
     const typeArgument = args[0];
-    if (typeArgument === undefined || typeArgument === "" || !isGuildChannelType(typeArgument)) {
-      return [
-        code.UserDefinedError,
-        `Invalid type. Valid types: ${[
-          "mission",
-          "pvpEvent",
-          "ship",
-          "trade",
-          "voiceChannel",
-          "voiceState",
-        ].join(", ")}`,
-      ];
-    }
-    const t = typeArgument;
-    const channel = message.mentions.channels.first() ?? message.channel;
+    if (typeArgument === undefined || !isTrackerKey(typeArgument))
+      return [code.UserDefinedError, `Invalid tracker type.\n**Available types**:\n- ${TRACKERS.join("\n- ")}`];
+    const trackerType = typeArgument;
+    const channel =
+      message.mentions.channels.first() ?? message.channel;
     const update: Partial<GuildChannels> = {
-      [t]: true,
-      [`${t}Channel`]: channel.id,
-      [`${t}Message`]: "",
+      [trackerType]: true,
+      [`${trackerType}Channel`]: channel.id,
+      [`${trackerType}Message`]: "",
     };
     tables.updateChannels(message.guildId, update);
     await message.reply({
       embeds: [
         createEmbed({
-          title: "Success",
-          description: `Set ${t} channel to ${channel.toString()}`,
+          title: cmd.name,
+          description: `Set ${trackerType} channel to ${channel.toString()}`,
           color: "Green",
           footer: {
             iconURL: message.author.displayAvatarURL(),
@@ -68,4 +59,6 @@ export default {
     });
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "isGuildChannelType" | "code">;
+} satisfies Command<
+  "tables" | "createEmbed" | "code"
+>;

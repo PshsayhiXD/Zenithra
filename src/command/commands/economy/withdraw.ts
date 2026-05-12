@@ -21,7 +21,7 @@ export default {
     const { tables, createEmbed, code, currency } = deps;
     const userId = message.author.id;
     const bank = tables.Economy.getBank(userId).bank;
-    const amount = Number(currency.parseCurrency(args.join(" ")));
+    const amount = currency.parseCurrency(args.join(" "));
     if (amount <= 0) return [code.UserDefinedError, "Please specify a valid amount to withdraw."];
     if (amount > bank) return [code.UserDefinedError, `You only have **${currency.formatCurrency(bank)}** in your bank.`];
     const result = tables.Economy.withdraw(userId, amount);

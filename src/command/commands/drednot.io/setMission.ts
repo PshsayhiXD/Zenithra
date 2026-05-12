@@ -22,14 +22,14 @@ export default {
   dependencies: ["eventTracker", "createEmbed", "code"],
   execute: async ({ message, args, deps }): Promise<CommandResult> => {
     const { eventTracker, createEmbed, code } = deps;
-    const { missionCache } = eventTracker;
+    const { missionStore } = eventTracker;
 
     if (args[0] === undefined || args[0] === "") return [code.UserDefinedError, "Please provide a mission name."];
     const missionName = args.join(" ");
-    const current = missionCache.get();
+    const current = missionStore.get();
     const startTime = current?.startTime ?? Math.floor(Date.now() / 1000);
 
-    missionCache.set({
+    missionStore.set({
       mission: missionName,
       location: current?.location ?? "Raven",
       startTime,

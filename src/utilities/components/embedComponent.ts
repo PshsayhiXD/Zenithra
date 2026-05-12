@@ -1,5 +1,5 @@
 import { EmbedBuilder } from "discord.js";
-import type { CreateEmbedOptions } from "@utilities/ui/types/embed.js";
+import type { CreateEmbedOptions } from "@/utilities/components/types/embedComponent.js";
 
 const createEmbed = ({
   title,

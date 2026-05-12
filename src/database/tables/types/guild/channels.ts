@@ -2,20 +2,34 @@ import type { GuildId } from "@tables/types/guild/id.js";
 import type { GuildChannelEnabled } from "@tables/types/guild/channelEnabled.js";
 import type { GuildChannelId } from "@tables/types/guild/channelId.js";
 import type { GuildChannelMessage } from "@tables/types/guild/channelMessage.js";
-import type { GuildChannelType } from "@tables/types/guild/channelType.js";
 
-export type GuildChannels = Record<GuildChannelType, boolean> & Record<`${GuildChannelType}Channel`, GuildChannelId> & Record<`${GuildChannelType}Message`, GuildChannelMessage>;
+export const TRACKERS = [
+  "shipTracker",
+  "eventTracker",
+  "pvpEventTracker",
+] as const;
+
+export type TrackerKey = (typeof TRACKERS)[number];
+
+export type GuildChannels = Record<TrackerKey, boolean> & Record<`${TrackerKey}Channel`, GuildChannelId> & Record<`${TrackerKey}Message`, GuildChannelMessage>;
 
 export interface GuildChannelRow {
   guildId: GuildId;
-  type: GuildChannelType;
+  type: TrackerKey;
   enabled: GuildChannelEnabled;
   channelId: GuildChannelId;
   message: GuildChannelMessage;
 }
 
-export const DEFAULT_CHANNELS: GuildChannels = Object.fromEntries([
-  ...(["shipTracker", "eventTracker", "pvpEventTracker"] as const).map((k) => [k, false]),
-  ...(["shipTracker", "eventTracker", "pvpEventTracker"] as const).map((k) => [`${k}Channel`, ""]),
-  ...(["shipTracker", "eventTracker", "pvpEventTracker"] as const).map((k) => [`${k}Message`, ""]),
-]) as GuildChannels;
+const createDefaults = (): GuildChannels => Object.fromEntries(
+    TRACKERS.flatMap((k) => [
+      [k, false],
+      [`${k}Channel`, ""],
+      [`${k}Message`, ""],
+    ]),
+  ) as GuildChannels;
+
+export const DEFAULT_CHANNELS = createDefaults();
+
+export const isTrackerKey = (value: string): value is TrackerKey =>
+  (TRACKERS as readonly string[]).includes(value);

@@ -1,4 +1,4 @@
-import type { EmbedBuilder, TextChannel } from "discord.js";
+import { type EmbedBuilder, type TextChannel, ChannelType } from "discord.js";
 import { getGuild, getChannels, updateChannels } from "@tables/guild/index.js";
 import { cache } from "@/client.js";
 
@@ -9,8 +9,11 @@ export const startPvpEventTracker = async (embed: EmbedBuilder): Promise<void> =
     const channels = getChannels(guild.id);
     if (!channels.pvpEventTracker) continue;
     if (typeof channels.pvpEventTrackerChannel !== "string" || !channels.pvpEventTrackerChannel) continue;
-    const channel = await guild.channels.fetch(channels.pvpEventTrackerChannel).catch(() => null);
-    if (channel?.isTextBased() !== true) continue;
+    const channel = await guild.channels
+      .fetch(channels.pvpEventTrackerChannel)
+      .catch((): undefined => undefined);
+    if (channel?.type !== ChannelType.GuildText) continue;
+    if (!channel.isTextBased()) continue;
     const textChannel = channel as TextChannel;
     if (typeof channels.pvpEventTrackerMessage === "string" && channels.pvpEventTrackerMessage) {
       try {

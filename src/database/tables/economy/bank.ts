@@ -7,6 +7,7 @@ import type {
 import { updateBalancesStmt } from "@tables/economy/_statements.js";
 import { getEconomy, getOrCreateEconomy } from "@tables/economy/userId.js";
 import { CURRENCY } from "@config/currency.js";
+import { Decimal } from "decimal.js";
 
 const assertPositiveAmount = (amount: EconomyCurrency, action: "Deposit" | "Withdraw"): void => {
   if (!Number.isFinite(amount) || amount <= 0) throw new Error(`${action} amount must be greater than 0.`);
@@ -21,9 +22,10 @@ export const deposit = (userId: EconomyUserId, amount: EconomyCurrency, feePerce
   assertFeePercent(feePercent);
   const current = getOrCreateEconomy(userId);
   if (amount > current.currency) throw new Error("Cannot deposit more than wallet balance.");
-  const fee = Math.floor(amount * feePercent);
-  const net = amount - fee;
-  if (current.bank + net > current.bankCapacity) throw new Error("Cannot deposit beyond bank capacity.");
+  const BASE = new Decimal("1e-16");
+  const fee = new Decimal(amount).mul(feePercent).div(BASE).floor().mul(BASE).toNumber();
+  const net = new Decimal(amount).sub(fee).toNumber();
+  if (new Decimal(current.bank).plus(net).gt(current.bankCapacity)) throw new Error("Cannot deposit beyond bank capacity.");
   const now = Date.now();
   updateBalancesStmt.run(-amount, net, now, userId);
   const row = getEconomy(userId);

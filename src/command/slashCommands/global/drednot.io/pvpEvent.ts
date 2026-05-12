@@ -1,6 +1,9 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
 import type { SlashCommand, SlashCommandResult } from "@command/types/slashCommand.js";
 
+const formatTimestamp = (t: number): string =>
+  `<t:${String(Math.floor(t / 1000))}:F> (<t:${String(Math.floor(t / 1000))}:R>)`;
+
 export default {
   shouldRegister: true,
   name: "pvpevent",
@@ -40,12 +43,13 @@ export default {
       flags: ephemeral ? MessageFlags.Ephemeral : undefined,
     });
     const nextPvpEvent = pvpEvent.calcPvpEvent(query);
-    // eslint-disable-next-line unicorn/consistent-function-scoping
-    const formatTimestamp = (t: number): string =>
-      `<t:${String(Math.floor(t / 1000))}:F> (<t:${String(Math.floor(t / 1000))}:R>)`;
-    if (Array.isArray(nextPvpEvent)) {
-      resultString = nextPvpEvent.length === 0 ? "No events found." : nextPvpEvent.map(t => formatTimestamp(t)).join("\n");
-    } else resultString = formatTimestamp(nextPvpEvent);
+    if (nextPvpEvent instanceof Error) {
+      resultString = `❌ ${nextPvpEvent.message}`;
+    } else if (Array.isArray(nextPvpEvent)) {
+      resultString = nextPvpEvent.length === 0 ? "No events found." : nextPvpEvent.map((t: number) => formatTimestamp(t)).join("\n");
+    } else {
+      resultString = formatTimestamp(Number(nextPvpEvent));
+    }
 
     await interaction.editReply({
       embeds: [
