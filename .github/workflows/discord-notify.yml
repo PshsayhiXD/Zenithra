@@ -1,0 +1,101 @@
+name: Discord Notify
+
+on:
+  push:
+    branches:
+      - "**"
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - synchronize
+      - closed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord notification
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        shell: bash
+        run: |
+          node <<'NODE'
+          const github = JSON.parse(process.env.GITHUB_CONTEXT ?? "{}");
+          const webhook = process.env.DISCORD_WEBHOOK_URL;
+          if (!webhook) process.exit(0);
+
+          const eventName = github.event_name ?? "unknown";
+          const actor = github.actor ?? "unknown";
+          const repo = github.repository ?? "unknown";
+          const serverUrl = github.server_url ?? "https://github.com";
+          const runId = github.run_id ?? "";
+          const workflowUrl = runId ? `${serverUrl}/${repo}/actions/runs/${runId}` : serverUrl;
+
+          let title = `Repository update in ${repo}`;
+          let description = `Event: ${eventName}`;
+          let url = workflowUrl;
+          const fields = [
+            { name: "Actor", value: actor },
+            { name: "Workflow Run", value: workflowUrl },
+          ];
+
+          if (eventName === "push") {
+            const ref = github.ref ?? "";
+            const branch = ref.replace("refs/heads/", "");
+            const compare = github.event?.compare ?? "";
+            const commits = Array.isArray(github.event?.commits) ? github.event.commits : [];
+            const headCommit = github.event?.head_commit;
+            title = `Push to ${branch || "unknown branch"}`;
+            description = headCommit?.message ?? `Pushed ${commits.length} commit(s)`;
+            url = compare || workflowUrl;
+            fields.push(
+              { name: "Branch", value: branch || "unknown" },
+              { name: "Commits", value: String(commits.length) },
+              { name: "Commit", value: headCommit?.id?.slice(0, 7) ?? "unknown" },
+            );
+          } else if (eventName === "pull_request") {
+            const pr = github.event?.pull_request ?? {};
+            const action = github.event?.action ?? "updated";
+            title = `Pull request ${action}: #${pr.number ?? "?"}`;
+            description = pr.title ?? "Pull request update";
+            url = pr.html_url ?? workflowUrl;
+            fields.push(
+              { name: "State", value: pr.state ?? "unknown" },
+              { name: "Merged", value: String(Boolean(pr.merged)) },
+              { name: "Source", value: pr.head?.ref ?? "unknown" },
+              { name: "Target", value: pr.base?.ref ?? "unknown" },
+            );
+          }
+
+          const payload = {
+            embeds: [
+              {
+                title,
+                description,
+                url,
+                color: 5814783,
+                fields,
+                footer: {
+                  text: `${repo} • ${eventName}`,
+                },
+                timestamp: new Date().toISOString(),
+              },
+            ],
+          };
+
+          fetch(webhook, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(payload),
+          }).then(async (response) => {
+            if (!response.ok) {
+              const text = await response.text();
+              throw new Error(`Discord webhook failed: ${response.status} ${text}`);
+            }
+          }).catch((error) => {
+            console.error(error);
+            process.exit(1);
+          });
+          NODE
