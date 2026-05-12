@@ -51,8 +51,10 @@ This cleans the `dist/` folder, compiles TypeScript, and copies the database.
 **Start after building:**
 
 ```bash
-npm run start:shard
+npm run start
 ```
+
+`npm run start` now follows the sharded runtime path. Use `npm run start:bot` if you explicitly want the single-process bot entry instead.
 
 **Using PM2**:
 

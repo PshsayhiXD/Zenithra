@@ -49,4 +49,4 @@ COPY --from=builder /app/data ./data
 RUN mkdir -p data
 
 # The command to run the sharded bot
-# CMD ["npm", "run", "start:shard"]
+CMD ["npm", "run", "start:shard"]
