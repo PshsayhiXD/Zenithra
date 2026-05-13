@@ -6,11 +6,23 @@ export type PvpServer =
   | "persistent"
   | "ephemeral";
 
+export const PvPServerEmoji: Record<PvpServer, string> = {
+  ephemeral: "📅",
+  persistent: "♾️",
+};
+
+export const PvPServerName: Record<PvpServer, string> = {
+  ephemeral: "Ephemeral",
+  persistent: "Persistent",
+};
+
+export interface PvpServerInfo {
+  id: 1 | 2;
+  type: PvpServer;
+}
+
 export interface ScrapedEntry {
-  server: {
-    id: 1 | 2;
-    type: PvpServer;
-  };
+  server: PvpServerInfo;
   dayText: string;
   timeText: string;
   countdownText: string;
@@ -18,11 +30,16 @@ export interface ScrapedEntry {
 
 export interface PvpEventResult {
   time: number;
-  server: {
-    id: 1 | 2;
-    type: PvpServer;
-  };
+  server: PvpServerInfo;
 }
+
+export type PvpQuery =
+  | "all"
+  | "today"
+  | "tomorrow"
+  | WeekDay
+  | UpcomingKey
+  | `past[${number}]`;
 
 export const upcomingIndex = {
   next: 0,

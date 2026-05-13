@@ -50,6 +50,9 @@
     "alwaysStrict": true,
     "noUncheckedSideEffectImports": true,
 
+    // we use clean so no need for incremental builds
+    // or you can use normal build and turn this to true
+    // but if you turn this to true and no clean build then you have to manually copy the database/migrations and other database files that aren't .ts files
     "incremental": false,
 
     "paths": {

@@ -51,15 +51,12 @@ export const createMissionTrackerEmbed = (
   }
 
   return createEmbed({
-    title:
-      data.missionName === null
-        ? "Mission Tracker"
-        : `Mission Tracker: ${data.missionName}`,
-    description: "Real-time mission status based on game calculations.",
+    title: "Mission Tracker",
+    description: `＞︿＜ Current mission: **\`${data.missionName ?? "None"}\`**.`,
     color: data.state === "OPEN" ? "Green" : "Red",
     fields,
     footer: {
-      text: "Mission Tracker • If timers are off, contact pshsayhi4117",
+      text: "• Mission Tracker",
     },
     options: {
       timestamp: new Date(),

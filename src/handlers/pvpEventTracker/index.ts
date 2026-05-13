@@ -1,13 +1,26 @@
 import createEmbed from "@/utilities/components/embedComponent.js";
 
 import type { EmbedBuilder } from "discord.js";
-import type {
-  PvpEventResult,
+import {
+  type PvpEventResult,
+  PvPServerEmoji,
+  PvPServerName,
 } from "@handlers/pvpEventTracker/type.js";
 
 import {
   toDiscordTimestamp,
 } from "@utilities/time.js";
+
+const formatEvent = (
+  event: PvpEventResult,
+): string => {
+  const emoji = PvPServerEmoji[event.server.type];
+  const name = PvPServerName[event.server.type];
+  return [
+    `${emoji} **${name} Server ${String(event.server.id)}**`,
+    `┗ ${toDiscordTimestamp(event.time)}`,
+  ].join("\n");
+};
 
 export const buildPvpEventEmbed = (
   events:
@@ -17,7 +30,7 @@ export const buildPvpEventEmbed = (
 ): EmbedBuilder => {
   if (events instanceof Error) {
     return createEmbed({
-      title: "PvP Events",
+      title: "⚔️ PvP Events",
       description: `❌ ${events.message}`,
       color: "Red",
       options: {
@@ -32,7 +45,7 @@ export const buildPvpEventEmbed = (
 
   if (list.length === 0) {
     return createEmbed({
-      title: "PvP Events",
+      title: "⚔️ PvP Events",
       description: "❌ No PvP events found.",
       color: "Red",
       options: {
@@ -42,19 +55,13 @@ export const buildPvpEventEmbed = (
   }
 
   return createEmbed({
-    title: "PvP Event(s)",
+    title: "⚔️ PvP Events",
     description: list
-      .map(
-        (event): string =>
-          [
-            `${event.server.type} Server ${String(event.server.id)}`,
-            toDiscordTimestamp(event.time),
-          ].join(" • "),
-      )
-      .join("\n"),
+      .map((event): string => formatEvent(event))
+      .join("\n\n"),
     color: "Grey",
     footer: {
-      text: "PvP Events Tracker • 5m",
+      text: "• pvpTracker",
     },
     options: {
       timestamp: new Date(),

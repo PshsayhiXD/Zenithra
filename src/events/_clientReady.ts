@@ -52,7 +52,7 @@ export const onClientReady = async (client: Client): Promise<void> => {
     if (!(pvpResult instanceof Error)) {
       const now = Date.now();
       const upcoming = (Array.isArray(pvpResult) ? pvpResult : [pvpResult])
-        .filter((t): t is number => typeof t === "number" && t > now)
+        .filter(event => event.time > now)
         .slice(0, 4);
       const pvpEmbed = buildPvpEventEmbed(upcoming);
       await startPvpEventTracker(pvpEmbed);
@@ -74,7 +74,7 @@ export const onClientReady = async (client: Client): Promise<void> => {
 
     loop(async (): Promise<void> => {
       updateCache();
-      const newPvpResult = await calcPvpEvent("all");
+      const newPvpResult = calcPvpEvent("all");
       if (!(newPvpResult instanceof Error)) {
         const now = Date.now();
         const list = Array.isArray(newPvpResult) ? newPvpResult : [newPvpResult];

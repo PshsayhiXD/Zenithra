@@ -1,5 +1,6 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
 import type { SlashCommand, SlashCommandResult } from "@command/types/slashCommand.js";
+import { type PvpQuery } from "@/handlers/pvpEventTracker/type.js";
 
 const formatTimestamp = (t: number): string =>
   `<t:${String(Math.floor(t / 1000))}:F> (<t:${String(Math.floor(t / 1000))}:R>)`;
@@ -36,19 +37,26 @@ export default {
   groupPermission: true,
   execute: async ({ interaction, deps }): Promise<SlashCommandResult> => {
     const { pvpEvent, createEmbed, code } = deps;
-    const query = interaction.options.getString("query") ?? "next";
+    const query = (interaction.options.getString("query") ?? "next") as PvpQuery;
     const ephemeral = interaction.options.getBoolean("ephemeral") ?? false;
-    let resultString: string;
+
     await interaction.deferReply({
       flags: ephemeral ? MessageFlags.Ephemeral : undefined,
     });
+
     const nextPvpEvent = pvpEvent.calcPvpEvent(query);
+
+    let resultString: string;
     if (nextPvpEvent instanceof Error) {
       resultString = `❌ ${nextPvpEvent.message}`;
     } else if (Array.isArray(nextPvpEvent)) {
-      resultString = nextPvpEvent.length === 0 ? "No events found." : nextPvpEvent.map((t: number) => formatTimestamp(t)).join("\n");
+      resultString = nextPvpEvent.length === 0
+        ? "No events found."
+        : nextPvpEvent
+            .map(event => `${event.server.type} Server ${String(event.server.id)} • ${formatTimestamp(event.time)}`)
+            .join("\n");
     } else {
-      resultString = formatTimestamp(Number(nextPvpEvent));
+      resultString = `${nextPvpEvent.server.type} Server ${String(nextPvpEvent.server.id)} • ${formatTimestamp(nextPvpEvent.time)}`;
     }
 
     await interaction.editReply({
