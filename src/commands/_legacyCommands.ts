@@ -5,6 +5,7 @@ import { pathToFileURL } from "node:url";
 import { createLogger } from "@utilities/logger.js";
 
 const log = createLogger("CommandLoader");
+const cmdsPath = path.join(__dirname, "legacyCommands");
 
 export const commands: Command[] = [];
 
@@ -46,7 +47,6 @@ export const loadCommands = (loadedCommands: Command[]): Promise<void> => {
 export const readCommands = async (): Promise<Command[]> => {
   const cmds: Command[] = [];
   try {
-    const cmdsPath = path.join(__dirname, "commands");
     const files = await fs.readdir(cmdsPath, { recursive: true });
     for (const file of files) {
       if (!file.endsWith(".js")) continue;

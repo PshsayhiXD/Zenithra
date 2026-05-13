@@ -4,20 +4,26 @@ export type WeekDay = (typeof WEEK_DAYS)[number];
 
 export type PvpServer =
   | "persistent"
-  | "ephemeral";
+  | "ephemeral"
+  | "wipe" // Ephemeral
+  | "test";
 
 export const PvPServerEmoji: Record<PvpServer, string> = {
   ephemeral: "📅",
   persistent: "♾️",
+  wipe: "📅", // Ephemeral
+  test: "🧪"
 };
 
 export const PvPServerName: Record<PvpServer, string> = {
   ephemeral: "Ephemeral",
   persistent: "Persistent",
+  test: "Test",
+  wipe: "Ephemeral"
 };
 
 export interface PvpServerInfo {
-  id: 1 | 2;
+  id: 1 | 2 | 3;
   type: PvpServer;
 }
 

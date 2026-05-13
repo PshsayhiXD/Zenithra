@@ -53,7 +53,7 @@ export const onClientReady = async (client: Client): Promise<void> => {
       const now = Date.now();
       const upcoming = (Array.isArray(pvpResult) ? pvpResult : [pvpResult])
         .filter(event => event.time > now)
-        .slice(0, 4);
+        .slice(0, 7);
       const pvpEmbed = buildPvpEventEmbed(upcoming);
       await startPvpEventTracker(pvpEmbed);
       log.info("PVP tracker initialized", {
