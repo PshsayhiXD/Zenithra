@@ -59,6 +59,8 @@
       "@/*": ["./src/*"],
       "@utilities/*": ["./src/utilities/*"],
 
+      "@DClient/*": ["./drednot-client/*"],
+
       "@environment": ["./src/environment.ts"],
       "@configs": ["./src/configs/index.ts"],
       "@configs/*": ["./src/configs/*"],
