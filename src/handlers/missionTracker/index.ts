@@ -25,12 +25,12 @@ export const createMissionTrackerEmbed = (
       return `${emoji} ${serverLabel[server]}: \`${mission.mission}\``;
     })
     .filter((value): value is string => value !== null)
-    .join(" • ");
+    .join("\n");
   const futureValue =
     futureMissions.length > 0
       ? futureMissions
           .map((mission, index) => `#${String(index + 1)} <t:${String(mission.open)}:R> → <t:${String(mission.close)}:R>`)
-          .join(" • ")
+          .join("\n")
       : "No future persistent missions available.";
   const overviewValue = [
     `${isOpen ? "🟢" : "🔴"} **${isOpen ? "OPEN" : "CLOSED"}**`,
