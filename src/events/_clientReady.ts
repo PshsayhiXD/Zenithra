@@ -62,12 +62,12 @@ export const onClientReady = async (client: Client): Promise<void> => {
       });
     }
 
-    const eventEmbed = buildMissionTrackerEmbed(15);
+    const eventEmbed = buildMissionTrackerEmbed(3);
     const shipPng = await buildPublicCombinedShips();
     await Promise.all([startMissionTracker(eventEmbed), startShipTracker(shipPng)]);
     log.info("Initial services started", { shardId });
     loop(async (): Promise<void> => {
-      const newEventEmbed = buildMissionTrackerEmbed(15);
+      const newEventEmbed = buildMissionTrackerEmbed(3);
       const newShipPng = await buildPublicCombinedShips();
       await Promise.all([startMissionTracker(newEventEmbed), startShipTracker(newShipPng)]);
     }, MINUTE / 2);

@@ -4,6 +4,10 @@ import WebSocket from "ws";
 import { PROXY } from "@configs/proxy.js";
 import { MISSION } from "@configs/mission.js";
 import { missionStore } from "@handlers/missionTracker/store.js";
+import type {
+  MissionData,
+  MissionServer,
+} from "@handlers/missionTracker/type.js";
 import { createLogger } from "@utilities/logger.js";
 import { MINUTE } from "@utilities/time.js";
 
@@ -16,21 +20,39 @@ interface InterstellarMessage {
 
 const log = createLogger("Interstellar");
 
-const pickMission = (
+const INTERSTELLAR_SERVER_MAP: Record<string, MissionServer> = {
+  "psis-tracker": "persistent",
+  "wipe-tracker": "wipe",
+  "test-tracker": "test",
+};
+
+const toMissionServers = (
   state: MissionTrackerState,
-): { event: string; time: number } | undefined => {
-  const priority = ["psis-tracker", "wipe-tracker", "test-tracker"];
-  for (const key of priority) {
-    if (state[key] !== undefined) return state[key];
+): Partial<Record<MissionServer, MissionData>> => {
+  const servers: Partial<Record<MissionServer, MissionData>> = {};
+  const now = Date.now();
+
+  for (const [trackerKey, server] of Object.entries(INTERSTELLAR_SERVER_MAP)) {
+    const trackerState = state[trackerKey];
+    if (trackerState?.event === undefined) {
+      continue;
+    }
+    servers[server] = {
+      mission: trackerState.event,
+      location: "Raven",
+      startTime: trackerState.time * 1000,
+      setAt: now,
+    };
   }
-  return Object.values(state)[0];
+
+  return servers;
 };
 
 class InterstellarTracker {
   private ws?: WebSocket;
   private reconnectTimer: NodeJS.Timeout | null = null;
   private alive = false;
-  private lastMission = "";
+  private lastSnapshot = "";
   /** Set to true by stop() so the close handler knows not to reconnect. */
   private stopped = false;
 
@@ -69,25 +91,21 @@ class InterstellarTracker {
         }
         return;
       }
-      const selected = pickMission(data.event_state);
-      if (selected?.event === undefined) {
+      const servers = toMissionServers(data.event_state);
+      if (Object.keys(servers).length === 0) {
         log.warn("ws.message.invalid_event");
         return;
       }
-      if (this.lastMission !== selected.event) {
-        this.lastMission = selected.event;
+
+      const snapshot = JSON.stringify(servers);
+      if (this.lastSnapshot !== snapshot) {
+        this.lastSnapshot = snapshot;
         log.info("ws.message.mission_update", {
-          event: selected.event,
-          time: selected.time,
+          servers,
         });
       }
-      missionStore.set({
-        mission: selected.event,
-        location: "Raven",
-        startTime: selected.time * 1000,
-        setAt: Date.now(),
-        version: 0,
-      });
+
+      missionStore.setServers(servers);
     });
 
     this.ws.on("close", () => {

@@ -26,15 +26,19 @@ export default {
 
     if (args[0] === undefined || args[0] === "") return [code.UserDefinedError, "Please provide a mission name."];
     const missionName = args.join(" ");
-    const current = missionStore.get();
+    const current = missionStore.getServer("persistent");
     const startTime = current?.startTime ?? Math.floor(Date.now() / 1000);
 
-    missionStore.set({
-      mission: missionName,
-      location: current?.location ?? "Raven",
-      startTime,
-      setAt: Date.now(),
-      version: 0,
+    const currentServers = missionStore.get()?.servers;
+
+    missionStore.setServers({
+      ...currentServers,
+      persistent: {
+        mission: missionName,
+        location: current?.location ?? "Raven",
+        startTime,
+        setAt: Date.now(),
+      },
     });
 
     await message.reply({
