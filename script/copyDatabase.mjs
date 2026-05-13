@@ -24,8 +24,8 @@ const copySqlDir = (srcDir, destDir) => {
   }
 };
 
-mkdir("dist/database");
+mkdir("dist/databases");
 
-rm("dist/database/migrations");
+rm("dist/databases/migrations");
 
-copySqlDir("src/database/migrations", "dist/database/migrations");
+copySqlDir("src/databases/migrations", "dist/databases/migrations");

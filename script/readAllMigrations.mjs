@@ -11,7 +11,7 @@ function chunk(arr, size) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const migrationsDir = path.join(__dirname, "../src/database/migrations");
+const migrationsDir = path.join(__dirname, "../src/databases/migrations");
 const entries = await fs.readdir(migrationsDir, { withFileTypes: true });
 const files = entries
   .filter((e) => e.isFile() && e.name.endsWith(".sql"))
