@@ -16,44 +16,26 @@ export const createMissionTrackerEmbed = (
   data: MissionTrackerData,
 ): EmbedBuilder => {
   const { state, futureMissions, trackedServers } = data;
-
+  const isOpen = state.state === "OPEN";
   const trackedServerValue = serverOrder
     .map((server) => {
       const mission = trackedServers[server];
       if (mission === undefined) return null;
-
-      return [
-        `${PvPServerEmoji[server]} ${serverLabel[server]}`,
-        `└ \`${mission.mission}\``,
-      ].join("\n");
+      const emoji = server === "wipe" ? PvPServerEmoji.ephemeral : PvPServerEmoji[server];
+      return `${emoji} ${serverLabel[server]}: \`${mission.mission}\``;
     })
     .filter((value): value is string => value !== null)
-    .join("\n\n");
-
+    .join(" • ");
   const futureValue =
     futureMissions.length > 0
       ? futureMissions
-          .map((mission, index) =>
-            [
-              `◆ Queue #${String(index + 1)}`,
-              `├ Open  <t:${String(mission.open)}:R>`,
-              `└ Close <t:${String(mission.close)}:R>`,
-            ].join("\n"),
-          )
-          .join("\n\n")
+          .map((mission, index) => `#${String(index + 1)} <t:${String(mission.open)}:R> → <t:${String(mission.close)}:R>`)
+          .join(" • ")
       : "No future persistent missions available.";
-
-  const isOpen = state.state === "OPEN";
-
   const overviewValue = [
-    `${isOpen ? "🟢" : "🔴"} Status     ${
-      isOpen ? "**OPEN**" : "**CLOSED**"
-    }`,
-    `⏳ Time Left <t:${
-      String(Math.floor(Date.now() / 1000) + state.timeLeft)
-    }:R>`,
+    `${isOpen ? "🟢" : "🔴"} **${isOpen ? "OPEN" : "CLOSED"}**`,
+    `⏳ <t:${String(Math.floor(Date.now() / 1000) + state.timeLeft)}:R>`,
   ].join("\n");
-
   return createEmbed({
     title: "Mission Tracker",
     description: "＞︿＜ Live mission tracking across all servers.",
@@ -62,17 +44,17 @@ export const createMissionTrackerEmbed = (
       {
         name: "📊 Overview",
         value: overviewValue,
-        inline: false,
+        inline: true,
       },
       {
         name: "🔢 Tracked Servers",
         value: trackedServerValue || "No mission data yet.",
-        inline: false,
+        inline: true,
       },
       {
         name: "📅 Upcoming Missions",
         value: futureValue,
-        inline: false,
+        inline: true,
       },
     ],
     footer: {
