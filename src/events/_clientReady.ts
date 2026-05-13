@@ -8,11 +8,11 @@ import { updateCache } from "@/client.js";
 import { loop, MINUTE } from "@utilities/time.js";
 import { createLogger } from "@utilities/logger.js";
 
-import { registerSlashCommands } from "@command/_registerSlashCommand.js";
+import { registerSlashCommands } from "@commands/_registerSlashCommand.js";
 import { startMissionTracker } from "@services/missionTracker.js";
 import { startPvpEventTracker } from "@services/pvpEventTracker.js";
 import { startShipTracker } from "@services/shipTracker.js";
-import { MISSION } from "@config/mission.js";
+import { MISSION } from "@configs/mission.js";
 import { interstellarTracker } from "@handlers/missionTracker/interstellarTracker.js";
 
 let hasStarted = false;

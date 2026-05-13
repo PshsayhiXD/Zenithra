@@ -1,7 +1,7 @@
 import type {
   CodeNumber,
 } from "@dependencies";
-import type { code } from "@/command/dependency/deps/code.js";
+import type { code } from "@commands/dependency/deps/code.js";
 import type * as tables from "@tables/index.js";
 
 export type ItemResult = CodeNumber | [number, string];

@@ -1,4 +1,4 @@
-import { PROXY } from "@config/proxy.js";
+import { PROXY } from "@configs/proxy.js";
 import { createLogger } from "@utilities/logger.js";
 import http, { type IncomingMessage } from "node:http";
 import net, { type Socket } from "node:net";

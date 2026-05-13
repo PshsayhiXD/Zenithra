@@ -60,24 +60,25 @@
       "@utilities/*": ["./src/utilities/*"],
 
       "@environment": ["./src/environment.ts"],
-      "@config": ["./src/config/index.ts"],
-      "@config/*": ["./src/config/*"],
+      "@configs": ["./src/configs/index.ts"],
+      "@configs/*": ["./src/configs/*"],
 
-      "@command/*": ["./src/command/*"],
-      "@slashCommands/*": ["./src/command/slashCommands/*"],
+      "@commands/*": ["./src/commands/*"],
+      "@legacyCommands/*": ["./src/commands/legacyCommands/*"],
+      "@slashCommands/*": ["./src/commands/slashCommands/*"],
 
       "@services/*": ["./src/services/*"],
       "@handlers/*": ["./src/handlers/*"],
       "@events/*": ["./src/events/*"],
 
-      "@dependencies": ["./src/command/dependencies.ts"],
-      "@dependency/*": ["./src/command/dependency/*"],
+      "@dependencies": ["./src/commands/dependencies.ts"],
+      "@dependency/*": ["./src/commands/dependency/*"],
       "@modules/*": ["./src/modules/*"],
 
-      "@database/*": ["./src/database/*"],
-      "@getDatabase": ["./src/database/index.ts"],
-      "@tables/*": ["./src/database/tables/*"],
-      "@migrations/*": ["./src/database/migrations/*"],
+      "@databases/*": ["./src/databases/*"],
+      "@getDatabase": ["./src/databases/index.ts"],
+      "@tables/*": ["./src/databases/tables/*"],
+      "@migrations/*": ["./src/databases/migrations/*"],
     }
   },
   "include": ["src/**/*.ts"],

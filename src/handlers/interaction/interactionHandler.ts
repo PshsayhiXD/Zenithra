@@ -1,5 +1,5 @@
 import type { Interaction } from "discord.js";
-import { handleSlashCommand } from "@command/_slashCommandHandler.js";
+import { handleSlashCommand } from "@commands/_slashCommandHandler.js";
 import { handleButtonInteraction } from "@handlers/interaction/buttonInteractionHandler.js";
 import { handleSelectInteraction } from "@handlers/interaction/selectInteractionHandler.js";
 

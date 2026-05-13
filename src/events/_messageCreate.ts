@@ -1,5 +1,5 @@
 import type { Message } from "discord.js";
-import { handleCommand } from "@command/_commandHandler.js";
+import { handleCommand } from "@commands/_legacyHandler.js";
 import { cache } from "@/client.js";
 
 export const onMessageCreate = async (message: Message): Promise<void> => {

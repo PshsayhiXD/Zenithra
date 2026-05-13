@@ -1,5 +1,5 @@
 import type { EmbedBuilder } from "discord.js";
-import createEmbed from "@/utilities/components/embedComponent.js";
+import createEmbed from "@utilities/components/embedComponent.js";
 import { getMissionTrackerData } from "@handlers/missionTracker/missions.js";
 import type { MissionState, FutureMission } from "@handlers/missionTracker/type.js";
 
@@ -73,10 +73,10 @@ export {
   getFutureMissions,
   getMissionState,
   getMissionTrackerData,
-} from "@/handlers/missionTracker/missions.js";
-export { missionStore } from "@/handlers/missionTracker/store.js";
+} from "@handlers/missionTracker/missions.js";
+export { missionStore } from "@handlers/missionTracker/store.js";
 export type {
   MissionData,
   FutureMission,
   MissionState,
-} from "@/handlers/missionTracker/type.js";
+} from "@handlers/missionTracker/type.js";

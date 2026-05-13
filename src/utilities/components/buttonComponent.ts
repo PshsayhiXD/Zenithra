@@ -3,7 +3,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
 } from "discord.js";
-import { addButtonRecord } from "@/handlers/interaction/buttonInteractionHandler.js";
+import { addButtonRecord } from "@handlers/interaction/buttonInteractionHandler.js";
 import type { ButtonComponentOptions } from "@utilities/components/types/buttonComponent.js";
 
 export const createButtonComponent = (

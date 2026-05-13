@@ -1,12 +1,12 @@
 import { Events } from "discord.js";
 import client from "@/client.js";
-import "@database/index.js";
+import "@databases/index.js";
 import "@environment";
-import { runPendingMigrations } from "@database/migrate.js";
+import { runPendingMigrations } from "@databases/migrate.js";
 import { createLogger } from "@utilities/logger.js";
 import net from "node:net";
-import { PROXY } from "@config/proxy.js";
-import { MISSION } from "@config/mission.js";
+import { PROXY } from "@configs/proxy.js";
+import { MISSION } from "@configs/mission.js";
 
 const log = {
   process: createLogger("Process"),
@@ -69,20 +69,20 @@ void (async function boot(): Promise<void> {
   }
 
   const { loadCommands, readCommands } =
-    await import("./command/_commands.js");
+    await import("@commands/_legacyCommands.js");
   const { loadSlashCommands, readSlashCommands } =
-    await import("./command/_slashCommands.js");
+    await import("@commands/_slashCommands.js");
 
   const { onClientReady } =
-    (await import("./events/_clientReady.js")) as {
+    (await import("@events/_clientReady.js")) as {
       onClientReady: (callback: unknown) => Promise<void>;
     };
   const { onInteractionCreate } =
-    (await import("./events/_interactionCreate.js")) as {
+    (await import("@events/_interactionCreate.js")) as {
       onInteractionCreate: (interaction: unknown) => Promise<void>;
     };
   const { onMessageCreate } =
-    (await import("./events/_messageCreate.js")) as {
+    (await import("@events/_messageCreate.js")) as {
       onMessageCreate: (message: unknown) => Promise<void>;
     };
 

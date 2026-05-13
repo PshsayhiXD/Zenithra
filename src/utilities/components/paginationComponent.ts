@@ -3,7 +3,7 @@ import {
   ButtonBuilder,
   ButtonStyle,
 } from "discord.js";
-import { addButtonRecord } from "@/handlers/interaction/buttonInteractionHandler.js";
+import { addButtonRecord } from "@handlers/interaction/buttonInteractionHandler.js";
 import type { PaginationOptions } from "@utilities/components/types/paginationComponent.js";
 
 export const createPaginationComponent = (

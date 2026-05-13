@@ -1,4 +1,4 @@
-import type { addButtonRecord } from "@/handlers/interaction/buttonInteractionHandler.js";
+import type { addButtonRecord } from "@handlers/interaction/buttonInteractionHandler.js";
 
 export interface PaginationOptions {
   currentPage: number;

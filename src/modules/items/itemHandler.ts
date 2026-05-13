@@ -5,7 +5,7 @@ import {
   ItemCode,
 } from "@modules/types/item.js";
 import { getItem } from "@modules/items/_items.js";
-import { getDeps } from "@/command/dependency/getDeps.js";
+import { getDeps } from "@commands/dependency/getDeps.js";
 import { getUserItem, removeItem, updateDurability } from "@tables/inventory/inventory.js";
 
 export const useItem = async (

@@ -1,8 +1,8 @@
 import { decode, encode } from "@msgpack/msgpack";
 import { HttpsProxyAgent } from "https-proxy-agent";
 import WebSocket from "ws";
-import { PROXY } from "@config/proxy.js";
-import { MISSION } from "@config/mission.js";
+import { PROXY } from "@configs/proxy.js";
+import { MISSION } from "@configs/mission.js";
 import { missionStore } from "@handlers/missionTracker/store.js";
 import { createLogger } from "@utilities/logger.js";
 import { MINUTE } from "@utilities/time.js";

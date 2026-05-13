@@ -1,4 +1,4 @@
-import { MISSION } from "@config/mission.js";
+import { MISSION } from "@configs/mission.js";
 import { missionStore } from "@handlers/missionTracker/store.js";
 import type { FutureMission, MissionState } from "@handlers/missionTracker/type.js";
 
