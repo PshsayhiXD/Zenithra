@@ -1,20 +1,6 @@
-# DredBot Evolve
+# Zenithra
 
 A Discord bot built for the [Drednot.io](https://drednot.io) community. It integrates with the Drednot anonymous API to provide in-game ship tracking and other utilities directly inside Discord.
-
-## Dependencies
-
-- [Node.js](https://nodejs.org/) v18+
-- [discord.js](https://discord.js.org/) v14
-- [better-sqlite3](https://github.com/WiseLibs/better-sqlite3) - local database
-- [sharp](https://sharp.pixelplumbing.com/) - image processing
-- [dotenv](https://github.com/motdotla/dotenv) - environment variable management
-- [ws](https://github.com/websockets/ws) - websocket client
-- [https-proxy-agent](https://github.com/TooTallNate/node-https-proxy-agent) - proxy agent
-- [http-proxy](https://github.com/nodejitsu/node-http-proxy) - proxy server
-- [pino](https://github.com/pinojs/pino) - logger
-- [pino-pretty](https://github.com/pinojs/pino-pretty) - pretty logger
-- [@msgpack/msgpack](https://github.com/msgpack/msgpack-javascript) - msgpack client
 
 ## Setup
 
