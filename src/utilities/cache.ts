@@ -25,11 +25,11 @@ export class Cache<T> {
     mode: CacheMode = "memory",
     directory = ".cache",
     private readonly flushDelayMs = 500,
-    private readonly maxEntries = 100_000,
+    private readonly maxEntries = 100_000
   ) {
     if (mode === "file") {
       fs.mkdirSync(directory, { recursive: true });
-      this.filePath = path.join(directory, `${name}.tmp`);
+      this.filePath = path.join(directory, `${name}.json`);
       this.loadFromDisk();
     }
   }
@@ -39,9 +39,12 @@ export class Cache<T> {
     try {
       const raw = fs.readFileSync(this.filePath, "utf8");
       const object = JSON.parse(raw) as Record<string, CacheEntry<T>>;
+      const now = Date.now();
       for (const k in object) {
         const entry = object[k];
-        if (entry !== undefined) this.store.set(k, entry);
+        if (entry === undefined) continue;
+        if (entry.expiresAt !== undefined && now > entry.expiresAt) continue;
+        this.store.set(k, entry);
       }
     } catch {
       void 0;
@@ -59,21 +62,21 @@ export class Cache<T> {
   flush(): void {
     if (this.filePath === undefined) return;
     const filePath = this.filePath;
-    const temporary = `${this.filePath}.tmp2`;
+    const temporary = `${filePath}.tmp`;
     const object: Record<string, CacheEntry<T>> = {};
     for (const [k, v] of this.store) object[k] = v;
+    this.dirty = false;
     fs.writeFile(temporary, JSON.stringify(object), "utf8", (): void => {
       fs.rename(temporary, filePath, (): void => {
         void 0;
       });
     });
-    this.dirty = true;
   }
 
   set(key: string, value: T, ttlMs?: number): void {
     this.store.set(key, {
       value,
-      expiresAt: ttlMs === undefined ? undefined : Date.now() + ttlMs,
+      expiresAt: ttlMs === undefined ? undefined : Date.now() + ttlMs
     });
     if (this.store.size > this.maxEntries) {
       const it = this.store.keys().next();
@@ -106,18 +109,19 @@ export class Cache<T> {
 
   onChange(key: string, callback: (value: T) => void, expireMs?: number): () => void {
     if (!this.listeners.has(key)) this.listeners.set(key, new Set<Listener<T>>());
-    const listener: Listener<T> = { fn: callback, timeout: undefined };
+    const listener: Listener<T> = {
+      fn: callback,
+      timeout: undefined
+    };
     const set = this.listeners.get(key);
-    if (set === undefined) {
-      return (): void => void 0;
-    }
+    if (set === undefined) return (): void => void 0;
     set.add(listener);
     if (expireMs !== undefined) {
-      listener.timeout = setTimeout(() => {
+      listener.timeout = setTimeout((): void => {
         set.delete(listener);
       }, expireMs);
     }
-    return () => {
+    return (): void => {
       if (listener.timeout !== undefined) clearTimeout(listener.timeout);
       set.delete(listener);
     };
