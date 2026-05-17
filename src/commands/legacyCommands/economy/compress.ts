@@ -23,9 +23,9 @@ export default {
   ],
   cooldown: 5,
   dependencies: ["tables", "createEmbed", "number", "code", "items"],
-  execute: async ({ message, args, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { args, deps, userId, responses, message, isDiscord, isDrednot } = context;
     const { tables, createEmbed, number, code } = deps;
-    const userId = message.author.id;
     const resource = args[0]?.toLowerCase();
     const count = Math.max(1, Number.parseInt(args[1] ?? "1"));
 
@@ -57,14 +57,16 @@ export default {
 
     tables.Inventory.addItem(userId, tier.nextId, count);
 
-    await message.reply({
+    const payload = {
       embeds: [createEmbed({
         title: "Compression Successful",
         description: `Compressed **${number.formatNumber(needed)}** ${tier.name} into **${String(count)}** ${tier.nextName}.`,
         color: "Green",
         options: { timestamp: new Date() }
       })]
-    });
+    };
+    if (isDiscord && message) await message.reply(payload);
+    if (isDrednot) responses?.push(payload);
 
     return code.Success;
   }

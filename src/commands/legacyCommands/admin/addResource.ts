@@ -24,8 +24,11 @@ export default {
   ],
   cooldown: 0,
   dependencies: ["tables", "createEmbed", "code", "currency"],
-  execute: async ({ message, args, deps, cmd }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, args, deps, cmd, userId, isDiscord } = context;
     const { tables, createEmbed, code, currency } = deps;
+    if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
+    if (!message) return [code.UserDefinedError, "Please provide a valid message"];
 
     let targetId: string;
     let resourceStartIndex: number;
@@ -37,7 +40,7 @@ export default {
         targetId = firstArgument;
         resourceStartIndex = 1;
       } else {
-        targetId = message.author.id;
+        targetId = userId;
         resourceStartIndex = 0;
       }
     } else {
@@ -52,7 +55,7 @@ export default {
 
     const result = tables.Economy.addWallet(targetId, amount);
 
-    await message.reply({
+    const payload = {
       embeds: [
         createEmbed({
           title: cmd.name,
@@ -61,7 +64,8 @@ export default {
           options: { timestamp: new Date() },
         }),
       ],
-    });
+    };
+    await message.reply(payload);
 
     return code.Success;
   },

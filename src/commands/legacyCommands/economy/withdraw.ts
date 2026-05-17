@@ -17,15 +17,15 @@ export default {
   ],
   cooldown: 5,
   dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code", "currency"],
-  execute: async ({ message, args, deps, cmd }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, args, deps, cmd, userId, responses, isDiscord, isDrednot } = context;
     const { tables, createEmbed, code, currency } = deps;
-    const userId = message.author.id;
     const bank = tables.Economy.getBank(userId).bank;
     const amount = currency.parseCurrency(args.join(" "));
     if (amount <= 0) return [code.UserDefinedError, "Please specify a valid amount to withdraw."];
     if (amount > bank) return [code.UserDefinedError, `You only have **${currency.formatCurrency(bank)}** in your bank.`];
     const result = tables.Economy.withdraw(userId, amount);
-    await message.reply({
+    const payload = {
       embeds: [
         createEmbed({
           title: cmd.name,
@@ -35,10 +35,15 @@ export default {
             Bank: **${currency.formatCurrency(result.bank)}**
           `.trim(),
           color: "Green",
-          options: { timestamp: new Date() },
+          options: {
+            ...(message ? { message } : {}),
+            timestamp: new Date()
+          },
         }),
       ],
-    });
+    };
+    if (isDiscord && message) await message.reply(payload);
+    if (isDrednot) responses?.push(payload);
     return code.Success;
   },
 } satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code" | "currency">;

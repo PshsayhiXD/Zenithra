@@ -1,4 +1,9 @@
-import type { Message, PermissionResolvable } from "discord.js";
+import type {
+  Message,
+  MessagePayload,
+  MessageCreateOptions,
+  PermissionResolvable,
+} from "discord.js";
 import type {
   CommandDependencies,
   DependencyKey,
@@ -14,14 +19,23 @@ export interface CommandPermission {
 }
 
 export type CommandResult = CodeNumber | [number, string];
+export type CommandReplyContent = string | MessagePayload | MessageCreateOptions;
 
 export interface CommandContext<T extends DependencyKey = DependencyKey> {
-  message: Message;
+  platform: "discord" | "drednot";
+  isDiscord: boolean;
+  isDrednot: boolean;
+  userId: string;
+  username: string;
+  userAvatarUrl: string;
+  guildId: string | null;
   args: string[];
   name: string;
   raw: string;
   deps: ResolvedDeps<T>;
   cmd: Command<T>;
+  message?: Message;
+  responses?: CommandReplyContent[];
 }
 
 export interface Command<T extends DependencyKey = DependencyKey> {
@@ -32,6 +46,8 @@ export interface Command<T extends DependencyKey = DependencyKey> {
   aliases: string[];
   cooldown: number;
   permission: CommandPermission;
+  /** @deprecated Prefer branching inside execute() with context.isDiscord/context.isDrednot. */
+  disableHttp?: boolean;
   args: {
     name: string;
     description?: string;

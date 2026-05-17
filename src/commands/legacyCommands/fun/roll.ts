@@ -17,7 +17,8 @@ export default {
   ],
   cooldown: 3,
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, args, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, args, deps, responses, isDiscord, isDrednot } = context;
     const { code, createEmbed } = deps;
     const firstArgument = args[0];
     if (firstArgument === undefined) return [code.UserDefinedError, "Please provide a valid number of sides (greater than 1)."];
@@ -29,10 +30,14 @@ export default {
       title: "Dice Roll",
       description: `You rolled a **${String(result)}** (1-${String(sides)})`,
       color: "Blue",
-      options: { message, timestamp: new Date() },
+      options: {
+        ...(message ? { message } : {}),
+        timestamp: new Date(),
+      },
     });
 
-    await message.reply({ embeds: [embed] });
+    if (isDiscord && message) await message.reply({ embeds: [embed] });
+    if (isDrednot) responses?.push({ embeds: [embed] });
     return code.Success;
   },
 } satisfies Command<"code" | "createEmbed">;

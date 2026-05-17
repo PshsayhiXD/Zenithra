@@ -1,4 +1,4 @@
-import type { Command } from "@commands/types/command.js";
+import type { Command, CommandResult } from "@commands/types/command.js";
 
 export const inviteCommand: Command<"env" | "createEmbed" | "code"> = {
   name: "invite",
@@ -10,25 +10,24 @@ export const inviteCommand: Command<"env" | "createEmbed" | "code"> = {
   args: [],
   cooldown: 5,
   dependencies: ["env", "createEmbed", "code"],
-  execute: async ({ message, deps }) => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, deps, responses, isDiscord, isDrednot } = context;
     const { env, createEmbed, code } = deps;
     const invite = env["opt_discord_bot_invite_url"];
     if (invite === undefined || invite === "") return [code.InternalError, "Invite URL is not configured."];
-    await message.reply({
+    const payload = {
       embeds: [createEmbed({
         title: "Invite",
         description: `[Invite me to your server](${invite})`,
         color: "Blurple",
-        thumbnail: message.client.user.displayAvatarURL(),
-        footer: {
-          text: message.author.tag,
-          iconURL: message.author.displayAvatarURL(),
-        },
         options: {
+          ...(message ? { message } : {}),
           timestamp: new Date(),
         },
       })],
-    });
+    };
+    if (isDiscord && message) await message.reply(payload);
+    if (isDrednot) responses?.push(payload);
     return code.Success;
   },
 };

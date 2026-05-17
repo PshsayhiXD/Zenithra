@@ -14,7 +14,8 @@ import type { Message } from "discord.js";
 const log = createLogger("Command");
 
 export const handleCommand = async (message: Message): Promise<void> => {
-  if (message.guild === null) return;
+  const guild = message.guild;
+  if (!guild) return;
   if (commands.length === 0) {
     log.warn("No commands loaded");
     await message.reply({
@@ -34,10 +35,10 @@ export const handleCommand = async (message: Message): Promise<void> => {
     return;
   }
 
-  const prefix = getPrefix(message.guild.id);
+  const prefix = getPrefix(guild.id);
   if (!message.content.startsWith(prefix)) return;
 
-  upsertGuild(message.guild.id);
+  upsertGuild(guild.id);
   upsertUser(message.author.id);
   const raw = message.content.slice(prefix.length).trim();
   if (raw.length === 0) return;
@@ -132,11 +133,18 @@ export const handleCommand = async (message: Message): Promise<void> => {
       command: cmd.name,
       userId: message.author.id,
       userTag: message.author.tag,
-      guildId: message.guild.id,
-      guildName: message.guild.name,
+      guildId: guild.id,
+      guildName: guild.name,
     });
 
     const result: CommandResult = await cmd.execute({
+      platform: "discord",
+      isDiscord: true,
+      isDrednot: false,
+      userId: message.author.id,
+      username: message.author.username,
+      userAvatarUrl: message.author.displayAvatarURL(),
+      guildId: guild.id,
       message,
       args: cmd.args.length > 0 ? arguments_ : [],
       name,
@@ -154,7 +162,7 @@ export const handleCommand = async (message: Message): Promise<void> => {
       await message.reply({
         embeds: [
           createEmbed({
-            title: "Warning (0)",
+            title: `Warning (${String(code.Warning)})`,
             description: "Command executed successfully but with nothing affected.",
             color: "Yellow",
             options: { message, timestamp: new Date() },

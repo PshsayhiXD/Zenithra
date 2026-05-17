@@ -12,10 +12,11 @@ export default {
   args: [],
   permission: {},
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, deps, responses, isDiscord, isDrednot } = context;
     const { code, createEmbed } = deps;
-    const { client } = message;
-    const user = client.user;
+    if (!message) return [code.UserDefinedError, "Please provide a valid message."];
+    const user = message.client.user;
 
     const uptime = process.uptime();
     const uptimeString = `${String(Math.floor(uptime / 3600))}h ${String(Math.floor((uptime % 3600) / 60))}m ${String(Math.floor(uptime % 60))}s`;
@@ -33,10 +34,14 @@ export default {
         { name: "Memory", value: `${memoryUsage} MB`, inline: true },
         { name: "OS", value: `${os.type()} ${os.arch()}`, inline: true }
       ],
-      options: { message, timestamp: new Date() },
+      options: {
+        message,
+        timestamp: new Date(),
+      },
     });
 
-    await message.reply({ embeds: [embed] });
+    if (isDiscord) await message.reply({ embeds: [embed] });
+    if (isDrednot) responses?.push({ embeds: [embed] });
     return code.Success;
   },
 } satisfies Command<"code" | "createEmbed">;

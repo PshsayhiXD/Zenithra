@@ -32,13 +32,10 @@ const createEmbed = ({
   if (image !== undefined && image !== "") embed.setImage(image);
 
   if (footer !== undefined || keepEmpty) {
-    const text = footer?.text ?? "Dredbot Evolve";
+    const text = footer?.text ?? "Zenithra";
     const iconURL = footer?.iconURL ?? botIcon;
-    if (iconURL === undefined) {
-      embed.setFooter({ text });
-    } else {
-      embed.setFooter({ text, iconURL });
-    }
+    if (iconURL === undefined) embed.setFooter({ text });
+    else embed.setFooter({ text, iconURL });
   }
 
   if (options?.timestamp) embed.setTimestamp(options.timestamp);

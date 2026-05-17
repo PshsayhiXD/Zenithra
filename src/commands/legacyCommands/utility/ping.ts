@@ -10,12 +10,24 @@ export default {
   args: [],
   permission: {},
   dependencies: ["code"],
-  execute: async ({ message, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, deps, responses, isDiscord, isDrednot } = context;
     const { code } = deps;
-    const message_ = await message.reply("Pinging...");
-    const latency = message_.createdTimestamp - message.createdTimestamp;
-    const apiLatency = Math.round(message.client.ws.ping);
-    await message_.edit(`Pong! Latency: ${String(latency)}ms, API Latency: ${String(apiLatency)}ms`);
+
+    if (isDiscord) {
+      if (!message) return [code.UserDefinedError, "Please provide a valid message."];
+      const pendingReply = await message.reply("Pinging...");
+      const latency = pendingReply.createdTimestamp - message.createdTimestamp;
+      const apiLatency = Math.round(message.client.ws.ping);
+      await pendingReply.edit(`Pong! Latency: ${latency.toString()}ms, API Latency: ${apiLatency.toString()}ms`);
+      return code.Success;
+    }
+
+    if (isDrednot) {
+      responses?.push("Pong! Drednot backend command path is reachable.");
+      return code.Success;
+    }
+
     return code.Success;
   }
 } satisfies Command<"code">;

@@ -17,9 +17,9 @@ export default {
   permission: {},
   cooldown: 5,
   dependencies: ["tables", "createEmbed", "config.CURRENCY", "code", "number", "currency"],
-  execute: async ({ message, args, deps, cmd }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { args, deps, cmd, userId, responses, message, isDiscord, isDrednot } = context;
     const { tables, createEmbed, "config.CURRENCY": CURRENCY, code, currency } = deps;
-    const userId = message.author.id;
     const wallet = tables.Economy.getWallet(userId);
     const bank = tables.Economy.getBank(userId);
     const amount = currency.parseCurrency(args.join(" "));
@@ -39,7 +39,7 @@ export default {
     const fee = CURRENCY.FEE_PERCENT * 100;
     const result = tables.Economy.deposit(userId, amount);
 
-    await message.reply({
+    const payload = {
       embeds: [
         createEmbed({
           title: cmd.name,
@@ -51,7 +51,9 @@ export default {
           options: { timestamp: new Date() },
         }),
       ],
-    });
+    };
+    if (isDiscord && message) await message.reply(payload);
+    if (isDrednot) responses?.push(payload);
 
     return code.Success;
   },

@@ -11,10 +11,10 @@ export default {
   args: [],
   cooldown: 5,
   dependencies: ["tables", "createEmbed", "items", "code"],
-  execute: async ({ message, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, deps, userId, username, responses, isDiscord, isDrednot } = context;
     const { tables, createEmbed, items, code } = deps;
     const getItem = items.getItem as (query: string | number) => Item | undefined;
-    const userId = message.author.id;
     const inv = tables.Inventory.getUserInventory(userId);
 
     if (inv.length > 0) {
@@ -26,29 +26,39 @@ export default {
         })
         .join("\n");
 
-      await message.reply({
+      const payload = {
         embeds: [
           createEmbed({
-            title: `${message.author.username}'s Inventory`,
+            title: `${username}'s Inventory`,
             description,
             color: "Blue",
-            options: { timestamp: new Date() },
+            options: {
+              ...(message ? { message } : {}),
+              timestamp: new Date()
+            },
           }),
         ],
-      });
+      };
+      if (isDiscord && message) await message.reply(payload);
+      if (isDrednot) responses?.push(payload);
       return code.Success;
     }
 
-    await message.reply({
+    const payload = {
       embeds: [
         createEmbed({
-          title: "Inventory",
+          title: `${username}'s Inventory`,
           description: "Your inventory is empty.",
           color: "Yellow",
-          options: { timestamp: new Date() },
+          options: {
+            ...(message ? { message } : {}),
+            timestamp: new Date()
+          },
         }),
       ],
-    });
+    };
+    if (isDiscord && message) await message.reply(payload);
+    if (isDrednot) responses?.push(payload);
     return code.Success;
   },
 } satisfies Command<"tables" | "createEmbed" | "items" | "code">;

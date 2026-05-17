@@ -20,7 +20,8 @@ export default {
   cooldown: 10,
   description: "Sets the current mission name while preserving the timer and location. (Admins only)",
   dependencies: ["eventTracker", "createEmbed", "code"],
-  execute: async ({ message, args, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, args, deps, responses, isDiscord, isDrednot } = context;
     const { eventTracker, createEmbed, code } = deps;
     const { missionStore } = eventTracker;
 
@@ -41,22 +42,21 @@ export default {
       },
     });
 
-    await message.reply({
+    const payload = {
       embeds: [
         createEmbed({
           title: "Mission Name Updated",
           description: `Successfully updated mission name.\n**Mission**: ${missionName}\n**Location**: ${current?.location ?? "Raven"}\n**Status**: Timer preserved.`,
           color: "Green",
-          footer: {
-            text: `Updated by ${message.author.username}`,
-            iconURL: message.author.displayAvatarURL(),
-          },
           options: {
+            ...(message ? { message } : {}),
             timestamp: new Date(),
           },
         }),
       ],
-    });
+    };
+    if (isDiscord && message) await message.reply(payload);
+    if (isDrednot) responses?.push(payload);
     return code.Success;
   },
 } satisfies Command<"eventTracker" | "createEmbed" | "code">;

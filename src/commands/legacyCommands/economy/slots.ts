@@ -18,7 +18,8 @@ export default {
     },
   ],
   dependencies: ["code", "createEmbed", "tables", "config.CURRENCY", "number", "currency"],
-  execute: async ({ message, args, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, args, deps, userId, responses, isDiscord, isDrednot } = context;
     const { code, createEmbed, tables, currency } = deps;
 
     const amountRaw = currency.parseCurrency(args.join(" "));
@@ -26,7 +27,7 @@ export default {
       return [code.UserDefinedError, "Please provide a valid bet amount."];
 
     const amount = amountRaw;
-    const wallet = tables.Economy.getWallet(message.author.id);
+    const wallet = tables.Economy.getWallet(userId);
 
     if (amount > wallet)
       return [
@@ -51,8 +52,8 @@ export default {
       win = new Decimal(amount).mul(multiplier).toNumber();
     }
 
-    if (win > 0) tables.Economy.addWallet(message.author.id, new Decimal(win).sub(amount).toNumber());
-    else tables.Economy.addWallet(message.author.id, -amount);
+    if (win > 0) tables.Economy.addWallet(userId, new Decimal(win).sub(amount).toNumber());
+    else tables.Economy.addWallet(userId, -amount);
     const resultString = `[ ${String(slot1)} | ${String(slot2)} | ${String(slot3)} ]`;
     const embed = createEmbed({
       title: "Slot Machine",
@@ -62,10 +63,14 @@ export default {
             ? `You won **${currency.formatCurrency(win)}**! (${String(multiplier)}x)`
             : `You lost **${currency.formatCurrency(amount)}**.`}`,
       color: win > 0 ? "Green" : "Red",
-      options: { message, timestamp: new Date() },
+      options: {
+        ...(message ? { message } : {}),
+        timestamp: new Date()
+      },
     });
 
-    await message.reply({ embeds: [embed] });
+    if (isDiscord && message) await message.reply({ embeds: [embed] });
+    if (isDrednot) responses?.push({ embeds: [embed] });
 
     return code.Success;
   },

@@ -17,11 +17,12 @@ export default {
   ],
   permission: {},
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, args, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, args, deps, responses, isDiscord, isDrednot } = context;
     const { code, createEmbed } = deps;
     if (args.length === 0) return [code.UserDefinedError, "Please ask a question!"];
 
-    const responses = [
+    const answers = [
       "It is certain.",
       "Yes, definitely.",
       "Most likely.",
@@ -30,7 +31,7 @@ export default {
       "Better not tell you now.",
       "Very doubtful."
     ];
-    const response = responses[Math.floor(Math.random() * responses.length)] ?? "Reply hazy, try again.";
+    const response = answers[Math.floor(Math.random() * answers.length)] ?? "Reply hazy, try again.";
     const question = args.join(" ");
 
     const embed = createEmbed({
@@ -40,10 +41,14 @@ export default {
         { name: "Answer", value: response }
       ],
       color: "Purple",
-      options: { message, timestamp: new Date() },
+      options: {
+        ...(message ? { message } : {}),
+        timestamp: new Date(),
+      },
     });
 
-    await message.reply({ embeds: [embed] });
+    if (isDiscord && message) await message.reply({ embeds: [embed] });
+    if (isDrednot) responses?.push({ embeds: [embed] });
     return code.Success;
   },
 } satisfies Command<"code" | "createEmbed">;

@@ -11,8 +11,11 @@ export default {
   args: [],
   permission: {},
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, deps, isDiscord } = context;
     const { code, createEmbed } = deps;
+    if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
+    if (!message) return [code.UserDefinedError, "Please provide a valid message."];
     const { guild } = message;
     if (!guild) return [code.UserDefinedError, "This command can only be used in a server."];
 
@@ -32,7 +35,10 @@ export default {
         { name: "Channels", value: channels.size.toString(), inline: true },
         { name: "Boosts", value: `${String(guild.premiumSubscriptionCount ?? 0)} (Level ${String(guild.premiumTier)})`, inline: true },
       ],
-      options: { message, timestamp: new Date() },
+      options: {
+        message,
+        timestamp: new Date(),
+      },
     });
 
     await message.reply({ embeds: [embed] });

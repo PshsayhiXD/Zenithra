@@ -10,7 +10,8 @@ export default {
   permission: {},
   args: [],
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, deps, responses, isDiscord, isDrednot } = context;
     const { code, createEmbed } = deps;
     const result = Math.random() < 0.5 ? "Heads" : "Tails";
 
@@ -18,10 +19,14 @@ export default {
       title: "Coin Flip",
       description: `The coin landed on: **${result}**!`,
       color: "Blue",
-      options: { message, timestamp: new Date() },
+      options: {
+        ...(message ? { message } : {}),
+        timestamp: new Date(),
+      },
     });
 
-    await message.reply({ embeds: [embed] });
+    if (isDiscord && message) await message.reply({ embeds: [embed] });
+    if (isDrednot) responses?.push({ embeds: [embed] });
     return code.Success;
   },
 } satisfies Command<"code" | "createEmbed">;

@@ -113,6 +113,15 @@ void (async function boot(): Promise<void> {
   loadItems(itemsList);
   log.bot.info("Loaded items registry");
 
+  const shouldStartBackend =
+    client.shard === null ||
+    client.shard.ids.includes(0);
+
+  if (shouldStartBackend) {
+    const { startBackendServer } = await import("./backend/server.js");
+    startBackendServer();
+  }
+
   const token = process.env["DISCORD_BOT_TOKEN"];
   if (token === undefined || token === "") throw new Error("Missing DISCORD_BOT_TOKEN.");
   await client.login(token);

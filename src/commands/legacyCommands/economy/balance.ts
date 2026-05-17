@@ -11,10 +11,10 @@ export default {
   aliases: [],
   cooldown: 10,
   dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code", "items", "currency"],
-  execute: async ({ message, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { deps, userId, username, responses, message, isDiscord, isDrednot } = context;
     const { tables, createEmbed, number, code, items, currency } = deps;
     const getItem = items.getItem as (query: string | number) => Item | undefined;
-    const userId = message.author.id;
     const wallet = tables.Economy.getWallet(userId);
     const bank = tables.Economy.getBank(userId);
 
@@ -43,10 +43,10 @@ export default {
       ? `\n\n**Currency Items:**\n${heldCurrency.join("\n")}`
       : "";
 
-    await message.reply({
+    const payload = {
       embeds: [
         createEmbed({
-          title: `${message.author.username}'s Balance`,
+          title: `${username}'s Balance`,
           description: `
             **Wallet:** ${currency.formatCurrency(wallet)}
             **Bank:** ${currency.formatCurrency(bank.bank)} / ${currency.formatCurrency(bank.bankCapacity)}
@@ -56,7 +56,9 @@ export default {
           options: { timestamp: new Date() },
         }),
       ],
-    });
+    };
+    if (isDiscord && message) await message.reply(payload);
+    if (isDrednot) responses?.push(payload);
     return code.Success;
   },
 } satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code" | "items" | "currency">;

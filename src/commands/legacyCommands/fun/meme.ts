@@ -10,7 +10,8 @@ export default {
   permission: {},
   cooldown: 5,
   dependencies: ["code", "createEmbed"],
-  execute: async ({ message, deps }): Promise<CommandResult> => {
+  execute: async (context): Promise<CommandResult> => {
+    const { message, deps, responses, isDiscord, isDrednot } = context;
     const { code, createEmbed } = deps;
 
     try {
@@ -34,10 +35,14 @@ export default {
         footer: {
           text: `r/${data.subreddit} | 👍 ${String(data.ups)} | by ${data.author}`,
         },
-        options: { message, timestamp: new Date() },
+        options: {
+          ...(message ? { message } : {}),
+          timestamp: new Date(),
+        },
       });
 
-      await message.reply({ embeds: [embed] });
+      if (isDiscord && message) await message.reply({ embeds: [embed] });
+      if (isDrednot) responses?.push({ embeds: [embed] });
       return code.Success;
     } catch {
       return [code.InternalError, "Failed to fetch a meme. The API might be down."];
