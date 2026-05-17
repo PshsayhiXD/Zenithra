@@ -3,6 +3,7 @@ import js from "@eslint/js";
 import tseslint from "typescript-eslint";
 import unicorn from "eslint-plugin-unicorn";
 import importX from "eslint-plugin-import-x";
+import globals from "globals";
 
 /** @type {import('@typescript-eslint/utils').TSESLint.FlatConfig.ConfigFile} */ // @ts-ignore
 export default [
@@ -20,11 +21,15 @@ export default [
   ...tseslint.configs.stylisticTypeChecked,
   unicorn.configs.recommended,
   {
-    files: ["**/*.ts"],
+    files: ["src/**/*.ts", "drednot-client/*.mjs"],
     languageOptions: {
+      globals: {
+        ...globals.node,
+      },
       parser: tseslint.parser,
       parserOptions: {
-        project: "./tsconfig.json",
+        project: ["./tsconfig.json", "./drednot-client/tsconfig.json"],
+        // @ts-ignore
         tsconfigRootDir: process.cwd(),
       },
     },
@@ -35,13 +40,44 @@ export default [
     settings: {
       "import-x/resolver": {
         typescript: {
-          project: "./tsconfig.json",
+          project: ["./tsconfig.json", "./drednot-client/tsconfig.json"],
         },
         node: {
           extensions: [".js", ".ts"],
         },
       },
     },
+  },
+  {
+    files: ["drednot-client/src/**/*.ts"],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+      },
+      parser: tseslint.parser,
+      parserOptions: {
+        project: ["./drednot-client/tsconfig.json"],
+        // @ts-ignore
+        tsconfigRootDir: process.cwd(),
+      },
+    },
+    plugins: {
+      unicorn,
+      "import-x": importX,
+    },
+    settings: {
+      "import-x/resolver": {
+        typescript: {
+          project: ["./drednot-client/tsconfig.json"],
+        },
+        node: {
+          extensions: [".js", ".ts"],
+        },
+      },
+    },
+  },
+  {
+    files: ["src/**/*.ts", "drednot-client/**/*.ts", "drednot-client/*.mjs"],
     rules: {
       "import-x/extensions": [
         "error",
@@ -66,6 +102,7 @@ export default [
       "unicorn/no-array-sort": "off",
       "unicorn/no-array-reverse": "off",
       "unicorn/prefer-export-from": "off",
+      "unicorn/prefer-module": "off",
       "unicorn/prefer-string-replace-all": "off",
       "unicorn/better-regex": "error",
       "unicorn/consistent-function-scoping": "error",
@@ -79,6 +116,7 @@ export default [
       "unicorn/prefer-set-has": "error",
       "unicorn/prefer-simple-condition-first": "error",
       "unicorn/no-abusive-eslint-disable": "error",
+      "unicorn/no-process-exit": "off",
 
       "object-shorthand": ["error", "always"],
       "arrow-body-style": ["error", "as-needed"],
