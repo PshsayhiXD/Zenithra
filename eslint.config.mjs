@@ -31,6 +31,7 @@ export default [
         project: ["./tsconfig.json", "./drednot-client/tsconfig.json"],
         // @ts-ignore
         tsconfigRootDir: process.cwd(),
+        noWarnOnMultipleProjects: true,
       },
     },
     plugins: {
@@ -59,6 +60,7 @@ export default [
         project: ["./drednot-client/tsconfig.json"],
         // @ts-ignore
         tsconfigRootDir: process.cwd(),
+        noWarnOnMultipleProjects: true,
       },
     },
     plugins: {
@@ -104,6 +106,8 @@ export default [
       "unicorn/prefer-export-from": "off",
       "unicorn/prefer-module": "off",
       "unicorn/prefer-string-replace-all": "off",
+      "unicorn/prefer-global-this": "off",
+
       "unicorn/better-regex": "error",
       "unicorn/consistent-function-scoping": "error",
       "unicorn/isolated-functions": "error",
