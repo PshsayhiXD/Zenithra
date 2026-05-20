@@ -12,9 +12,9 @@ const client = new Client({
 });
 
 export const cache = {
-  users: new Cache<ReturnType<Client["users"]["cache"]["get"]>>("users", "file"),
-  channels: new Cache<ReturnType<Client["channels"]["cache"]["get"]>>("channels", "file"),
-  guilds: new Cache<Guild>("guilds", "file"),
+  users: new Cache<ReturnType<Client["users"]["cache"]["get"]>>("users", "file").init(),
+  channels: new Cache<ReturnType<Client["channels"]["cache"]["get"]>>("channels", "file").init(),
+  guilds: new Cache<Guild>("guilds", "file").init(),
 };
 
 export const updateCache = (): true => {
