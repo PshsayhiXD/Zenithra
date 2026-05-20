@@ -9,17 +9,17 @@ export default {
   args: [],
   permission: {},
   cooldown: 86_400, // 24 hours
-  dependencies: ["code", "createEmbed", "tables"],
+  dependencies: ["code", "createEmbed", "tables", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, userId, responses, isDiscord, isDrednot } = context;
-    const { code, createEmbed, tables } = deps;
+    const { code, createEmbed, tables, currency } = deps;
     const amount = 500;
 
     tables.Economy.addWallet(userId, amount);
 
     const embed = createEmbed({
       title: "Daily Reward",
-      description: `You have claimed your daily reward of **${String(amount)}** Dredcoins!`,
+      description: `You have claimed your daily reward of **${currency.formatCurrency(amount)}**!`,
       color: "Gold",
       options: {
         ...(message ? { message } : {}),
@@ -31,4 +31,4 @@ export default {
     if (isDrednot) responses?.push({ embeds: [embed] });
     return code.Success;
   },
-} satisfies Command<"code" | "createEmbed" | "tables">;
+} satisfies Command<"code" | "createEmbed" | "tables" | "currency">;

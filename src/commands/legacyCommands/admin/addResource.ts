@@ -27,6 +27,7 @@ export default {
   execute: async (context): Promise<CommandResult> => {
     const { message, args, deps, cmd, userId, isDiscord } = context;
     const { tables, createEmbed, code, currency } = deps;
+
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
     if (!message) return [code.UserDefinedError, "Please provide a valid message"];
 
@@ -66,7 +67,6 @@ export default {
       ],
     };
     await message.reply(payload);
-
     return code.Success;
   },
 } satisfies Command<"tables" | "createEmbed" | "code" | "currency">;

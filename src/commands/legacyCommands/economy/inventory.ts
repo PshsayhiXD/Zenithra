@@ -12,8 +12,11 @@ export default {
   cooldown: 5,
   dependencies: ["tables", "createEmbed", "items", "code"],
   execute: async (context): Promise<CommandResult> => {
-    const { message, deps, userId, username, responses, isDiscord, isDrednot } = context;
+    const { message, deps, userId, username, isDiscord } = context;
     const { tables, createEmbed, items, code } = deps;
+
+    if (!isDiscord) return [code.Warning, "This command currently only supports Discord."];
+    if (!message) return [code.UserDefinedError, "Please provide a valid message."];
     const getItem = items.getItem as (query: string | number) => Item | undefined;
     const inv = tables.Inventory.getUserInventory(userId);
 
@@ -33,14 +36,13 @@ export default {
             description,
             color: "Blue",
             options: {
-              ...(message ? { message } : {}),
+              message,
               timestamp: new Date()
             },
           }),
         ],
       };
-      if (isDiscord && message) await message.reply(payload);
-      if (isDrednot) responses?.push(payload);
+      await message.reply(payload);
       return code.Success;
     }
 
@@ -51,14 +53,13 @@ export default {
           description: "Your inventory is empty.",
           color: "Yellow",
           options: {
-            ...(message ? { message } : {}),
+            message,
             timestamp: new Date()
           },
         }),
       ],
     };
-    if (isDiscord && message) await message.reply(payload);
-    if (isDrednot) responses?.push(payload);
+    await message.reply(payload);
     return code.Success;
   },
 } satisfies Command<"tables" | "createEmbed" | "items" | "code">;

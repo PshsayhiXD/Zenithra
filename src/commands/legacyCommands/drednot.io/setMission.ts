@@ -21,9 +21,11 @@ export default {
   description: "Sets the current mission name while preserving the timer and location. (Admins only)",
   dependencies: ["eventTracker", "createEmbed", "code"],
   execute: async (context): Promise<CommandResult> => {
-    const { message, args, deps, responses, isDiscord, isDrednot } = context;
+    const { message, args, deps, isDiscord } = context;
     const { eventTracker, createEmbed, code } = deps;
     const { missionStore } = eventTracker;
+
+    if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
 
     if (args[0] === undefined || args[0] === "") return [code.UserDefinedError, "Please provide a mission name."];
     const missionName = args.join(" ");
@@ -55,8 +57,7 @@ export default {
         }),
       ],
     };
-    if (isDiscord && message) await message.reply(payload);
-    if (isDrednot) responses?.push(payload);
+    if (message) await message.reply(payload);
     return code.Success;
   },
 } satisfies Command<"eventTracker" | "createEmbed" | "code">;

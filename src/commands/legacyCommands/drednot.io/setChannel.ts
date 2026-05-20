@@ -28,8 +28,10 @@ export default {
   execute: async (context): Promise<CommandResult> => {
     const { message, args, deps, cmd, isDiscord } = context;
     const { tables, createEmbed, code } = deps;
+
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
     if (!message) return [code.InternalError, "Couldnt find message."];
+
     if (message.guildId === null)
       return [code.InternalError, "Couldnt find guild."];
     const typeArgument = args[0];

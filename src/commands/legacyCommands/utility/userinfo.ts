@@ -14,8 +14,10 @@ export default {
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, isDiscord } = context;
     const { code, createEmbed } = deps;
+
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
     if (!message) return [code.UserDefinedError, "Please provide a valid message."];
+
     const member = message.mentions.members?.first() ?? message.member;
     if (!member) return [code.UserDefinedError, "Member not found."];
 

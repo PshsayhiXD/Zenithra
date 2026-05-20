@@ -24,7 +24,7 @@ export default {
     }
 
     if (isDrednot) {
-      responses?.push("Pong! Drednot backend command path is reachable.");
+      responses?.push("Pong!");
       return code.Success;
     }
 

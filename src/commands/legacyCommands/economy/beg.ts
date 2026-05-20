@@ -14,6 +14,7 @@ export default {
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, cmd, userId, responses, isDiscord, isDrednot } = context;
     const { tables, createEmbed, code, currency } = deps;
+
     const random = new Decimal(Math.floor(Math.random() * 100) + 30).mul("1e-16").toNumber();
     const result = tables.Economy.addWallet(userId, random);
 
@@ -34,7 +35,7 @@ export default {
       ],
     };
     if (isDiscord && message) await message.reply(payload);
-    if (isDrednot) responses?.push(payload);
+    if (isDrednot) responses?.push(`New balance: **${currency.formatCurrency(result.currency)}**`);
     return code.Success;
   },
 } satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code" | "currency">;

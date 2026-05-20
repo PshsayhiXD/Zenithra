@@ -14,10 +14,12 @@ export default {
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, isDiscord } = context;
     const { code, createEmbed } = deps;
+
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
     if (!message) return [code.UserDefinedError, "Please provide a valid message."];
+
     const { guild } = message;
-    if (!guild) return [code.UserDefinedError, "This command can only be used in a server."];
+    if (!guild) return [code.UserDefinedError, "This command currently only supports in server."];
 
     const owner = await guild.fetchOwner();
     const channels = guild.channels.cache;

@@ -58,7 +58,9 @@ export default {
       ],
     };
     if (isDiscord && message) await message.reply(payload);
-    if (isDrednot) responses?.push(payload);
+    if (isDrednot) responses?.push(`
+      ${username}'s Balance: ${currency.formatCurrency(wallet)} / ${currency.formatCurrency(bank.bank)} (Bank Capacity: ${currency.formatCurrency(bank.bankCapacity)})
+    `);
     return code.Success;
   },
 } satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code" | "items" | "currency">;

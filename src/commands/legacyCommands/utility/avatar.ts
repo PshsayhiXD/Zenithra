@@ -13,8 +13,10 @@ export default {
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, isDiscord } = context;
     const { code, createEmbed } = deps;
+
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
     if (!message) return [code.UserDefinedError, "Please provide a valid message."];
+
     const user = message.mentions.users.first() ?? message.author;
     const avatarURL = user.displayAvatarURL({ size: 1024, extension: "png" });
 

@@ -31,6 +31,7 @@ export default {
 
       const embed = createEmbed({
         title: data.title,
+        description: data.url,
         image: data.url,
         footer: {
           text: `r/${data.subreddit} | 👍 ${String(data.ups)} | by ${data.author}`,

@@ -13,11 +13,13 @@ export default {
   permission: {},
   dependencies: ["code", "createEmbed"],
   execute: async (context): Promise<CommandResult> => {
-    const { message, deps, responses, isDiscord, isDrednot } = context;
+    const { message, deps, isDiscord } = context;
     const { code, createEmbed } = deps;
-    if (!message) return [code.UserDefinedError, "Please provide a valid message."];
-    const user = message.client.user;
 
+    if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
+    if (!message) return [code.UserDefinedError, "Please provide a valid message."];
+
+    const user = message.client.user;
     const uptime = process.uptime();
     const uptimeString = `${String(Math.floor(uptime / 3600))}h ${String(Math.floor((uptime % 3600) / 60))}m ${String(Math.floor(uptime % 60))}s`;
     const memoryUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
@@ -40,8 +42,7 @@ export default {
       },
     });
 
-    if (isDiscord) await message.reply({ embeds: [embed] });
-    if (isDrednot) responses?.push({ embeds: [embed] });
+    await message.reply({ embeds: [embed] });
     return code.Success;
   },
 } satisfies Command<"code" | "createEmbed">;

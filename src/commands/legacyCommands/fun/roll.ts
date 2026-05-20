@@ -37,7 +37,7 @@ export default {
     });
 
     if (isDiscord && message) await message.reply({ embeds: [embed] });
-    if (isDrednot) responses?.push({ embeds: [embed] });
+    if (isDrednot) responses?.push(embed.data.description ?? " ");
     return code.Success;
   },
 } satisfies Command<"code" | "createEmbed">;

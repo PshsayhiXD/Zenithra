@@ -2,7 +2,7 @@ import type { Command, CommandResult } from "@commands/types/command.js";
 
 export default {
   name: "link",
-  id: 22,
+  id: 24,
   category: "utility",
   description: "Link your account with Discord",
   aliases: [],

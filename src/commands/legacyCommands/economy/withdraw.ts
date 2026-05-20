@@ -16,7 +16,7 @@ export default {
     },
   ],
   cooldown: 5,
-  dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code", "currency"],
+  dependencies: ["tables", "createEmbed", "number", "code", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { message, args, deps, cmd, userId, responses, isDiscord, isDrednot } = context;
     const { tables, createEmbed, code, currency } = deps;
@@ -46,4 +46,4 @@ export default {
     if (isDrednot) responses?.push(payload);
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code" | "currency">;
+} satisfies Command<"tables" | "createEmbed" | "number" | "code" | "currency">;

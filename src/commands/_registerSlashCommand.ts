@@ -2,7 +2,7 @@ import type { RESTPostAPIApplicationCommandsJSONBody } from "discord-api-types/v
 import { REST, Routes, type Client } from "discord.js";
 
 import { readSlashCommands } from "@commands/_slashCommands.js";
-import { createHash } from "@utilities/crypto";
+import { createHash } from "@utilities/crypto.js";
 import { createLogger } from "@utilities/logger.js";
 import { serializeSlashCommand } from "@commands/slashCommandHelper.js";
 import { readSlashCommandHashCache, writeSlashCommandHashCache } from "@commands/slashCommandCache.js";

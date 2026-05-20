@@ -53,7 +53,7 @@ export default {
       ],
     };
     if (isDiscord && message) await message.reply(payload);
-    if (isDrednot) responses?.push(payload);
+    if (isDrednot) responses?.push(`Deposited **${currency.formatCurrency(amount)}** (after ${String(fee)}% fee).`);
 
     return code.Success;
   },
