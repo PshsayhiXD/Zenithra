@@ -1,6 +1,6 @@
 import { Decimal } from "decimal.js";
 
-const BASE = new Decimal("1e-16");
+export const BASE = new Decimal("1e-16");
 
 const units = {
   "<:res_flux_crystals:1502673687160291450>": BASE.mul(1_000_000_000),
@@ -67,6 +67,12 @@ export const formatCurrency = (amount: bigint | number | Decimal): string => {
     parts.push(`${last?.[0] ?? "x"}x${String(remaining.div(BASE).toNumber())}`);
   }
   return parts.join(" ");
+};
+
+export const normalizeAmount = (value: bigint | number | Decimal | string): number => {
+  const d = new Decimal(value.toString());
+  if (d.gte(0)) return d.div(BASE).floor().mul(BASE).toNumber();
+  return d.div(BASE).ceil().mul(BASE).toNumber();
 };
 
 export const parseCurrency = (input: string): number => {
