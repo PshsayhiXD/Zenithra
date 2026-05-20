@@ -19,6 +19,7 @@ export class Cache<T> {
   private dirty = false;
   private flushTimer: NodeJS.Timeout | undefined = undefined;
   private readonly listeners = new Map<string, Set<Listener<T>>>();
+  private loaded = false;
 
   constructor(
     name: string,
@@ -30,7 +31,6 @@ export class Cache<T> {
     if (mode === "file") {
       fs.mkdirSync(directory, { recursive: true });
       this.filePath = path.join(directory, `${name}.json`);
-      this.loadFromDisk();
     }
   }
 
@@ -156,6 +156,13 @@ export class Cache<T> {
       out.push(v.value);
     }
     return out;
+  }
+
+  init(): this {
+    if (this.loaded) return this;
+    this.loadFromDisk();
+    this.loaded = true;
+    return this;
   }
 
   *[Symbol.iterator](): IterableIterator<T> {
