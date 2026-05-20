@@ -1,16 +1,12 @@
 import { setConfig } from "@DClient/config.js";
+import { startApp } from "@DClient/app/bootstrap.js";
 import { promptForInterstellar } from "@DClient/runtime/interstellar.js";
-import { ZenithraBot } from "@DClient/bot.js";
 
 export { setConfig };
 
 promptForInterstellar();
 
-const app = new ZenithraBot();
-
 // eslint-disable-next-line unicorn/prefer-top-level-await
-void app.start().catch((error: unknown) => {
+void startApp().catch((error: unknown): void => {
   console.error("[ZenithraBot]", error);
 });
-
-export { app as zenithraBot };

@@ -11,8 +11,8 @@ export const promptForInterstellar = (): void => {
       "Press OK to join the Interstellar Discord server.",
       "Interstellar is not part of Zenithra.",
       "Zenithra Client is a client for Drednot, and Interstellar is the API used by Zenithra.",
-    ].join("\n")
+    ].join("\n"),
   );
 
-  if (shouldJoin) globalThis.open("https://discord.gg/RudT9ZTaFA", "_blank");
+  if (shouldJoin) window.open("https://discord.gg/RudT9ZTaFA", "_blank");
 };

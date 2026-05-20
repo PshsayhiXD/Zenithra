@@ -1,12 +1,9 @@
-import type { ButtonInteraction, Awaitable } from "discord.js";
 import { Cache } from "@utilities/cache.js";
+import type { PersistentInteractionRecord } from "@handlers/interaction/types/persistentInteraction.js";
 
-export interface ButtonRecord {
-  onClick: (interaction: ButtonInteraction) => Awaitable<void>;
-  options?: {
-    /** Remove the record after the first successful invocation. */
-    single?: boolean;
-  };
-}
+export type ButtonRecord = PersistentInteractionRecord;
 
-export const buttonCache = new Cache<ButtonRecord>("button", "memory");
+export const buttonCache = new Cache<ButtonRecord>(
+  "interaction-button-records",
+  "file",
+);

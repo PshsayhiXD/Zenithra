@@ -5,7 +5,7 @@ export interface BrowserStorage {
 
 export interface BrowserRuntime {
   baseUrl: string;
-  fetch: typeof globalThis.fetch;
-  WebSocket: typeof globalThis.WebSocket;
+  fetch: typeof window.fetch;
+  WebSocket: typeof window.WebSocket;
   storage?: BrowserStorage;
 }

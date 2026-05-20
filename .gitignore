@@ -5,3 +5,4 @@ data/
 _test.ts
 .cache/
 logs/
+drednot-client/bundled

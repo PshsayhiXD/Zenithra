@@ -1,6 +1,7 @@
 import type { Interaction } from "discord.js";
 import { handleSlashCommand } from "@commands/_slashCommandHandler.js";
 import { handleButtonInteraction } from "@handlers/interaction/buttonInteractionHandler.js";
+import { handleModalInteraction } from "@handlers/interaction/modalInteractionHandler.js";
 import { handleSelectInteraction } from "@handlers/interaction/selectInteractionHandler.js";
 
 export default async function handleInteraction(
@@ -16,9 +17,12 @@ export default async function handleInteraction(
     return;
   }
 
+  if (interaction.isModalSubmit()) {
+    await handleModalInteraction(interaction);
+    return;
+  }
+
   if (interaction.isChatInputCommand()) {
     await handleSlashCommand(interaction);
   }
-
-  // Modal submits and other interaction types are not handled yet.
 }

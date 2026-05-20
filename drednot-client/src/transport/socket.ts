@@ -15,7 +15,7 @@ export const connectSocket = (
   hooks: ClientHooks,
   onClose: () => void
 ): SocketHandle => {
-  let heartbeat: ReturnType<typeof setInterval> | undefined;
+  let heartbeat: number | undefined;
 
   const ws = new runtime.WebSocket(socketUrl);
 
@@ -26,13 +26,13 @@ export const connectSocket = (
 
   const clearHeartbeat = (): void => {
     if (heartbeat === undefined) return;
-    globalThis.clearInterval(heartbeat);
+    window.clearInterval(heartbeat);
     heartbeat = undefined;
   };
 
   ws.addEventListener("open", () => {
     send({ type: "client.register", payload: { clientId } });
-    heartbeat = globalThis.setInterval(() => {
+    heartbeat = window.setInterval(() => {
       send({ type: "heartbeat.ping", payload: { timestamp: Date.now() } });
     }, HEARTBEAT_INTERVAL_MS);
     hooks.onOpen?.();
@@ -57,7 +57,7 @@ export const connectSocket = (
 
   return {
     send,
-    disconnect: () => {
+    disconnect: (): void => {
       clearHeartbeat();
       ws.close();
     },

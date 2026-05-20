@@ -1,7 +1,9 @@
 import type {
+  Awaitable,
+  ButtonInteraction,
   ButtonStyle,
-  Interaction,
 } from "discord.js";
+import type { JsonValue } from "@handlers/interaction/types/persistentInteraction.js";
 
 export interface InteractionButtonComponentOptions {
   label: string;
@@ -9,8 +11,12 @@ export interface InteractionButtonComponentOptions {
   customId: string;
   disabled?: boolean;
   emoji?: string;
-  onClick?: (interaction: Interaction) => void;
+  onClick?: (interaction: ButtonInteraction) => Awaitable<void>;
+  handlerKey?: string;
+  metadata?: JsonValue;
   single?: boolean;
+  persist?: boolean;
+  ttlMs?: number;
 };
 
 export interface LinkButtonComponentOptions {

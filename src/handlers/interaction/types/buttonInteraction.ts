@@ -1,9 +1,9 @@
-import type { ButtonRecord } from "@handlers/interaction/cache/buttonCache.js";
+import type {
+  AddPersistentRecordOptions,
+  ButtonHandler,
+} from "@handlers/interaction/types/persistentInteraction.js";
 
-export interface AddButtonRecordOptions {
-  customId: string;
-  onClick: ButtonRecord["onClick"];
-  options?: ButtonRecord["options"];
-  /** Auto-expire the record after this many milliseconds. */
-  ttlMs?: number;
+export interface AddButtonRecordOptions
+  extends AddPersistentRecordOptions<ButtonHandler> {
+  onClick?: ButtonHandler;
 }

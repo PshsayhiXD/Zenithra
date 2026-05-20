@@ -15,3 +15,9 @@ export interface ExecuteCommandResponse {
   replies: unknown[];
   deprecated?: Record<string, string>;
 }
+
+export interface ChatCommandContext {
+  input: string;
+  username: string;
+  userId: string;
+}

@@ -7,10 +7,12 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 /** @type {import("esbuild").BuildOptions} */
 const buildOptions = {
-  entryPoints: [path.join(__dirname, "src/drednot.ts")],
+  entryPoints: [path.join(__dirname, "src/index.ts")],
   bundle: true,
-  outfile: path.join(__dirname, "bundled/drednot.js"),
-  format: "esm",
+  outfile: path.join(__dirname, "bundled/index.js"),
+  format: "iife",
+  treeShaking: true,
+  globalName: "ZenithraClient",
   minify: true,
   sourcemap: true,
   target: "es2023",

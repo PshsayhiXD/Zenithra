@@ -1,33 +1,60 @@
 import type { StringSelectMenuInteraction } from "discord.js";
 import { selectCache } from "@handlers/interaction/cache/selectCache.js";
 import type { AddSelectRecordOptions } from "@handlers/interaction/types/selectInteraction.js";
+import {
+  registerSelectHandler,
+  selectHandlerRegistry,
+  transientSelectRegistry,
+} from "@handlers/interaction/registry.js";
+import { routeComponentInteraction } from "@handlers/interaction/router.js";
 import { createLogger } from "@utilities/logger.js";
 
 const log = createLogger("SelectInteraction");
 
 export const addSelectRecord = ({
   customId,
+  handlerKey,
+  metadata,
   onSelect,
   options,
   ttlMs,
 }: AddSelectRecordOptions): void => {
-  selectCache.set(
-    customId,
-    { onSelect, ...(options === undefined ? {} : { options }) },
-    ttlMs,
-  );
+  if (onSelect !== undefined) {
+    const transientRecord =
+      options === undefined
+        ? { handler: onSelect }
+        : { handler: onSelect, options };
+
+    transientSelectRegistry.set(customId, transientRecord);
+  }
+
+  if (handlerKey === undefined) return;
+
+  if (options?.persist === false) return;
+
+  const persistentRecord =
+    metadata === undefined && options === undefined
+      ? { customId, handlerKey }
+      : {
+        customId,
+        handlerKey,
+        ...(metadata === undefined ? {} : { metadata }),
+        ...(options === undefined ? {} : { options }),
+      };
+
+  selectCache.set(customId, persistentRecord, ttlMs);
 };
 
 export const handleSelectInteraction = async (
   interaction: StringSelectMenuInteraction,
 ): Promise<void> => {
-  const record = selectCache.get(interaction.customId);
-  if (record === undefined) return;
-
-  if (record.options?.single === true) selectCache.delete(interaction.customId);
-
   try {
-    await record.onSelect(interaction);
+    await routeComponentInteraction({
+      interaction,
+      persistentCache: selectCache,
+      persistentHandlers: selectHandlerRegistry,
+      transientHandlers: transientSelectRegistry,
+    });
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
     log.error(error_, {
@@ -37,3 +64,5 @@ export const handleSelectInteraction = async (
     });
   }
 };
+
+export { registerSelectHandler };

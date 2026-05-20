@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zenithra Portal | Control Console</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 50%, #15103c 0%, #07041a 100%);
+      --accent-primary: #a855f7;
+      --accent-secondary: #3b82f6;
+      --accent-gradient: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+      --emerald: #10b981;
+      --emerald-gradient: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      --red: #ef4444;
+      --yellow: #f59e0b;
+      --glass-bg: rgba(255, 255, 255, 0.03);
+      --glass-border: rgba(255, 255, 255, 0.06);
+      --text-main: #e2e8f0;
+      --text-muted: #94a3b8;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+      line-height: 1.5;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.2);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* Container & Layout */
+    .app-container {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 2.5rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2.5rem;
+      flex-grow: 1;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--glass-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      padding: 1.5rem 2rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    }
+
+    .brand-section h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      background: var(--accent-gradient);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .brand-section p {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: 0.2rem;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(0, 0, 0, 0.3);
+      padding: 0.5rem 1rem;
+      border-radius: 50px;
+      border: 1px solid var(--glass-border);
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--red);
+      box-shadow: 0 0 10px var(--red);
+      transition: background 0.3s, box-shadow 0.3s;
+    }
+
+    .status-dot.online {
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+    }
+
+    /* Grid Layout */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 900px) {
+      .dashboard-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Cards */
+    .card {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: var(--accent-gradient);
+      opacity: 0.8;
+    }
+
+    .card.emerald::before {
+      background: var(--emerald-gradient);
+    }
+
+    .card-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      color: #fff;
+    }
+
+    .card-desc {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-top: -1rem;
+    }
+
+    /* Forms & Inputs */
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    input, select {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--accent-primary);
+      box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .btn {
+      flex-grow: 1;
+      padding: 0.9rem 1.5rem;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+      color: #fff;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary {
+      background: var(--accent-gradient);
+      box-shadow: 0 4px 15px rgba(168, 85, 247, 0.3);
+    }
+
+    .btn-emerald {
+      background: var(--emerald-gradient);
+      box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--glass-border);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    /* Info Lists */
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .info-item {
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 0.8rem 1.2rem;
+    }
+
+    .info-item .info-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .info-item .info-val {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 0.2rem;
+    }
+
+    /* Terminal Console */
+    .terminal-container {
+      background: #090616;
+      border: 1px solid var(--glass-border);
+      border-radius: 16px;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.85rem;
+      height: 300px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
+    }
+
+    .terminal-header {
+      background: rgba(255, 255, 255, 0.02);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .terminal-dots {
+      display: flex;
+      gap: 0.4rem;
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot.r { background: var(--red); }
+    .terminal-dot.y { background: var(--yellow); }
+    .terminal-dot.g { background: var(--emerald); }
+
+    .terminal-body {
+      padding: 1rem;
+      flex-grow: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .term-line {
+      display: flex;
+      gap: 0.5rem;
+      line-height: 1.4;
+    }
+
+    .term-prompt {
+      color: var(--accent-primary);
+      user-select: none;
+    }
+
+    .term-input {
+      color: #fff;
+    }
+
+    .term-output {
+      color: var(--text-muted);
+      padding-left: 1rem;
+      white-space: pre-wrap;
+    }
+
+    .term-output.success { color: var(--emerald); }
+    .term-output.error { color: var(--red); }
+    .term-output.warning { color: var(--yellow); }
+
+    .terminal-input-row {
+      display: flex;
+      align-items: center;
+      background: rgba(0,0,0,0.4);
+      border-top: 1px solid var(--glass-border);
+      padding: 0.6rem 1rem;
+    }
+
+    .terminal-prompt-prefix {
+      color: var(--accent-primary);
+      font-family: inherit;
+      font-weight: 600;
+      margin-right: 0.6rem;
+      user-select: none;
+    }
+
+    .terminal-command-input {
+      flex-grow: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.85rem;
+      outline: none;
+      padding: 0;
+    }
+
+    .terminal-command-input::placeholder {
+      color: rgba(255,255,255,0.15);
+    }
+
+    /* Live Output Box */
+    .json-output {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--glass-border);
+      border-radius: 12px;
+      padding: 1rem;
+      font-family: 'Fira Code', monospace;
+      font-size: 0.8rem;
+      max-height: 180px;
+      overflow-y: auto;
+      color: var(--emerald);
+      white-space: pre-wrap;
+    }
+
+    /* Status Banner / Messages */
+    .alert-banner {
+      padding: 1rem;
+      border-radius: 12px;
+      font-size: 0.9rem;
+      display: none;
+      align-items: center;
+      gap: 0.8rem;
+      border: 1px solid transparent;
+    }
+
+    .alert-banner.success {
+      display: flex;
+      background: rgba(16, 185, 129, 0.1);
+      border-color: rgba(16, 185, 129, 0.2);
+      color: var(--emerald);
+    }
+
+    .alert-banner.error {
+      display: flex;
+      background: rgba(239, 68, 68, 0.1);
+      border-color: rgba(239, 68, 68, 0.2);
+      color: var(--red);
+    }
+
+    /* Quick action buttons inside Terminal */
+    .quick-cmd-bar {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    .quick-cmd-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--glass-border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      padding: 0.25rem 0.6rem;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .quick-cmd-btn:hover {
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Header -->
+    <header>
+      <div class="brand-section">
+        <h1>Zenithra Portal</h1>
+        <p>Unified Control Panel & Chat identity Gateway</p>
+      </div>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <div id="settingsToggle" style="cursor: pointer; background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); padding: 0.5rem; border-radius: 50%; font-size: 1.2rem; display: flex; justify-content: center; align-items: center; transition: background 0.2s;" title="Connection Settings">⚙️</div>
+        <div class="status-badge">
+          <div id="statusDot" class="status-dot"></div>
+          <span id="statusText">Connecting...</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Settings Panel -->
+    <div id="settingsPanel" style="display: none; background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 1.5rem 2rem; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3); flex-direction: column; gap: 1rem;">
+      <h3 style="font-size: 1.1rem; color: #fff; font-weight: 600;">⚙️ Connection Settings</h3>
+      <p style="font-size: 0.85rem; color: var(--text-muted);">Configure a custom backend URL if your frontend and backend tunnels run on different ports or domains.</p>
+      <div class="form-group">
+        <label>Backend Base URL</label>
+        <input type="text" id="settingBackendUrl" placeholder="e.g. https://your-localtunnel.localtunnel.me" />
+      </div>
+      <button id="btnSaveSettings" class="btn btn-primary" style="align-self: flex-start; padding: 0.6rem 1.2rem; font-size: 0.85rem; width: auto; flex-grow: 0;">Save Settings</button>
+    </div>
+
+    <!-- Main Grid -->
+    <div class="dashboard-grid">
+      <!-- Left Column: Identity & Health -->
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <!-- Bot Health Card -->
+        <div class="card emerald">
+          <div class="card-title">
+            <span style="font-size: 1.5rem;">📊</span> Bot Monitor
+          </div>
+          <p class="card-desc">Real-time server operational parameters.</p>
+          <div class="info-grid">
+            <div class="info-item">
+              <div class="info-label">Active Host</div>
+              <div id="healthHost" class="info-val">--</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Port</div>
+              <div id="healthPort" class="info-val">--</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Loaded Commands</div>
+              <div id="healthCommands" class="info-val">--</div>
+            </div>
+            <div class="info-item">
+              <div class="info-label">Sockets Path</div>
+              <div id="healthSockets" class="info-val">--</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Linking Card -->
+        <div class="card">
+          <div class="card-title">
+            <span style="font-size: 1.5rem;">🔗</span> Account Association
+          </div>
+          <p class="card-desc">Bind a Drednot game identity to your Discord credentials.</p>
+
+          <div id="linkerAlert" class="alert-banner"></div>
+
+          <div class="form-group">
+            <label>Drednot Username</label>
+            <input type="text" id="linkerUsername" placeholder="e.g. pshsaygayz" />
+          </div>
+
+          <div class="button-group">
+            <button id="btnLinkOAuth" class="btn btn-primary">
+              Link via Discord
+            </button>
+          </div>
+
+
+        </div>
+      </div>
+
+      <!-- Right Column: Command Shell & Parser -->
+      <div style="display: flex; flex-direction: column; gap: 2rem;">
+        <!-- Shell Terminal Card -->
+        <div class="card">
+          <div class="card-title">
+            <span style="font-size: 1.5rem;">🐚</span> Interactive Shell Terminal
+          </div>
+          <p class="card-desc">Execute Zenithra legacy commands in a unified context.</p>
+
+          <div class="terminal-container">
+            <div class="terminal-header">
+              <div class="terminal-dots">
+                <span class="terminal-dot r"></span>
+                <span class="terminal-dot y"></span>
+                <span class="terminal-dot g"></span>
+              </div>
+              <span>zenithra@terminal: ~</span>
+            </div>
+            <div id="terminalBody" class="terminal-body">
+              <div class="term-line">
+                <span class="term-output">Zenithra Interactive Shell Console. Type a command (e.g. !help, !ping) and press Enter.</span>
+              </div>
+            </div>
+            <div class="terminal-input-row">
+              <span class="terminal-prompt-prefix">&gt;</span>
+              <input type="text" id="terminalInput" class="terminal-command-input" placeholder="Type command here..." autofocus />
+            </div>
+          </div>
+
+          <div class="quick-cmd-bar">
+            <button class="quick-cmd-btn" onclick="sendQuickCommand('!ping')">!ping</button>
+            <button class="quick-cmd-btn" onclick="sendQuickCommand('!help')">!help</button>
+            <button class="quick-cmd-btn" onclick="clearTerminal()">clear</button>
+          </div>
+        </div>
+
+        <!-- Parser Sandbox Card -->
+        <div class="card">
+          <div class="card-title">
+            <span style="font-size: 1.5rem;">⚙️</span> Command Parser Sandbox
+          </div>
+          <p class="card-desc">Inspect structured arguments and command resolution metadata as you type.</p>
+
+          <div class="form-group">
+            <label>Raw String Parser Input</label>
+            <input type="text" id="parserInput" value="!help user_lookup admin" placeholder="Type parsing query here..." />
+          </div>
+
+          <div class="form-group">
+            <label>Parsed Output JSON Tree</label>
+            <div id="parserJsonOutput" class="json-output">{ }</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let baseUrl = localStorage.getItem('zenithra_backend_url') || window.location.origin;
+    if (baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
+
+    // Elements
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const healthHost = document.getElementById('healthHost');
+    const healthPort = document.getElementById('healthPort');
+    const healthCommands = document.getElementById('healthCommands');
+    const healthSockets = document.getElementById('healthSockets');
+
+    const settingsToggle = document.getElementById('settingsToggle');
+    const settingsPanel = document.getElementById('settingsPanel');
+    const settingBackendUrl = document.getElementById('settingBackendUrl');
+    const btnSaveSettings = document.getElementById('btnSaveSettings');
+
+    settingBackendUrl.value = baseUrl;
+
+    settingsToggle.addEventListener('click', () => {
+      if (settingsPanel.style.display === 'none') {
+        settingsPanel.style.display = 'flex';
+      } else {
+        settingsPanel.style.display = 'none';
+      }
+    });
+
+    btnSaveSettings.addEventListener('click', () => {
+      let inputVal = settingBackendUrl.value.trim();
+      if (!inputVal) {
+        inputVal = window.location.origin;
+      }
+      if (inputVal.endsWith('/')) inputVal = inputVal.slice(0, -1);
+      
+      localStorage.setItem('zenithra_backend_url', inputVal);
+      baseUrl = inputVal;
+      settingsPanel.style.display = 'none';
+      checkHealth();
+      runParser();
+      printTermLine(`[System] Connected to backend endpoint: ${baseUrl}`, 'success');
+    });
+
+    const linkerUsername = document.getElementById('linkerUsername');
+    const linkerAlert = document.getElementById('linkerAlert');
+    const btnLinkOAuth = document.getElementById('btnLinkOAuth');
+
+    const terminalBody = document.getElementById('terminalBody');
+    const terminalInput = document.getElementById('terminalInput');
+
+    const parserInput = document.getElementById('parserInput');
+    const parserJsonOutput = document.getElementById('parserJsonOutput');
+
+    // Display Alert Helper
+    function showAlert(message, type = 'success') {
+      linkerAlert.className = `alert-banner ${type}`;
+      linkerAlert.textContent = message;
+      linkerAlert.style.display = 'flex';
+      setTimeout(() => {
+        linkerAlert.style.display = 'none';
+      }, 5000);
+    }
+
+    // Ping Health Check
+    async function checkHealth() {
+      try {
+        const response = await fetch(`${baseUrl}/health`);
+        if (!response.ok) throw new Error('Unhealthy status code');
+        const data = await response.json();
+
+        statusDot.className = 'status-dot online';
+        statusText.textContent = 'System Online';
+        healthHost.textContent = data.host;
+        healthPort.textContent = data.port;
+        healthCommands.textContent = data.commandsLoaded;
+        healthSockets.textContent = data.realtimePath;
+      } catch (err) {
+        statusDot.className = 'status-dot';
+        statusText.textContent = 'System Offline';
+        healthHost.textContent = '--';
+        healthPort.textContent = '--';
+        healthCommands.textContent = '--';
+        healthSockets.textContent = '--';
+      }
+    }
+
+
+    // OAuth2 Redirect Action
+    btnLinkOAuth.addEventListener('click', () => {
+      const username = linkerUsername.value.trim();
+      if (!username) {
+        showAlert('Please enter your Drednot Username to link.', 'error');
+        return;
+      }
+      window.open(`${baseUrl}/chat/link?username=${encodeURIComponent(username)}`, '_blank');
+    });
+
+    // Terminal Commands
+    function printTermLine(text, type = '') {
+      const line = document.createElement('div');
+      line.className = 'term-line';
+
+      if (type === 'input') {
+        line.innerHTML = `<span class="term-prompt">&gt;</span><span class="term-input">${escapeHtml(text)}</span>`;
+      } else {
+        const outputSpan = document.createElement('span');
+        outputSpan.className = `term-output ${type}`;
+        outputSpan.textContent = text;
+        line.appendChild(outputSpan);
+      }
+
+      terminalBody.appendChild(line);
+      terminalBody.scrollTop = terminalBody.scrollHeight;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    function clearTerminal() {
+      terminalBody.innerHTML = '';
+      printTermLine('Console cleared. Type a command (e.g. !help, !ping) and press Enter.');
+    }
+
+    async function executeCommand(input) {
+      if (!input.trim()) return;
+      printTermLine(input, 'input');
+
+      try {
+        const res = await fetch(`${baseUrl}/command/execute`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            input: input,
+            username: 'Drednot_Player',
+            userId: '0'
+          })
+        });
+
+        const data = await res.json();
+        if (res.ok) {
+          if (data.replies && data.replies.length > 0) {
+            data.replies.forEach(reply => {
+              if (reply && typeof reply === 'object') {
+                if (reply.content) printTermLine(reply.content);
+                if (reply.embeds) {
+                  reply.embeds.forEach(emb => {
+                    printTermLine(`--- Embed: ${emb.title || 'Info'} ---`);
+                    if (emb.description) printTermLine(emb.description);
+                    if (emb.fields) {
+                      emb.fields.forEach(f => printTermLine(`${f.name}: ${f.value}`));
+                    }
+                  });
+                }
+              } else {
+                printTermLine(String(reply));
+              }
+            });
+          } else {
+            printTermLine('Command executed successfully with no returned output.', 'success');
+          }
+        } else {
+          printTermLine(`Error: ${data.error || 'Execution failed.'}`, 'error');
+        }
+      } catch (err) {
+        printTermLine(`Failed to connect to backend: ${err.message}`, 'error');
+      }
+    }
+
+    function sendQuickCommand(cmd) {
+      executeCommand(cmd);
+    }
+
+    terminalInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const cmd = terminalInput.value;
+        terminalInput.value = '';
+        executeCommand(cmd);
+      }
+    });
+
+    // Debounced live command parser sandbox
+    let parserTimeout;
+    async function runParser() {
+      const val = parserInput.value.trim();
+      if (!val) {
+        parserJsonOutput.textContent = '{ }';
+        return;
+      }
+
+      try {
+        const res = await fetch(`${baseUrl}/command/parse`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ input: val })
+        });
+        const data = await res.json();
+        parserJsonOutput.textContent = JSON.stringify(data, null, 2);
+      } catch (err) {
+        parserJsonOutput.textContent = `Error connecting to parser: ${err.message}`;
+      }
+    }
+
+    parserInput.addEventListener('input', () => {
+      clearTimeout(parserTimeout);
+      parserTimeout = setTimeout(runParser, 300);
+    });
+
+    // Init
+    checkHealth();
+    runParser();
+    setInterval(checkHealth, 10000);
+  </script>
+</body>
+</html>

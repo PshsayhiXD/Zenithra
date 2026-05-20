@@ -10,7 +10,7 @@
     "test": "npm run check && npm run build",
     "build": "tsc && tsc-alias",
     "build:clean": "npm run clean && npm run build && npm run db:copy",
-    "build:prod": "npm run build:clean",
+    "build:prod": "npm run build:clean && npm run build:client",
     "build:client": "node drednot-client/esbuild.mjs",
     "build:client:watch": "node drednot-client/esbuild.mjs --watch",
     "start": "npm run start:shard && npm run start:server",

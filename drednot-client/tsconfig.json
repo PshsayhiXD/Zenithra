@@ -1,20 +1,27 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "rootDir": "./",
-    "outDir": "./bundled",
-
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-
     "noEmit": true,
-
     "allowJs": true,
     "checkJs": true,
-
     "paths": {
-      "@DClient/*": ["./src/*"]
+      "@DClient/*": ["./src/*"],
+      "@backend/*": ["../src/backend/*"],
+      "@backend/config": ["../src/backend/utils/config.ts"]
     }
   },
-  "include": ["src/**/*.ts", "esbuild.mjs"],
-  "exclude": ["node_modules", "dist", "data", "assets", "logs", ".cache"]
+  "include": [
+    "src/**/*.ts",
+    "esbuild.mjs",
+    "../src/backend/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "data",
+    "assets",
+    "logs",
+    ".cache"
+  ]
 }

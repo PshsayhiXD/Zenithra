@@ -226,4 +226,10 @@ export default [
       "@typescript-eslint/no-duplicate-type-constituents": "error",
     },
   },
+  {
+    files: ["src/migration/migrations/[0-9][0-9][0-9]_*.ts"],
+    rules: {
+      "unicorn/filename-case": "off",
+    },
+  },
 ];

@@ -14,6 +14,10 @@ import { startPvpEventTracker } from "@services/pvpEventTracker.js";
 import { startShipTracker } from "@services/shipTracker.js";
 import { MISSION } from "@configs/mission.js";
 import { interstellarTracker } from "@handlers/missionTracker/interstellarTracker.js";
+import {
+  executeRuntimeMigrations,
+  registerRuntimeMigrations,
+} from "@Rmigrations/executeMigrations.js";
 
 let hasStarted = false;
 const log = createLogger("Ready");
@@ -31,11 +35,15 @@ export const onClientReady = async (client: Client): Promise<void> => {
     userTag: client.user?.tag ?? null,
   });
 
+  registerRuntimeMigrations();
+
   try {
     if (isFirstShard) {
       log.info("Registering slash commands", { shardId });
       await registerSlashCommands(client);
       log.info("Slash commands registered", { shardId });
+      const migrationResult = await executeRuntimeMigrations(client);
+      log.info("Migration results", { shardId, migrationResult });
     }
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));

@@ -13,6 +13,14 @@ export const getRootOrRoutes = (response: ServerResponse): void => {
       { method: "GET", path: "/command/:name" },
       { method: "POST", path: "/command/parse" },
       { method: "POST", path: "/command/execute" },
+      { method: "GET", path: "/chat/link" },
+      { method: "POST", path: "/chat/link" },
+      { method: "GET", path: "/chat/identity" },
+      { method: "POST", path: "/chat/identity" },
+      { method: "POST", path: "/chat/message" },
+      { method: "GET", path: "/runtime/config" },
+      { method: "GET", path: "/transport/socket" },
+      { method: "POST", path: "/transport/http" },
     ],
   });
 };

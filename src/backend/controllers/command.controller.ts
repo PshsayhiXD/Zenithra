@@ -4,6 +4,8 @@ import { sendJson } from "@backend/utils/http.js";
 import { readJsonBody } from "@backend/utils/body.js";
 import { listCommands, getCommand, parseCommand } from "@backend/services/command.service.js";
 import { findLegacyCommand } from "@commands/catalog.js";
+import { resolveUserIdentity } from "./chat.controller.js";
+import type { ParsedCommandResponse, ExecuteCommandResponse } from "@backend/types/command.js";
 
 export const getCommands = (response: ServerResponse): void => {
   sendJson(response, 200, {
@@ -28,7 +30,10 @@ export const getCommandByName = (name: string, response: ServerResponse): void =
   sendJson(response, 200, { command });
 };
 
-export const parseCommandRequest = async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
+export const parseCommandRequest = async (
+  request: IncomingMessage,
+  response: ServerResponse
+): Promise<void> => {
   try {
     const body = await readJsonBody(request);
     const input = typeof body?.["input"] === "string" ? body["input"] : "";
@@ -40,7 +45,12 @@ export const parseCommandRequest = async (request: IncomingMessage, response: Se
       return;
     }
 
-    const parsed = parseCommand(input);
+    let normalizedInput = input.trim();
+    if (normalizedInput.startsWith("!") || normalizedInput.startsWith("/")) {
+      normalizedInput = normalizedInput.slice(1).trim();
+    }
+
+    const parsed = parseCommand(normalizedInput);
     if (parsed === undefined) {
       sendJson(response, 404, {
         error: "No matching command found.",
@@ -48,7 +58,13 @@ export const parseCommandRequest = async (request: IncomingMessage, response: Se
       return;
     }
 
-    sendJson(response, 200, parsed);
+    const payload: ParsedCommandResponse = {
+      name: parsed.name,
+      arguments: parsed.arguments,
+      raw: input,
+    };
+
+    sendJson(response, 200, payload);
   } catch (error: unknown) {
     sendJson(response, 400, {
       error: error instanceof Error ? error.message : String(error),
@@ -56,11 +72,14 @@ export const parseCommandRequest = async (request: IncomingMessage, response: Se
   }
 };
 
-export const executeCommandRequest = async (request: IncomingMessage, response: ServerResponse): Promise<void> => {
+export const executeCommandRequest = async (
+  request: IncomingMessage,
+  response: ServerResponse
+): Promise<void> => {
   try {
     const body = await readJsonBody(request);
-    const userId = typeof body?.["userId"] === "string" ? body["userId"] : "0";
-    const username = typeof body?.["username"] === "string" ? body["username"] : "HTTP_User";
+    const userId = typeof body?.["userId"] === "string" ? body["userId"] : undefined;
+    const username = typeof body?.["username"] === "string" ? body["username"] : undefined;
     const input = typeof body?.["input"] === "string" ? body["input"] : "";
 
     if (input.trim().length === 0) {
@@ -68,14 +87,21 @@ export const executeCommandRequest = async (request: IncomingMessage, response: 
       return;
     }
 
-    const parsed = parseCommand(input);
+    // Resolve unified identity
+    const identity = resolveUserIdentity(username, userId);
+
+    let commandInput = input.trim();
+    if (commandInput.startsWith("!") || commandInput.startsWith("/")) {
+      commandInput = commandInput.slice(1).trim();
+    }
+
+    const parsed = parseCommand(commandInput);
     if (parsed === undefined) {
       sendJson(response, 404, { error: "No matching command found." });
       return;
     }
 
     const cmd = findLegacyCommand(parsed.name);
-
     if (cmd === undefined) {
       sendJson(response, 404, { error: "Command not found." });
       return;
@@ -87,29 +113,30 @@ export const executeCommandRequest = async (request: IncomingMessage, response: 
     const replies: unknown[] = [];
 
     const result = await cmd.execute({
-      platform: "drednot",
-      isDiscord: false,
-      isDrednot: true,
-      userId,
-      username,
+      platform: identity.platform,
+      isDiscord: identity.platform === "discord",
+      isDrednot: identity.platform === "drednot",
+      userId: identity.userId,
+      username: identity.username,
       userAvatarUrl: "",
       guildId: null,
       args: parsed.arguments,
       name: parsed.name,
-      raw: input,
+      raw: commandInput,
       deps,
       cmd,
       responses: replies as CommandReplyContent[],
     });
 
-    sendJson(response, 200, {
+    const payload: ExecuteCommandResponse = {
       result,
       replies,
       deprecated: {
         disableHttp: "Use context.isDiscord/context.isDrednot inside commands instead.",
       },
-    });
+    };
 
+    sendJson(response, 200, payload);
   } catch (error: unknown) {
     sendJson(response, 500, {
       error: error instanceof Error ? error.message : String(error),

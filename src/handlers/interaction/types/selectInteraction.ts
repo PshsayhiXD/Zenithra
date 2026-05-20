@@ -1,9 +1,9 @@
-import type { SelectRecord } from "@handlers/interaction/cache/selectCache.js";
+import type {
+  AddPersistentRecordOptions,
+  SelectHandler,
+} from "@handlers/interaction/types/persistentInteraction.js";
 
-export interface AddSelectRecordOptions {
-  customId: string;
-  onSelect: SelectRecord["onSelect"];
-  options?: SelectRecord["options"];
-  /** Auto-expire the record after this many milliseconds. */
-  ttlMs?: number;
+export interface AddSelectRecordOptions
+  extends AddPersistentRecordOptions<SelectHandler> {
+  onSelect?: SelectHandler;
 }

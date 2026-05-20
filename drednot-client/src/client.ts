@@ -19,12 +19,17 @@ export const toWsUrl = (httpUrl: string): string =>
 export class ZenithraClient {
   private clientId: string | null;
   private httpBaseUrl: string;
-  private reconnectTimer: ReturnType<typeof setTimeout> | undefined;
+  private reconnectTimer: number | undefined;
 
   constructor(
     private readonly runtime: BrowserRuntime,
     private readonly hooks: ClientHooks = {}
   ) {
+
+    // eslint-disable-next-line no-console
+    console.log(runtime.baseUrl)
+    // eslint-disable-next-line no-console
+    console.log(normalizeBaseUrl(runtime.baseUrl))
     this.clientId = this.runtime.storage?.getItem(CLIENT_ID_KEY) ?? null;
     this.httpBaseUrl = normalizeBaseUrl(runtime.baseUrl);
   }
@@ -69,7 +74,7 @@ export class ZenithraClient {
 
   private scheduleReconnect(): void {
     if (this.reconnectTimer !== undefined) return;
-    this.reconnectTimer = globalThis.setTimeout(() => {
+    this.reconnectTimer = window.setTimeout(() => {
       this.reconnectTimer = undefined;
       void this.start().catch((error: unknown) => {
         this.hooks.onError?.(error);
@@ -81,7 +86,7 @@ export class ZenithraClient {
 
   private clearReconnectTimer(): void {
     if (this.reconnectTimer === undefined) return;
-    globalThis.clearTimeout(this.reconnectTimer);
+    window.clearTimeout(this.reconnectTimer);
     this.reconnectTimer = undefined;
   }
 }

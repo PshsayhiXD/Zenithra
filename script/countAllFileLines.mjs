@@ -23,22 +23,24 @@ function chunk(files, size) {
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const base = path.join(__dirname, "../src");
+const bases = [
+  path.join(__dirname, "../src"),
+  path.join(__dirname, "../drednot-client"),
+  path.join(__dirname, "../script"),
+];
 
-const files = await getFiles(base);
+let files = [];
+for (const base of bases)
+  files = files.concat(await getFiles(base));
 const batches = chunk(files, 100);
-
 let totalLines = 0;
-
 for (const batch of batches) {
   const results = await Promise.all(
     batch.map(async (file) => {
       const content = await fs.readFile(file, "utf-8");
       return content.split("\n").length;
-    })
+    }),
   );
-
   for (const lines of results) totalLines += lines;
 }
-
 console.log(totalLines);
