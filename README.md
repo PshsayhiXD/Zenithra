@@ -1,73 +1,22 @@
 # Zenithra
 
-A Discord bot built for the [Drednot.io](https://drednot.io) community. It integrates with the Drednot anonymous API to provide in-game ship tracking and other utilities directly inside Discord.
+Zenithra is a Discord bot for the Drednot.io community. It uses the Drednot anonymous API for ship tracking and other utilities inside Discord.
 
 ## Setup
-
-1. **Clone the repository**
-
-   ```bash
-   git clone https://github.com/PshsayhiXD/dredbot-evolve.git
-   cd dredbot-evolve
-   ```
-
-2. **Install dependencies**
-
-   ```bash
-   npm install
-   ```
-
-3. **Configure environment variables**
-   To convert `.env.example` to `.env`, make sure to fill out all the UPPERCASE variables, otherwise it will not start properly
-
-   ```bash
-   npm run env:copy
-   ```
+Clone the repository with `git clone https://github.com/PshsayhiXD/dredbot-evolve.git` then move into the folder with `cd dredbot-evolve`.
+Install dependencies with `npm install`.
+Install certs.
+Copy `.env.example` to `.env` and fill in all UPPERCASE variables before starting the bot.
+Run `npm run env:copy` to create the `.env` file.
 
 ## Build
-
-**Production build:**
-
-```bash
-npm run build:clean
-```
-
-This cleans the `dist/` folder, compiles TypeScript, and copies the database.
-
-**Start after building:**
-
-```bash
-npm run start
-```
-
-`npm run start` now follows the sharded runtime path. Use `npm run start:bot` if you explicitly want the single-process bot entry instead.
-
-**Using PM2**:
-
-```bash
-npm run pm2:start
-```
+Run `npm run build:clean` for a production build. This cleans the `dist/` folder, compiles TypeScript, and copies the database.
+Start the bot with `npm run start`.
+`npm run start` uses the sharded runtime. Use `npm run start:bot` if you want the single-process bot instead.
+Start with PM2 using `npm run pm2:start`.
 
 ## Docker
-
-You can also run the bot using Docker for easier deployment and consistency.
-
-1. **Build and start the bot:**
-
-   ```bash
-   docker compose up -d --build
-   ```
-
-2. **Check logs:**
-
-   ```bash
-   docker compose logs -f
-   ```
-
-3. **Stop the bot:**
-
-   ```bash
-   docker compose down
-   ```
-
-Data is persisted in the `./data` folder on your host machine.
+Start the bot with Docker using `docker compose up -d --build`.
+View logs with `docker compose logs -f`.
+Stop containers with `docker compose down`.
+Data is stored in the `./data` folder.
