@@ -6,4 +6,4 @@ export type SelectRecord = PersistentInteractionRecord;
 export const selectCache = new Cache<SelectRecord>(
   "interaction-select-records",
   "file",
-);
+).init();

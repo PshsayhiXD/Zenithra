@@ -7,7 +7,7 @@ import type {
 
 const MISSION_TTL_MS = 10 * 60 * 1000;
 
-const cache = new Cache<MissionStoreData>("mission", "file");
+const cache = new Cache<MissionStoreData>("mission", "file").init();
 const KEY = "current";
 
 export const missionStore = {

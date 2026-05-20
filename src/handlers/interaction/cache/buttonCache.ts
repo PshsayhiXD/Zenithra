@@ -6,4 +6,4 @@ export type ButtonRecord = PersistentInteractionRecord;
 export const buttonCache = new Cache<ButtonRecord>(
   "interaction-button-records",
   "file",
-);
+).init();

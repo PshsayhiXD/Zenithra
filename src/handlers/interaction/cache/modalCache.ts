@@ -6,4 +6,4 @@ export type ModalRecord = PersistentInteractionRecord;
 export const modalCache = new Cache<ModalRecord>(
   "interaction-modal-records",
   "file",
-);
+).init();
