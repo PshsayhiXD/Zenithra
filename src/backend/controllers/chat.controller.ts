@@ -4,8 +4,8 @@ import { validateUsername } from "@Rmigrations/logic/001/validation.js";
 import { getDatabase } from "@databases/index.js";
 import { sendJson } from "@backend/utils/http.js";
 import { readJsonBody } from "@backend/utils/body.js";
-import { resolvePublicBaseUrl } from "@backend/utils/config.js";
 import { loadEnvironment } from "@environment";
+import { BACKEND_HOST, BACKEND_PORT, resolvePublicBaseUrl } from "@backend/utils/config.js";
 import { findLegacyCommand, parseLegacyCommandInput } from "@commands/catalog.js";
 import type { CommandReplyContent } from "@commands/types/command.js";
 import type { ChatIdentityResponse, ChatMessageResponse } from "@backend/types/chat.js";
@@ -74,7 +74,7 @@ export const identityRequest = async (
       username = typeof body?.["username"] === "string" ? body["username"] : undefined;
       userId = typeof body?.["userId"] === "string" ? body["userId"] : undefined;
     } else {
-      const host = request.headers.host ?? "127.0.0.1:8787";
+      const host = request.headers.host ?? `${BACKEND_HOST}:${String(BACKEND_PORT)}`;
       const url = new URL(request.url ?? "/", `http://${host}`);
       username = url.searchParams.get("username") ?? undefined;
       userId = url.searchParams.get("userId") ?? undefined;
@@ -145,7 +145,7 @@ export const linkOAuthRequest = async (
   request: IncomingMessage,
   response: ServerResponse
 ): Promise<void> => {
-  const host = request.headers.host ?? "127.0.0.1:8787";
+  const host = request.headers.host ?? `${BACKEND_HOST}:${String(BACKEND_PORT)}`;
   const url = new URL(request.url ?? "/", `http://${host}`);
   const username = url.searchParams.get("username") ?? undefined;
   const code = url.searchParams.get("code") ?? undefined;

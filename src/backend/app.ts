@@ -3,6 +3,7 @@ import path from "node:path";
 import { sendJson } from "@backend/utils/http.js";
 import { applyCors } from "@backend/middleware/cors.js";
 import { loadRoutes, matchAndHandleRoute } from "@backend/utils/router.js";
+import { BACKEND_HOST, BACKEND_PORT } from "@backend/utils/config.js";
 
 let routesLoaded = false;
 export const ensureRoutesLoaded = async (): Promise<void> => {
@@ -16,7 +17,7 @@ export const handleRequest = async (request: IncomingMessage, response: ServerRe
   await ensureRoutesLoaded();
 
   const method = request.method ?? "GET";
-  const host = request.headers.host ?? "127.0.0.1:8787";
+  const host = request.headers.host ?? `${BACKEND_HOST}:${String(BACKEND_PORT)}`;
   const url = new URL(request.url ?? "/", `http://${host}`);
 
   applyCors(response);

@@ -6,7 +6,7 @@ import {
 } from "@backend/domain/client/client.js";
 import { Cache } from "@/utilities/cache.js";
 
-const registryCache = new Cache<ClientRecord>("client-registry", "file");
+const registryCache = new Cache<ClientRecord>("client-registry", "file").init();
 
 export const registerClient = (input: ClientRegistrationInput): ClientRegistrationResult => {
   const existingClient =

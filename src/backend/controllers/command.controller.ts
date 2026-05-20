@@ -1,10 +1,13 @@
 import type { IncomingMessage, ServerResponse } from "node:http";
-import type { CommandReplyContent } from "@commands/types/command.js";
+import type { CommandReplyContent, CommandResult } from "@commands/types/command.js";
 import { sendJson } from "@backend/utils/http.js";
 import { readJsonBody } from "@backend/utils/body.js";
 import { listCommands, getCommand, parseCommand } from "@backend/services/command.service.js";
 import { findLegacyCommand } from "@commands/catalog.js";
 import { resolveUserIdentity } from "./chat.controller.js";
+import { code } from "@dependencies";
+import { getRemainingCooldown, setCooldown } from "@tables/cooldown/index.js";
+import { upsertUser } from "@tables/user/index.js";
 import type { ParsedCommandResponse, ExecuteCommandResponse } from "@backend/types/command.js";
 
 export const getCommands = (response: ServerResponse): void => {
@@ -46,9 +49,7 @@ export const parseCommandRequest = async (
     }
 
     let normalizedInput = input.trim();
-    if (normalizedInput.startsWith("!") || normalizedInput.startsWith("/")) {
-      normalizedInput = normalizedInput.slice(1).trim();
-    }
+    if (normalizedInput.startsWith("!") || normalizedInput.startsWith("/")) normalizedInput = normalizedInput.slice(1).trim();
 
     const parsed = parseCommand(normalizedInput);
     if (parsed === undefined) {
@@ -72,6 +73,22 @@ export const parseCommandRequest = async (
   }
 };
 
+const formatMissingArguments = (
+  cmd: { args: { name: string; description?: string; type: string; required: boolean }[]; name: string },
+  arguments_: string[],
+): string => {
+  const usage = cmd.args
+    .map((argument) => (argument.required ? `<${argument.name}>` : `[${argument.name}]`))
+    .join(" ");
+
+  const typeList = cmd.args.map((argument) => argument.type).join(", ");
+  const missingArguments = cmd.args
+    .filter((argument, index) => argument.required && arguments_[index] === undefined)
+    .map((argument) => argument.name);
+
+  return `Usage: \`${cmd.name} ${usage}\`\nType: \`${typeList}\`\nMissing: ${missingArguments.join(", ")}`;
+};
+
 export const executeCommandRequest = async (
   request: IncomingMessage,
   response: ServerResponse
@@ -87,13 +104,11 @@ export const executeCommandRequest = async (
       return;
     }
 
-    // Resolve unified identity
     const identity = resolveUserIdentity(username, userId);
+    upsertUser(identity.userId);
 
     let commandInput = input.trim();
-    if (commandInput.startsWith("!") || commandInput.startsWith("/")) {
-      commandInput = commandInput.slice(1).trim();
-    }
+    if (commandInput.startsWith("!") || commandInput.startsWith("/")) commandInput = commandInput.slice(1).trim();
 
     const parsed = parseCommand(commandInput);
     if (parsed === undefined) {
@@ -107,12 +122,35 @@ export const executeCommandRequest = async (
       return;
     }
 
+    const replies: CommandReplyContent[] = [];
+
+    if (cmd.cooldown && cmd.cooldown > 0) {
+      const remaining = getRemainingCooldown(identity.userId, cmd.name);
+      if (remaining > 0) {
+        const seconds = (remaining / 1000).toFixed(1);
+        replies.push(`Please wait **${seconds}s** before using \`${cmd.name}\` again.`);
+        const payload: ExecuteCommandResponse = { result: code.Warning, replies };
+        sendJson(response, 200, payload);
+        return;
+      }
+      setCooldown(identity.userId, cmd.name, cmd.cooldown * 1000);
+    }
+
+    if (cmd.args.length > 0) {
+      const missingArguments = cmd.args.filter(
+        (argument, index) => argument.required && parsed.arguments[index] === undefined,
+      );
+      if (missingArguments.length > 0) {
+        replies.push(formatMissingArguments(cmd, parsed.arguments));
+        const payload: ExecuteCommandResponse = { result: code.Warning, replies };
+        sendJson(response, 200, payload);
+        return;
+      }
+    }
+
     const { getDeps } = await import("@dependencies");
     const deps = getDeps(cmd.dependencies);
-
-    const replies: unknown[] = [];
-
-    const result = await cmd.execute({
+    const result: CommandResult = await cmd.execute({
       platform: identity.platform,
       isDiscord: identity.platform === "discord",
       isDrednot: identity.platform === "drednot",
@@ -125,15 +163,12 @@ export const executeCommandRequest = async (
       raw: commandInput,
       deps,
       cmd,
-      responses: replies as CommandReplyContent[],
+      responses: replies,
     });
 
     const payload: ExecuteCommandResponse = {
       result,
       replies,
-      deprecated: {
-        disableHttp: "Use context.isDiscord/context.isDrednot inside commands instead.",
-      },
     };
 
     sendJson(response, 200, payload);

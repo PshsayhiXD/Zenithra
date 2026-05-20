@@ -1,13 +1,20 @@
 import type { IncomingMessage } from "node:http";
 
-export const BACKEND_HOST = "127.0.0.1";
+export const BACKEND_HOST = "0.0.0.0";
 export const BACKEND_PORT = 8787;
+export const BACKEND_URL = `https://localhost:${String(BACKEND_PORT)}`
 export const REALTIME_PATH = "/realtime";
-
+export const FILEPATH = {
+  certificate: [
+    // starts from root (/zenithra/)
+    // key, cert
+    "./cert/localhost.pem",
+    "./cert/localhost-key.pem"
+  ] as [string, string]
+};
 const getForwardedValue = (value: string | string[] | undefined): string | undefined => {
   if (Array.isArray(value)) return value[0];
   if (typeof value !== "string") return undefined;
-
   const [firstValue] = value.split(",");
   return firstValue?.trim();
 };
@@ -15,11 +22,16 @@ const getForwardedValue = (value: string | string[] | undefined): string | undef
 export const resolvePublicBaseUrl = (request: IncomingMessage): string => {
   const forwardedProtocol = getForwardedValue(request.headers["x-forwarded-proto"]);
   const forwardedHost = getForwardedValue(request.headers["x-forwarded-host"]);
-  const host = forwardedHost ?? request.headers.host ?? `${BACKEND_HOST}:${String(BACKEND_PORT)}`;
-  const protocol = forwardedProtocol ?? "http";
+  const protocol = forwardedProtocol ?? "https";
+  const host =
+    forwardedHost ??
+    request.headers.host ??
+    `localhost:${String(BACKEND_PORT)}`;
 
   return `${protocol}://${host}`;
 };
 
 export const toWebSocketBaseUrl = (httpUrl: string): string =>
-  httpUrl.replace(/^http:\/\//u, "ws://").replace(/^https:\/\//u, "wss://");
+  httpUrl
+    .replace(/^http:\/\//u, "ws://")
+    .replace(/^https:\/\//u, "wss://");
