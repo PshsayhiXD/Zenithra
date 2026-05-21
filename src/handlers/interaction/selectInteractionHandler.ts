@@ -1,5 +1,5 @@
 import type { StringSelectMenuInteraction } from "discord.js";
-import { selectCache } from "@handlers/interaction/cache/selectCache.js";
+import { selectCache } from "@/handlers/interaction/cacher/selectCache.js";
 import type { AddSelectRecordOptions } from "@handlers/interaction/types/selectInteraction.js";
 import {
   registerSelectHandler,

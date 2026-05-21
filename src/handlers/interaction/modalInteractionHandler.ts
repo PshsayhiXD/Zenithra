@@ -1,5 +1,5 @@
 import type { ModalSubmitInteraction } from "discord.js";
-import { modalCache } from "@handlers/interaction/cache/modalCache.js";
+import { modalCache } from "@/handlers/interaction/cacher/modalCache.js";
 import {
   modalHandlerRegistry,
   registerModalHandler,

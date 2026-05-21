@@ -1,5 +1,5 @@
 import type { ButtonInteraction } from "discord.js";
-import { buttonCache } from "@handlers/interaction/cache/buttonCache.js";
+import { buttonCache } from "@/handlers/interaction/cacher/buttonCache.js";
 import type { AddButtonRecordOptions } from "@handlers/interaction/types/buttonInteraction.js";
 import {
   buttonHandlerRegistry,
