@@ -11,10 +11,10 @@ export default {
   cooldown: 10,
   args: [],
   permission: {},
-  dependencies: ["code", "createEmbed"],
+  dependencies: ["code", "components"],
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, isDiscord } = context;
-    const { code, createEmbed } = deps;
+    const { code, components } = deps;
 
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
     if (!message) return [code.UserDefinedError, "Please provide a valid message."];
@@ -24,7 +24,7 @@ export default {
     const uptimeString = `${String(Math.floor(uptime / 3600))}h ${String(Math.floor((uptime % 3600) / 60))}m ${String(Math.floor(uptime % 60))}s`;
     const memoryUsage = (process.memoryUsage().heapUsed / 1024 / 1024).toFixed(2);
 
-    const embed = createEmbed({
+    const embed = components.createEmbed({
       title: "Bot Information",
       thumbnail: user.displayAvatarURL(),
       fields: [
@@ -45,4 +45,4 @@ export default {
     await message.reply({ embeds: [embed] });
     return code.Success;
   },
-} satisfies Command<"code" | "createEmbed">;
+} satisfies Command<"code" | "components">;

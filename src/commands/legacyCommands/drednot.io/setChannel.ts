@@ -24,10 +24,10 @@ export default {
   permission: {},
   cooldown: 10,
   description: "Sets the channel for event tracker messages.",
-  dependencies: ["tables", "createEmbed", "code"],
+  dependencies: ["tables", "components", "code"],
   execute: async (context): Promise<CommandResult> => {
     const { message, args, deps, cmd, isDiscord } = context;
-    const { tables, createEmbed, code } = deps;
+    const { tables, components, code } = deps;
 
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
     if (!message) return [code.InternalError, "Couldnt find message."];
@@ -48,7 +48,7 @@ export default {
     tables.updateChannels(message.guildId, update);
     const payload = {
       embeds: [
-        createEmbed({
+        components.createEmbed({
           title: cmd.name,
           description: `Set ${trackerType} channel to ${channel.toString()}`,
           color: "Green",
@@ -63,5 +63,5 @@ export default {
     return code.Success;
   },
 } satisfies Command<
-  "tables" | "createEmbed" | "code"
+  "tables" | "components" | "code"
 >;

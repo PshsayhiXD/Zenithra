@@ -9,10 +9,10 @@ export default {
   args: [],
   permission: {},
   cooldown: 5,
-  dependencies: ["code", "createEmbed"],
+  dependencies: ["code", "components"],
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, responses, isDiscord, isDrednot } = context;
-    const { code, createEmbed } = deps;
+    const { code, components } = deps;
 
     try {
       const response = await fetch("https://meme-api.com/gimme");
@@ -29,7 +29,7 @@ export default {
 
       if (data.nsfw || data.spoiler) return [code.UserDefinedError, "Fetched a meme but it was NSFW or a spoiler. Please try again."];
 
-      const embed = createEmbed({
+      const embed = components.createEmbed({
         title: data.title,
         description: data.url,
         image: data.url,
@@ -49,4 +49,4 @@ export default {
       return [code.InternalError, "Failed to fetch a meme. The API might be down."];
     }
   },
-} satisfies Command<"code" | "createEmbed">;
+} satisfies Command<"code" | "components">;

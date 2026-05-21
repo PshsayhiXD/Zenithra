@@ -10,7 +10,7 @@ import {
 import { addButtonRecord } from "@handlers/interaction/buttonInteractionHandler.js";
 import { encodeCustomId } from "@handlers/interaction/customId.js";
 import { createModalComponent } from "@utilities/components/modalComponent.js";
-import createEmbed from "@utilities/components/embedComponent.js";
+import { createEmbed } from "@utilities/components/embedComponent.js";
 import {
   USERNAME_CHANGE_HANDLER_KEY,
   USERNAME_MIGRATION_NAMESPACE,

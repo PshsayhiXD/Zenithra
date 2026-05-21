@@ -4,6 +4,11 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { RouteModule } from "@backend/types/router/route.js";
 import { pathToFileURL } from "node:url";
 
+export interface RouteDiscoveryItem {
+  method: string;
+  path: string;
+}
+
 interface RouteDefinition {
   pattern: RegExp;
   paramNames: string[];
@@ -52,6 +57,13 @@ export const loadRoutes = async (directory: string, basePath = ""): Promise<void
     return b.path.length - a.path.length;
   });
 };
+
+export const getRouteDiscoveryItems = (): RouteDiscoveryItem[] => routes.flatMap((route) =>
+    Object.keys(route.module).map((method) => ({
+      method: method.toUpperCase(),
+      path: route.path,
+    }))
+  );
 
 export const matchAndHandleRoute = async (
   request: IncomingMessage,

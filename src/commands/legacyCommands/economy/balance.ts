@@ -10,10 +10,10 @@ export default {
   args: [],
   aliases: [],
   cooldown: 10,
-  dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code", "items", "currency"],
+  dependencies: ["tables", "components", "number", "config.CURRENCY", "code", "items", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { deps, userId, username, responses, message, isDiscord, isDrednot } = context;
-    const { tables, createEmbed, number, code, items, currency } = deps;
+    const { tables, components, number, code, items, currency } = deps;
     const getItem = items.getItem as (query: string | number) => Item | undefined;
     const wallet = tables.Economy.getWallet(userId);
     const bank = tables.Economy.getBank(userId);
@@ -45,7 +45,7 @@ export default {
 
     const payload = {
       embeds: [
-        createEmbed({
+        components.createEmbed({
           title: `${username}'s Balance`,
           description: `
             **Wallet:** ${currency.formatCurrency(wallet)}
@@ -63,4 +63,4 @@ export default {
     `);
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code" | "items" | "currency">;
+} satisfies Command<"tables" | "components" | "number" | "config.CURRENCY" | "code" | "items" | "currency">;

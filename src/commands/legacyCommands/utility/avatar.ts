@@ -9,10 +9,10 @@ export default {
   cooldown: 5,
   args: [],
   permission: {},
-  dependencies: ["code", "createEmbed"],
+  dependencies: ["code", "components"],
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, isDiscord } = context;
-    const { code, createEmbed } = deps;
+    const { code, components } = deps;
 
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
     if (!message) return [code.UserDefinedError, "Please provide a valid message."];
@@ -20,7 +20,7 @@ export default {
     const user = message.mentions.users.first() ?? message.author;
     const avatarURL = user.displayAvatarURL({ size: 1024, extension: "png" });
 
-    const embed = createEmbed({
+    const embed = components.createEmbed({
       title: `${user.username}'s Avatar`,
       image: avatarURL,
       options: {
@@ -32,4 +32,4 @@ export default {
     await message.reply({ embeds: [embed] });
     return code.Success;
   },
-} satisfies Command<"code" | "createEmbed">;
+} satisfies Command<"code" | "components">;

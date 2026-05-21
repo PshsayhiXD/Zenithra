@@ -16,10 +16,10 @@ export default {
   ],
   permission: {},
   cooldown: 5,
-  dependencies: ["tables", "createEmbed", "config.CURRENCY", "code", "number", "currency"],
+  dependencies: ["tables", "components", "config.CURRENCY", "code", "number", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { args, deps, cmd, userId, responses, message, isDiscord, isDrednot } = context;
-    const { tables, createEmbed, "config.CURRENCY": CURRENCY, code, currency } = deps;
+    const { tables, components, "config.CURRENCY": CURRENCY, code, currency } = deps;
     const wallet = tables.Economy.getWallet(userId);
     const bank = tables.Economy.getBank(userId);
     const amount = currency.parseCurrency(args.join(" "));
@@ -41,7 +41,7 @@ export default {
 
     const payload = {
       embeds: [
-        createEmbed({
+        components.createEmbed({
           title: cmd.name,
           description:
             `Deposited **${currency.formatCurrency(amount)}** (after ${String(fee)}% fee).\n` +
@@ -57,4 +57,4 @@ export default {
 
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "config.CURRENCY" | "code" | "number" | "currency">;
+} satisfies Command<"tables" | "components" | "config.CURRENCY" | "code" | "number" | "currency">;

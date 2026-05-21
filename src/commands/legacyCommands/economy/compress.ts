@@ -22,10 +22,10 @@ export default {
     }
   ],
   cooldown: 5,
-  dependencies: ["tables", "createEmbed", "number", "code", "items"],
+  dependencies: ["tables", "components", "number", "code", "items"],
   execute: async (context): Promise<CommandResult> => {
     const { args, deps, userId, responses, message, isDiscord, isDrednot } = context;
-    const { tables, createEmbed, number, code } = deps;
+    const { tables, components, number, code } = deps;
     const resource = args[0]?.toLowerCase();
     const count = Math.max(1, Number.parseInt(args[1] ?? "1"));
 
@@ -58,7 +58,7 @@ export default {
     tables.Inventory.addItem(userId, tier.nextId, count);
 
     const payload = {
-      embeds: [createEmbed({
+      embeds: [components.createEmbed({
         title: "Compression Successful",
         description: `Compressed **${number.formatNumber(needed)}** ${tier.name} into **${String(count)}** ${tier.nextName}.`,
         color: "Green",
@@ -70,4 +70,4 @@ export default {
 
     return code.Success;
   }
-} satisfies Command<"tables" | "createEmbed" | "number" | "code" | "items">;
+} satisfies Command<"tables" | "components" | "number" | "code" | "items">;

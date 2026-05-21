@@ -1,7 +1,7 @@
 import { COMMANDS } from "@configs/legacyCommands.js";
 import type { CommandResult } from "@commands/types/command.js";
 
-import createEmbed from "@utilities/components/embedComponent.js";
+import { createEmbed } from "@utilities/components/embedComponent.js";
 import { commands } from "@commands/_legacyCommands.js";
 import { code, getDeps, type CodeNumber } from "@dependencies";
 import { formatCommandPermission, hasCommandPermission } from "@commands/shared.js";

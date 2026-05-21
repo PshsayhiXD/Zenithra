@@ -29,9 +29,9 @@ export default {
     },
   ],
   permission: {},
-  dependencies: ["tables", "createEmbed", "isGuildChannelType", "code"],
+  dependencies: ["tables", "components", "isGuildChannelType", "code"],
   execute: async ({ interaction, options, deps }): Promise<SlashCommandResult> => {
-    const { tables, createEmbed, isGuildChannelType, code } = deps;
+    const { tables, components, isGuildChannelType, code } = deps;
 
     const channel = options.getChannel("channel", true);
     const type = options.getString("type", true);
@@ -49,7 +49,7 @@ export default {
 
     await interaction.reply({
       embeds: [
-        createEmbed({
+        components.createEmbed({
           title: "Success",
           description: `Set ${type} channel to <#${channel.id}>`,
           color: "Green",
@@ -58,4 +58,4 @@ export default {
     });
     return code.Success;
   },
-} as SlashCommand<"tables" | "createEmbed" | "isGuildChannelType" | "code">;
+} as SlashCommand<"tables" | "components" | "isGuildChannelType" | "code">;

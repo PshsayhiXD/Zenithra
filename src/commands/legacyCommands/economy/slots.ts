@@ -17,10 +17,10 @@ export default {
       required: true,
     },
   ],
-  dependencies: ["code", "createEmbed", "tables", "config.CURRENCY", "number", "currency"],
+  dependencies: ["code", "components", "tables", "config.CURRENCY", "number", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { message, args, deps, userId, responses, isDiscord, isDrednot } = context;
-    const { code, createEmbed, tables, currency } = deps;
+    const { code, components, tables, currency } = deps;
 
     const amountRaw = currency.parseCurrency(args.join(" "));
     if (amountRaw <= 0)
@@ -55,7 +55,7 @@ export default {
     if (win > 0) tables.Economy.addWallet(userId, new Decimal(win).sub(amount).toNumber());
     else tables.Economy.addWallet(userId, -amount);
     const resultString = `[ ${String(slot1)} | ${String(slot2)} | ${String(slot3)} ]`;
-    const embed = createEmbed({
+    const embed = components.createEmbed({
       title: "Slot Machine",
       description:
         `${resultString}\n\n${
@@ -74,4 +74,4 @@ export default {
 
     return code.Success;
   },
-} satisfies Command<"code" | "createEmbed" | "tables" | "config.CURRENCY" | "number" | "currency">;
+} satisfies Command<"code" | "components" | "tables" | "config.CURRENCY" | "number" | "currency">;

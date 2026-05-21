@@ -22,10 +22,10 @@ export default {
   ],
   aliases: ["pay", "give"],
   cooldown: 10,
-  dependencies: ["code", "createEmbed", "tables", "currency"],
+  dependencies: ["code", "components", "tables", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { message, args, deps, userId, isDiscord } = context;
-    const { code, createEmbed, tables, currency } = deps;
+    const { code, components, tables, currency } = deps;
 
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
 
@@ -47,7 +47,7 @@ export default {
     tables.Economy.addWallet(userId, -amount);
     tables.Economy.addWallet(target.id, amount);
 
-    const embed = createEmbed({
+    const embed = components.createEmbed({
       title: "Transfer Successful",
       description:
         `Successfully transferred **${currency.formatCurrency(amount)}** Dredcoins to **${target.tag}**.`,
@@ -61,4 +61,4 @@ export default {
     if (message) await message.reply({ embeds: [embed] });
     return code.Success;
   },
-} satisfies Command<"code" | "createEmbed" | "tables" | "currency">;
+} satisfies Command<"code" | "components" | "tables" | "currency">;

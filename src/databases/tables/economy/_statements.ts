@@ -36,10 +36,10 @@ export const upsertEconomyStmt: Statement<
   [EconomyUserId, EconomyCurrency, EconomyUpdatedAt],
   RunResult
 > = database.prepare(`
-  INSERT INTO economy (userId, ${CURRENCY.NAME}, updatedAt)
+  INSERT INTO economy (userId, ${CURRENCY.COLUMN_NAME}, updatedAt)
   VALUES (?, ?, ?)
   ON CONFLICT (userId) DO UPDATE SET
-    ${CURRENCY.NAME} = excluded.${CURRENCY.NAME},
+    ${CURRENCY.COLUMN_NAME} = excluded.${CURRENCY.COLUMN_NAME},
     updatedAt = excluded.updatedAt
 `);
 
@@ -48,7 +48,7 @@ export const updateBalancesStmt: Statement<
   RunResult
 > = database.prepare(`
   UPDATE economy SET
-    ${CURRENCY.NAME} = ${CURRENCY.NAME} + ?,
+    ${CURRENCY.COLUMN_NAME} = ${CURRENCY.COLUMN_NAME} + ?,
     bank = bank + ?,
     updatedAt = ?
   WHERE userId = ?
@@ -59,7 +59,7 @@ export const updateWalletStmt: Statement<
   RunResult
 > = database.prepare(`
   UPDATE economy SET
-    ${CURRENCY.NAME} = ${CURRENCY.NAME} + ?,
+    ${CURRENCY.COLUMN_NAME} = ${CURRENCY.COLUMN_NAME} + ?,
     updatedAt = ?
   WHERE userId = ?
 `);

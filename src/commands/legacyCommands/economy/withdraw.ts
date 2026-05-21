@@ -16,10 +16,10 @@ export default {
     },
   ],
   cooldown: 5,
-  dependencies: ["tables", "createEmbed", "number", "code", "currency"],
+  dependencies: ["tables", "components", "number", "code", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { message, args, deps, cmd, userId, responses, isDiscord, isDrednot } = context;
-    const { tables, createEmbed, code, currency } = deps;
+    const { tables, components, code, currency } = deps;
     const bank = tables.Economy.getBank(userId).bank;
     const amount = currency.parseCurrency(args.join(" "));
     if (amount <= 0) return [code.UserDefinedError, "Please specify a valid amount to withdraw."];
@@ -27,7 +27,7 @@ export default {
     const result = tables.Economy.withdraw(userId, amount);
     const payload = {
       embeds: [
-        createEmbed({
+        components.createEmbed({
           title: cmd.name,
           description: `
             Withdrew **${currency.formatCurrency(amount)}** from your bank.
@@ -46,4 +46,4 @@ export default {
     if (isDrednot) responses?.push(payload);
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "number" | "code" | "currency">;
+} satisfies Command<"tables" | "components" | "number" | "code" | "currency">;

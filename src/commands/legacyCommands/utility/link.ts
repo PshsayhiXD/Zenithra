@@ -9,13 +9,13 @@ export default {
   permission: {},
   args: [],
   cooldown: 5,
-  dependencies: ["createEmbed", "code"],
+  dependencies: ["components", "code"],
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, responses, isDiscord, isDrednot, cmd } = context;
-    const { createEmbed, code } = deps;
+    const { components, code } = deps;
 
     const payload = {
-      embeds: [createEmbed({
+      embeds: [components.createEmbed({
         title: cmd.name,
         description: "To link your account with Discord, please open the Zenithra Portal in your browser and use the 'Link via Discord' button.",
         color: "Blurple",
@@ -29,4 +29,4 @@ export default {
     if (isDrednot) responses?.push(payload);
     return code.Success;
   },
-} satisfies Command<"createEmbed" | "code">;
+} satisfies Command<"components" | "code">;

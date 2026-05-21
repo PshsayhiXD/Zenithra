@@ -10,10 +10,10 @@ export default {
   cooldown: 10,
   args: [],
   permission: {},
-  dependencies: ["code", "createEmbed"],
+  dependencies: ["code", "components"],
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, isDiscord } = context;
-    const { code, createEmbed } = deps;
+    const { code, components } = deps;
 
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
     if (!message) return [code.UserDefinedError, "Please provide a valid message."];
@@ -25,7 +25,7 @@ export default {
     const channels = guild.channels.cache;
     const roles = guild.roles.cache;
 
-    const embed = createEmbed({
+    const embed = components.createEmbed({
       title: `Server Information - ${guild.name}`,
       thumbnail: guild.iconURL({ size: 1024 }) ?? "",
       fields: [
@@ -46,4 +46,4 @@ export default {
     await message.reply({ embeds: [embed] });
     return code.Success;
   },
-} satisfies Command<"code" | "createEmbed">;
+} satisfies Command<"code" | "components">;

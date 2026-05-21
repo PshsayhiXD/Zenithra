@@ -75,7 +75,7 @@ export const identityRequest = async (
       userId = typeof body?.["userId"] === "string" ? body["userId"] : undefined;
     } else {
       const host = request.headers.host ?? `${BACKEND_HOST}:${String(BACKEND_PORT)}`;
-      const url = new URL(request.url ?? "/", `http://${host}`);
+      const url = new URL(request.url ?? "/", `https://${host}`);
       username = url.searchParams.get("username") ?? undefined;
       userId = url.searchParams.get("userId") ?? undefined;
     }
@@ -146,7 +146,7 @@ export const linkOAuthRequest = async (
   response: ServerResponse
 ): Promise<void> => {
   const host = request.headers.host ?? `${BACKEND_HOST}:${String(BACKEND_PORT)}`;
-  const url = new URL(request.url ?? "/", `http://${host}`);
+  const url = new URL(request.url ?? "/", `https://${host}`);
   const username = url.searchParams.get("username") ?? undefined;
   const code = url.searchParams.get("code") ?? undefined;
   const state = url.searchParams.get("state") ?? undefined;

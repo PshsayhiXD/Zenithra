@@ -5,7 +5,7 @@ import {
   config,
   number as numberUtility,
   currency as currencyUtility,
-  createEmbed,
+  components,
 } from "@dependency/core.js";
 import { code } from "@commands/dependency/deps/code.js";
 import { isGuildChannelType } from "@commands/dependency/deps/guild.js";
@@ -21,7 +21,7 @@ import type {
 import { resolveDependency } from "@commands/dependency/resolver.js";
 
 export const availableDependencies: StaticDependencies = {
-  createEmbed,
+  components,
   db: database,
   dbTypes: databaseTypes_,
   tables: tablesModule,

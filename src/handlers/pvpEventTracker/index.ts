@@ -1,4 +1,4 @@
-import createEmbed from "@utilities/components/embedComponent.js";
+import { createEmbed } from "@utilities/components/embedComponent.js";
 
 import type { EmbedBuilder } from "discord.js";
 import {

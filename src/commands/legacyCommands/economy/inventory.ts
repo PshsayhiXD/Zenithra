@@ -10,10 +10,10 @@ export default {
   permission: {},
   args: [],
   cooldown: 5,
-  dependencies: ["tables", "createEmbed", "items", "code"],
+  dependencies: ["tables", "components", "items", "code"],
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, userId, username, isDiscord } = context;
-    const { tables, createEmbed, items, code } = deps;
+    const { tables, components, items, code } = deps;
 
     if (!isDiscord) return [code.Warning, "This command currently only supports Discord."];
     if (!message) return [code.UserDefinedError, "Please provide a valid message."];
@@ -31,7 +31,7 @@ export default {
 
       const payload = {
         embeds: [
-          createEmbed({
+          components.createEmbed({
             title: `${username}'s Inventory`,
             description,
             color: "Blue",
@@ -48,7 +48,7 @@ export default {
 
     const payload = {
       embeds: [
-        createEmbed({
+        components.createEmbed({
           title: `${username}'s Inventory`,
           description: "Your inventory is empty.",
           color: "Yellow",
@@ -62,4 +62,4 @@ export default {
     await message.reply(payload);
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "items" | "code">;
+} satisfies Command<"tables" | "components" | "items" | "code">;

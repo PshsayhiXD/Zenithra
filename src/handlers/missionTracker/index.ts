@@ -1,5 +1,5 @@
 import type { EmbedBuilder } from "discord.js";
-import createEmbed from "@utilities/components/embedComponent.js";
+import { createEmbed } from "@utilities/components/embedComponent.js";
 import { getMissionTrackerData } from "@handlers/missionTracker/missions.js";
 import type { MissionTrackerData } from "@handlers/missionTracker/type.js";
 import { PvPServerEmoji } from "@handlers/pvpEventTracker/type.js";

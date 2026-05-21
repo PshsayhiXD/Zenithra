@@ -7,6 +7,6 @@ export { default as config } from "@configs";
 export * as tables from "@tables/index.js";
 export * as dbTypes from "@tables/types/index.js";
 export { number, currency } from "@utilities/index.js";
-export { default as createEmbed } from "@utilities/components/embedComponent.js";
+export { components } from "@utilities/components/index.js";
 export { database as db };
 

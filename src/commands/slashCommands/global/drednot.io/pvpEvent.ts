@@ -32,11 +32,11 @@ export default {
     },
   ],
   permission: {},
-  dependencies: ["pvpEvent", "createEmbed", "code"],
+  dependencies: ["pvpEvent", "components", "code"],
   dmPermission: true,
   groupPermission: true,
   execute: async ({ interaction, deps }): Promise<SlashCommandResult> => {
-    const { pvpEvent, createEmbed, code } = deps;
+    const { pvpEvent, components, code } = deps;
     const query = (interaction.options.getString("query") ?? "next") as PvpQuery;
     const ephemeral = interaction.options.getBoolean("ephemeral") ?? false;
 
@@ -61,7 +61,7 @@ export default {
 
     await interaction.editReply({
       embeds: [
-        createEmbed({
+        components.createEmbed({
           title: "PvP Event(s)",
           description: resultString,
           color: "Green",
@@ -77,4 +77,4 @@ export default {
     });
     return code.Success;
   },
-} as SlashCommand<"pvpEvent" | "createEmbed" | "code">;
+} as SlashCommand<"pvpEvent" | "components" | "code">;

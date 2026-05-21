@@ -1,9 +1,8 @@
-import type { Message, EmbedBuilder } from "discord.js";
+import type { Message } from "discord.js";
 import type { Database } from "better-sqlite3";
-import type { CreateEmbedOptions } from "@utilities/components/types/embedComponent.js";
 import type * as tables from "@tables/index.js";
 import type * as databaseTypes from "@tables/types/index.js";
-
+import type { Components } from "@utilities/components/index.js";
 import { type Config } from "@configs";
 import type { number, currency } from "@utilities/index.js";
 import type { code } from "@commands/dependency/deps/code.js";
@@ -56,7 +55,7 @@ export type DeepValue<T, Path extends string> =
       : never;
 
 export interface CommandDependencies {
-  createEmbed: (options: CreateEmbedOptions) => EmbedBuilder;
+  components: Components;
   db: Database;
   tables: typeof tables;
   dbTypes: typeof databaseTypes;

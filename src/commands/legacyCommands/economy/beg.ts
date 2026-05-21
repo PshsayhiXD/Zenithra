@@ -10,17 +10,17 @@ export default {
   permission: {},
   args: [],
   cooldown: 10,
-  dependencies: ["tables", "createEmbed", "number", "config.CURRENCY", "code", "currency"],
+  dependencies: ["tables", "components", "number", "config.CURRENCY", "code", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, cmd, userId, responses, isDiscord, isDrednot } = context;
-    const { tables, createEmbed, code, currency } = deps;
+    const { tables, components, code, currency } = deps;
 
     const random = new Decimal(Math.floor(Math.random() * 100) + 30).mul("1e-16").toNumber();
     const result = tables.Economy.addWallet(userId, random);
 
     const payload = {
       embeds: [
-        createEmbed({
+        components.createEmbed({
           title: cmd.name,
           description: `
             Added **${currency.formatCurrency(random)}** to **<@${userId}>**.
@@ -38,4 +38,4 @@ export default {
     if (isDrednot) responses?.push(`New balance: **${currency.formatCurrency(result.currency)}**`);
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "number" | "config.CURRENCY" | "code" | "currency">;
+} satisfies Command<"tables" | "components" | "number" | "config.CURRENCY" | "code" | "currency">;

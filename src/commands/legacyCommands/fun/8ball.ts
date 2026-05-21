@@ -16,10 +16,10 @@ export default {
     },
   ],
   permission: {},
-  dependencies: ["code", "createEmbed"],
+  dependencies: ["code", "components"],
   execute: async (context): Promise<CommandResult> => {
     const { message, args, deps, responses, isDiscord, isDrednot } = context;
-    const { code, createEmbed } = deps;
+    const { code, components } = deps;
     if (args.length === 0) return [code.UserDefinedError, "Please ask a question!"];
 
     const answers = [
@@ -34,7 +34,7 @@ export default {
     const response = answers[Math.floor(Math.random() * answers.length)] ?? "Reply hazy, try again.";
     const question = args.join(" ");
 
-    const embed = createEmbed({
+    const embed = components.createEmbed({
       title: "Magic 8-Ball",
       fields: [
         { name: "Question", value: question },
@@ -51,4 +51,4 @@ export default {
     if (isDrednot) responses?.push(`${question}. ${response}`);
     return code.Success;
   },
-} satisfies Command<"code" | "createEmbed">;
+} satisfies Command<"code" | "components">;

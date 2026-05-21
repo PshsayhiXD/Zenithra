@@ -16,17 +16,17 @@ export default {
     }
   ],
   cooldown: 3,
-  dependencies: ["code", "createEmbed"],
+  dependencies: ["code", "components"],
   execute: async (context): Promise<CommandResult> => {
     const { message, args, deps, responses, isDiscord, isDrednot } = context;
-    const { code, createEmbed } = deps;
+    const { code, components } = deps;
     const firstArgument = args[0];
     if (firstArgument === undefined) return [code.UserDefinedError, "Please provide a valid number of sides (greater than 1)."];
     const sides = Number.parseInt(firstArgument, 10);
     if (Number.isNaN(sides) || sides <= 1) return [code.UserDefinedError, "Please provide a valid number of sides (greater than 1)."];
     const result = Math.floor(Math.random() * sides) + 1;
 
-    const embed = createEmbed({
+    const embed = components.createEmbed({
       title: "Dice Roll",
       description: `You rolled a **${String(result)}** (1-${String(sides)})`,
       color: "Blue",
@@ -40,4 +40,4 @@ export default {
     if (isDrednot) responses?.push(embed.data.description ?? " ");
     return code.Success;
   },
-} satisfies Command<"code" | "createEmbed">;
+} satisfies Command<"code" | "components">;

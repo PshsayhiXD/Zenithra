@@ -23,10 +23,10 @@ export default {
     },
   ],
   cooldown: 0,
-  dependencies: ["tables", "createEmbed", "code", "currency"],
+  dependencies: ["tables", "components", "code", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { message, args, deps, cmd, userId, isDiscord } = context;
-    const { tables, createEmbed, code, currency } = deps;
+    const { tables, components, code, currency } = deps;
 
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];
     if (!message) return [code.UserDefinedError, "Please provide a valid message"];
@@ -58,7 +58,7 @@ export default {
 
     const payload = {
       embeds: [
-        createEmbed({
+        components.createEmbed({
           title: cmd.name,
           description: `Added **${currency.formatCurrency(amount)}** to **<@${targetId}>**.\nNew balance: **${currency.formatCurrency(result.currency)}**`,
           color: "Green",
@@ -69,4 +69,4 @@ export default {
     await message.reply(payload);
     return code.Success;
   },
-} satisfies Command<"tables" | "createEmbed" | "code" | "currency">;
+} satisfies Command<"tables" | "components" | "code" | "currency">;
