@@ -41,5 +41,5 @@
     }
   },
   "include": ["src/**/*.ts"],
-  "exclude": ["node_modules", "dist", "data", "assets", "logs", ".cache"]
+  "exclude": ["node_modules", "dist", "data", "assets", "logs", ".cache", "src/frontend", "**/*.mjs"]
 }
