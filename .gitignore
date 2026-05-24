@@ -6,4 +6,5 @@ _test.ts
 .cache/
 logs/
 drednot-client/bundled
+src/frontend/bundled
 cert/
