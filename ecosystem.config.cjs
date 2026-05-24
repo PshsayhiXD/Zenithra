@@ -3,7 +3,7 @@
 module.exports = {
   apps: [
     {
-      name: "dredbot-evolve",
+      name: "zenithra",
       script: "dist/sharding.js",
       cwd: process.cwd(),
       instances: 1,
