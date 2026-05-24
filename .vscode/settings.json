@@ -36,5 +36,14 @@
     "**/node_modules/**": true,
     "**/.cache/**": true,
     "**/logs/**": true
-  }
+  },
+  "cSpell.words": [
+    "authtoken",
+    "COOLDOWN",
+    "cooldowns",
+    "Drednot",
+    "Rmigrations",
+    "tungtungtungsahur",
+    "Zenithra"
+  ]
 }
