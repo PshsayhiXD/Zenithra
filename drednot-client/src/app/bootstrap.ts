@@ -6,15 +6,18 @@ import { playersChatListener } from "@DClient/chat/chatListener.js";
 export const startApp = async (): Promise<ZenithraBot> => {
   const bot = new ZenithraBot();
   await bot.start();
-
   const config = getConfig();
-
   playersChatListener((html: string): void => {
     const parsed = chatHtmlParser(html);
     if (!parsed.message.startsWith(config.defaultPrefix)) return;
-    parsed.message = parsed.message.slice(config.defaultPrefix.length);
-    void bot.handleChatMessage(parsed);
+    const raw = parsed.message.slice(config.defaultPrefix.length).trim();
+    if (raw.length === 0) return;
+    void bot.handleInput({
+      message: raw,
+      username: parsed.username,
+      rank: parsed.rank,
+      badges: parsed.badges,
+    });
   });
-
   return bot;
-};
+}

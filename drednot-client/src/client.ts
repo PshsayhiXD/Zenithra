@@ -1,12 +1,14 @@
 import type { BrowserRuntime } from "@DClient/types/browser.js";
-import type { ExecuteCommandOptions, ExecuteCommandResponse, ParsedCommandResponse } from "@DClient/types/command.js";
 import type { ClientHooks, RealtimeEnvelope } from "@DClient/types/realtime.js";
 import { registerClient, type ClientRegistrationResponse } from "@DClient/transport/http.js";
 import { connectSocket } from "@DClient/transport/socket.js";
-import { parseCommand } from "@DClient/commands/parse.js";
-import { executeCommand } from "@DClient/commands/execute.js";
 
 export type { ClientHooks, RealtimeEnvelope };
+
+interface SendCommandResponse {
+  result: unknown;
+  replies: string[];
+};
 
 const CLIENT_ID_KEY = "zenithra.clientId";
 const RECONNECT_DELAY_MS = 1500;
@@ -23,13 +25,8 @@ export class ZenithraClient {
 
   constructor(
     private readonly runtime: BrowserRuntime,
-    private readonly hooks: ClientHooks = {}
+    private readonly hooks: ClientHooks = {},
   ) {
-
-    // eslint-disable-next-line no-console
-    console.log(runtime.baseUrl)
-    // eslint-disable-next-line no-console
-    console.log(normalizeBaseUrl(runtime.baseUrl))
     this.clientId = this.runtime.storage?.getItem(CLIENT_ID_KEY) ?? null;
     this.httpBaseUrl = normalizeBaseUrl(runtime.baseUrl);
   }
@@ -48,12 +45,22 @@ export class ZenithraClient {
     this.connect(registration);
   }
 
-  parseCommand(input: string): Promise<ParsedCommandResponse> {
-    return parseCommand(this.runtime, this.httpBaseUrl, input);
-  }
+  async sendCommand(options: {
+    input: string;
+    userId?: string;
+    username?: string;
+    guildId?: string;
+    rank?: number;
+    badges?: string[];
+  }): Promise<SendCommandResponse> {
+    const url = new URL("/command/execute", `${this.httpBaseUrl}/`);
+    const response = await this.runtime.fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(options),
+    });
 
-  executeCommand(options: ExecuteCommandOptions): Promise<ExecuteCommandResponse> {
-    return executeCommand(this.runtime, this.httpBaseUrl, options, this.clientId ?? "0");
+    return (await response.json()) as SendCommandResponse;
   }
 
   private applyRegistration(reg: ClientRegistrationResponse): void {
@@ -93,7 +100,7 @@ export class ZenithraClient {
 
 export const startZenithraClient = async (
   runtime: BrowserRuntime,
-  hooks?: ClientHooks
+  hooks?: ClientHooks,
 ): Promise<ZenithraClient> => {
   const client = new ZenithraClient(runtime, hooks);
   await client.start();

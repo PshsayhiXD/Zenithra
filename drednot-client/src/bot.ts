@@ -1,5 +1,4 @@
 import type { ParsedChatMessage } from "@DClient/types/chat.js";
-import type { ExecuteCommandResponse, ParsedCommandResponse, ChatCommandContext } from "@DClient/types/command.js";
 import { getBrowserRuntime } from "@DClient/runtime/browser.js";
 import { startZenithraClient, type ZenithraClient } from "@DClient/client.js";
 
@@ -9,13 +8,8 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
 const extractReplyText = (reply: unknown): string[] => {
   if (typeof reply === "string") return [reply];
   if (!isRecord(reply)) return [];
-
   const lines: string[] = [];
-
-  if (typeof reply["content"] === "string" && reply["content"].length > 0) {
-    lines.push(reply["content"]);
-  }
-
+  if (typeof reply["content"] === "string" && reply["content"].length > 0) lines.push(reply["content"]);
   if (Array.isArray(reply["embeds"])) {
     for (const embed of reply["embeds"]) {
       if (!isRecord(embed)) continue;
@@ -31,14 +25,35 @@ const extractReplyText = (reply: unknown): string[] => {
       }
     }
   }
-
   return lines;
+};
+
+const chunkText = (text: string): string[] => {
+  if (text.length <= 300) return [text];
+  const chunks: string[] = [];
+  let pos = 0;
+  while (pos < text.length) {
+    const isFirst = chunks.length === 0;
+    const prefix = isFirst ? "" : "..";
+    const remaining = text.slice(pos);
+    const isLast = prefix.length + remaining.length <= 300;
+    if (isLast) {
+      chunks.push(prefix + remaining);
+      break;
+    }
+    const suffix = "..";
+    const available = 300 - prefix.length - suffix.length;
+    chunks.push(prefix + text.slice(pos, pos + available) + suffix);
+    pos += available;
+  }
+  return chunks;
 };
 
 const sendReplyToChat = (reply: unknown): void => {
   if (typeof window.StellarAPI.sendChat !== "function") return;
   const lines = extractReplyText(reply);
-  for (const line of lines) window.StellarAPI.sendChat(line);
+  for (const line of lines)
+    for (const chunk of chunkText(line)) window.StellarAPI.sendChat(chunk);
 };
 
 export class ZenithraBot {
@@ -52,29 +67,15 @@ export class ZenithraBot {
     });
   };
 
-  handleChatMessage = async (message: ParsedChatMessage): Promise<void> => {
-    const parsed = await this.parseChatCommand(message.message);
-    if (parsed.name === "") return;
-    const response = await this.executeChatCommand({
+  handleInput = async (message: ParsedChatMessage): Promise<void> => {
+    if (this.client === null) throw new Error("Zenithra bot has not started.");
+    const response = await this.client.sendCommand({
       input: message.message,
-      username: message.username,
       userId: "unknown",
+      username: message.username,
+      rank: Number(message.rank) || 0,
+      badges: message.badges,
     });
     for (const reply of response.replies) sendReplyToChat(reply);
   };
-
-  parseChatCommand = (input: string): Promise<ParsedCommandResponse> => {
-    if (this.client === null) throw new Error("Zenithra bot has not started.");
-    return this.client.parseCommand(input);
-  };
-
-  executeChatCommand = (context: ChatCommandContext): Promise<ExecuteCommandResponse> => {
-    if (this.client === null) throw new Error("Zenithra bot has not started.");
-    return this.client.executeCommand({
-      input: context.input,
-      username: context.username,
-      userId: context.userId,
-    });
-  };
 }
-

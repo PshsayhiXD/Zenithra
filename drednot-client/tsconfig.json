@@ -7,6 +7,25 @@
     "checkJs": true,
     "paths": {
       "@DClient/*": ["./src/*"],
+      "@/*": ["../src/*"],
+      "@utilities/*": ["../src/utilities/*"],
+      "@environment": ["../src/environment.ts"],
+      "@configs": ["../src/configs/index.ts"],
+      "@configs/*": ["../src/configs/*"],
+      "@commands/*": ["../src/commands/*"],
+      "@legacyCommands/*": ["../src/commands/legacyCommands/*"],
+      "@slashCommands/*": ["../src/commands/slashCommands/*"],
+      "@services/*": ["../src/services/*"],
+      "@handlers/*": ["../src/handlers/*"],
+      "@events/*": ["../src/events/*"],
+      "@Rmigrations/*": ["../src/migrations/*"],
+      "@dependencies": ["../src/commands/dependencies.ts"],
+      "@dependency/*": ["../src/commands/dependency/*"],
+      "@modules/*": ["../src/modules/*"],
+      "@databases/*": ["../src/databases/*"],
+      "@getDatabase": ["../src/databases/index.ts"],
+      "@tables/*": ["../src/databases/tables/*"],
+      "@Dmigrations/*": ["../src/databases/migrations/*"],
       "@backend/*": ["../src/backend/*"],
       "@backend/config": ["../src/backend/utils/config.ts"]
     }
@@ -22,6 +41,7 @@
     "data",
     "assets",
     "logs",
-    ".cache"
+    ".cache",
+    "bundled"
   ]
 }

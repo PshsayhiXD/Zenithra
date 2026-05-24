@@ -6,7 +6,7 @@ export interface ZenithraConfig {
 }
 
 let _config: ZenithraConfig = {
-  backendUrl: String(BACKEND_URL),
+  backendUrl: BACKEND_URL,
   defaultPrefix: "?",
 };
 

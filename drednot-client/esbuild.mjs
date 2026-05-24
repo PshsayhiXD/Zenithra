@@ -28,6 +28,6 @@ if (process.argv.includes("--watch")) {
   try {
     await esbuild.build(buildOptions);
   } catch {
-    process.exit(1);
+    throw new Error("Failed to built")
   }
 }
