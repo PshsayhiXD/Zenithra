@@ -1,7 +1,7 @@
 services:
   dredbot:
     build: .
-    container_name: dredbot-evolve
+    container_name: zenithra
     restart: unless-stopped
     env_file:
       - .env
