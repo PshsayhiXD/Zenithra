@@ -1,6 +1,6 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "withdraw",
   id: 11,
   category: "economy",
@@ -22,8 +22,8 @@ export default {
     const { tables, components, code, currency } = deps;
     const bank = tables.Economy.getBank(userId).bank;
     const amount = currency.parseCurrency(args.join(" "));
-    if (amount <= 0) return [code.UserDefinedError, "Please specify a valid amount to withdraw."];
-    if (amount > bank) return [code.UserDefinedError, `You only have **${currency.formatCurrency(bank)}** in your bank.`];
+    if (amount.lte(0)) return [code.UserDefinedError, "Please specify a valid amount to withdraw."];
+    if (amount.gt(bank)) return [code.UserDefinedError, `You only have **${currency.formatCurrency(bank)}** in your bank.`];
     const result = tables.Economy.withdraw(userId, amount);
     const payload = {
       embeds: [
@@ -46,4 +46,4 @@ export default {
     if (isDrednot) responses?.push(payload);
     return code.Success;
   },
-} satisfies Command<"tables" | "components" | "number" | "code" | "currency">;
+});

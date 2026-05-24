@@ -1,16 +1,16 @@
 import type {
-    InventoryItemId,
-    InventoryQuantity,
-    InventoryRow,
-    InventoryUserId,
+  InventoryItemId,
+  InventoryQuantity,
+  InventoryRow,
+  InventoryUserId,
 } from "@tables/types/inventory/index.js";
 import {
-    addItemStmt,
-    deleteEmptyStackStmt,
-    getUserInventoryStmt,
-    getUserItemStmt,
-    removeItemStmt,
-    updateDurabilityStmt,
+  addItemStmt,
+  deleteEmptyStackStmt,
+  getUserInventoryStmt,
+  getUserItemStmt,
+  removeItemStmt,
+  updateDurabilityStmt,
 } from "@tables/inventory/_statements.js";
 
 export const getUserInventory = (userId: InventoryUserId): InventoryRow[] => getUserInventoryStmt.all(userId);

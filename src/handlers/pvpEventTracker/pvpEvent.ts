@@ -11,7 +11,7 @@ import { Cache } from "@utilities/cache.js";
 import { createLogger } from "@utilities/logger.js";
 import { WEEK_DAYS, WEEK, HOUR } from "@utilities/time.js";
 
-const log = createLogger("PvpEventTracker");
+const logger = createLogger("PvpEventTracker");
 const SCHEDULE_TTL_MS = HOUR;
 const scheduleCache = new Cache<ScrapedEntry[]>("pvpSchedule", "memory");
 const SCHEDULE_CACHE_KEY = "schedule";
@@ -139,13 +139,13 @@ const fetchSchedule = async (): Promise<ScrapedEntry[]> => {
     const body = await response.text();
     const schedule = parseScheduleTable(body);
     scheduleCache.set(SCHEDULE_CACHE_KEY, schedule, SCHEDULE_TTL_MS);
-    log.debug("pvpSchedule.fetched", {
+    logger.debug("pvpSchedule.fetched", {
       count: schedule.length,
     });
     return schedule;
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
-    log.error(error_, {
+    logger.error(error_, {
       phase: "fetchSchedule",
     });
     return [];

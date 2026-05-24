@@ -1,23 +1,23 @@
-import { COMMANDS } from "@configs/legacyCommands.js";
+import { LEGACY_COMMANDS } from "@configs/legacyCommands.js";
 import type { CommandResult } from "@commands/types/command.js";
 
 import { createEmbed } from "@utilities/components/embedComponent.js";
-import { commands } from "@commands/_legacyCommands.js";
+import { legacyCommands } from "@commands/_legacyCommands.js";
 import { code, getDeps, type CodeNumber } from "@dependencies";
-import { formatCommandPermission, hasCommandPermission } from "@commands/shared.js";
+import { formatCommandPermission, hasCommandPermission, parseArguments } from "@commands/shared.js";
 import { createLogger } from "@utilities/logger.js";
 import { getRemainingCooldown, setCooldown } from "@tables/cooldown/index.js";
 import { getPrefix, upsertGuild } from "@tables/guild/index.js";
 import { upsertUser } from "@tables/user/index.js";
 import type { Message } from "discord.js";
 
-const log = createLogger("Command");
+const logger = createLogger("Command");
 
-export const handleCommand = async (message: Message): Promise<void> => {
+export const handleLegacyCommand = async (message: Message): Promise<void> => {
   const guild = message.guild;
   if (!guild) return;
-  if (commands.length === 0) {
-    log.warn("No commands loaded");
+  if (legacyCommands.length === 0) {
+    logger.warn("No commands loaded");
     await message.reply({
       embeds: [
         createEmbed({
@@ -45,9 +45,13 @@ export const handleCommand = async (message: Message): Promise<void> => {
   const parts = raw.trim().split(/\s+/);
   const inputName = parts[0];
   if (inputName === undefined) return;
-  const arguments_ = parts.slice(1);
+  const parsed = parseArguments(parts.slice(1));
+
+  const arguments_ = parsed.positionals;
+  const flags = parsed.flags;
+
   const name = inputName.toLowerCase();
-  const cmd = commands.find(v => v.name === name || v.aliases.includes(name));
+  const cmd = legacyCommands.find(v => v.name === name || v.aliases.includes(name));
   if (cmd === undefined) return;
 
   if (cmd.cooldown && cmd.cooldown > 0) {
@@ -129,7 +133,7 @@ export const handleCommand = async (message: Message): Promise<void> => {
 
   try {
     const deps = getDeps(cmd.dependencies);
-    log.info(`Executing ${cmd.name}`, {
+    logger.info(`Executing ${cmd.name}`, {
       command: cmd.name,
       userId: message.author.id,
       userTag: message.author.tag,
@@ -146,19 +150,20 @@ export const handleCommand = async (message: Message): Promise<void> => {
       userAvatarUrl: message.author.displayAvatarURL(),
       guildId: guild.id,
       message,
-      args: cmd.args.length > 0 ? arguments_ : [],
+      args: arguments_,
+      flags,
       name,
       raw,
       deps,
       cmd,
     });
 
-    log.info(`Executed ${cmd.name}`, { command: cmd.name, result });
+    logger.info(`Executed ${cmd.name}`, { command: cmd.name, result });
 
     if (result === code.Success) return;
 
     if (result === code.Warning) {
-      await message.react(COMMANDS.WARNING_REACTION).catch((): undefined => undefined);
+      await message.react(LEGACY_COMMANDS.WARNING_REACTION).catch((): undefined => undefined);
       await message.reply({
         embeds: [
           createEmbed({
@@ -190,10 +195,10 @@ export const handleCommand = async (message: Message): Promise<void> => {
       return;
     }
 
-    log.warn("Command returned unrecognised result", { command: cmd.name, result });
+    logger.warn("Command returned unrecognized result", { command: cmd.name, result });
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
-    log.error(error_, { command: cmd.name });
-    await message.react(COMMANDS.ERROR_REACTION).catch((): undefined => undefined);
+    logger.error(error_, { command: cmd.name });
+    await message.react(LEGACY_COMMANDS.ERROR_REACTION).catch((): undefined => undefined);
   }
 };

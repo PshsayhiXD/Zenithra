@@ -6,7 +6,7 @@ import type { SlashCommand } from "@commands/types/slashCommand.js";
 import { createLogger } from "@utilities/logger.js";
 
 export const slashCommands: SlashCommand[] = [];
-const log = createLogger("SlashLoader");
+const logger = createLogger("SlashLoader");
 
 const isSlashCommand = (value: unknown): value is SlashCommand => {
   if (value === null || typeof value !== "object") return false;
@@ -35,7 +35,7 @@ const getDefaultExport = (module_: unknown): unknown => {
 export const loadSlashCommands = (loadedCommands: SlashCommand[]): Promise<void> => {
   slashCommands.length = 0;
   slashCommands.push(...loadedCommands);
-  log.info("Slash commands loaded", { count: slashCommands.length });
+  logger.info("Slash commands loaded", { count: slashCommands.length });
   return Promise.resolve();
 };
 
@@ -71,7 +71,7 @@ export const readSlashCommands = async (): Promise<{
     const guildFiles = await collectJsFiles(slashGuildPath);
 
     if (globalFiles.length === 0 && guildFiles.length === 0) {
-      log.info("No slash commands found");
+      logger.info("No slash commands found");
       return { global: globalCmds, guild: guildCmds };
     }
 
@@ -82,14 +82,14 @@ export const readSlashCommands = async (): Promise<{
       const module_: unknown = await import(pathToFileURL(filePath).href);
       const resolved = getDefaultExport(module_);
       if (!isSlashCommand(resolved) || resolved.name === "") {
-        log.warn("Invalid slash command skipped", { filePath });
+        logger.warn("Invalid slash command skipped", { filePath });
         continue;
       }
       const cmd = resolved;
       const existingName = names.get(cmd.name);
       if (existingName !== undefined) {
         const newName = `${cmd.name}_${String(cmd.id)}`;
-        log.warn("Duplicate slash command name", {
+        logger.warn("Duplicate slash command name", {
           value: cmd.name,
           originalCommand: existingName.name,
           originalId: existingName.id,
@@ -103,7 +103,7 @@ export const readSlashCommands = async (): Promise<{
       const existingId = ids.get(cmd.id);
       if (existingId !== undefined) {
         const newId = Math.sqrt(cmd.id);
-        log.warn("Duplicate slash command id", {
+        logger.warn("Duplicate slash command id", {
           value: cmd.id,
           originalCommand: existingId.name,
           originalId: existingId.id,
@@ -122,7 +122,7 @@ export const readSlashCommands = async (): Promise<{
       const resolved = getDefaultExport(module_);
 
       if (!isSlashCommand(resolved) || resolved.name === "") {
-        log.warn("Invalid guild slash command skipped", { filePath });
+        logger.warn("Invalid guild slash command skipped", { filePath });
         continue;
       }
 
@@ -130,10 +130,10 @@ export const readSlashCommands = async (): Promise<{
     }
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
-    log.warn("Failed to read slash command directories", { error: error_.message });
+    logger.warn("Failed to read slash command directories", { error: error_.message });
   }
 
-  log.info("Slash commands read complete", {
+  logger.info("Slash commands read complete", {
     globalCount: globalCmds.length,
     guildCount: guildCmds.length,
   });

@@ -1,1 +1,3 @@
-export type EconomyBank = number;
+import type { Decimal } from "decimal.js";
+
+export type EconomyBank = Decimal;

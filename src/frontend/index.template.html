@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Zenithra - open-source Discord and Drednot bot with custom economy, commands, and community utilities."
+    />
+    <title>Zenithra</title>
+    <script>
+      (function () {
+        var key = "zenithra-theme";
+        var stored = localStorage.getItem(key);
+        var theme =
+          stored === "light" || stored === "dark"
+            ? stored
+            : window.matchMedia("(prefers-color-scheme: dark)").matches
+              ? "dark"
+              : "light";
+        document.documentElement.dataset.theme = theme;
+        document.documentElement.style.colorScheme = theme;
+      })();
+    </script>
+    <!-- ZENITHRA_STYLES -->
+  </head>
+  <body>
+    <div id="root"></div>
+    <!-- ZENITHRA_SCRIPT -->
+  </body>
+</html>

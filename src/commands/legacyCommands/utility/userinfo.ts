@@ -1,7 +1,7 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 import { time } from "discord.js";
 
-export default {
+export default defineLegacyCommand({
   name: "userinfo",
   id: 21,
   category: "utility",
@@ -47,4 +47,4 @@ export default {
     await message.reply({ embeds: [embed] });
     return code.Success;
   },
-} satisfies Command<"code" | "components">;
+});

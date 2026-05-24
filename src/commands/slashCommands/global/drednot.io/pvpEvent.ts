@@ -1,11 +1,11 @@
 import { ApplicationCommandOptionType, MessageFlags } from "discord.js";
-import type { SlashCommand, SlashCommandResult } from "@commands/types/slashCommand.js";
+import { defineGlobalSlashCommand, type SlashCommandResult } from "@commands/types/slashCommand.js";
 import { type PvpQuery } from "@handlers/pvpEventTracker/type.js";
 
 const formatTimestamp = (t: number): string =>
   `<t:${String(Math.floor(t / 1000))}:F> (<t:${String(Math.floor(t / 1000))}:R>)`;
 
-export default {
+export default defineGlobalSlashCommand({
   shouldRegister: true,
   name: "pvpevent",
   id: 2,
@@ -77,4 +77,4 @@ export default {
     });
     return code.Success;
   },
-} as SlashCommand<"pvpEvent" | "components" | "code">;
+});

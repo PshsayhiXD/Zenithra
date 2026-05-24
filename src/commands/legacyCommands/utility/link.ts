@@ -1,6 +1,6 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "link",
   id: 24,
   category: "utility",
@@ -17,7 +17,7 @@ export default {
     const payload = {
       embeds: [components.createEmbed({
         title: cmd.name,
-        description: "To link your account with Discord, please open the Zenithra Portal in your browser and use the 'Link via Discord' button.",
+        description: "https://discord.com/oauth2/authorize?client_id=1342359906510049291&response_type=code&redirect_uri=https%3A%2F%2Fintent-horribly-killdeer.ngrok-free.app%2Flink%2Fchat&scope=identify",
         color: "Blurple",
         options: {
           ...(message ? { message } : {}),
@@ -29,4 +29,4 @@ export default {
     if (isDrednot) responses?.push(payload);
     return code.Success;
   },
-} satisfies Command<"components" | "code">;
+});

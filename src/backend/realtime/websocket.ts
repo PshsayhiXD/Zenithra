@@ -4,7 +4,7 @@ import { createLogger } from "@utilities/logger.js";
 import { REALTIME_PATH } from "@backend/utils/config.js";
 import { handleRealtimeConnection } from "@backend/realtime/handlers/connection.js";
 
-const log = createLogger("Realtime");
+const logger = createLogger("Realtime");
 
 let websocket: WebSocketServer | undefined;
 
@@ -34,7 +34,7 @@ export const bindWebSocketServer = (server: http.Server): WebSocketServer => {
   });
 
   websocket.on("error", (error: Error): void => {
-    log.error(error, { event: "websocketError" });
+    logger.error(error, { event: "websocketError" });
   });
 
   return websocket;

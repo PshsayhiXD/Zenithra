@@ -1,6 +1,6 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "avatar",
   id: 22,
   category: "utility",
@@ -32,4 +32,4 @@ export default {
     await message.reply({ embeds: [embed] });
     return code.Success;
   },
-} satisfies Command<"code" | "components">;
+});

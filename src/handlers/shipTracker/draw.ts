@@ -10,7 +10,7 @@ const escapeXml = (text: string | number | null | undefined): string =>
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
     .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
+    .replaceAll("\"", "&quot;")
     .replaceAll("'", "&apos;");
 
 const clamp = (value: number, min: number, max: number): number =>

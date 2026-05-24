@@ -1,7 +1,7 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 import { PermissionFlagsBits } from "discord.js";
 
-export default {
+export default defineLegacyCommand({
   name: "setmission",
   id: 2,
   category: "drednot.io",
@@ -60,4 +60,4 @@ export default {
     if (message) await message.reply(payload);
     return code.Success;
   },
-} satisfies Command<"eventTracker" | "components" | "code">;
+});

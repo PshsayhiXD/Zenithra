@@ -29,22 +29,17 @@ export const setUsername: (userId: UserId, username: string) => UserRow =
   ): UserRow => {
     const existing = getUser(userId);
     const now = Date.now();
-
-    if (existing === undefined) {
-      throw new Error(`Cannot set username for unknown user: ${userId}`);
-    }
-
-    setUsernameStmt.run(username, now, userId);
-
+    if (existing === undefined) throw new Error(`Cannot set username for unknown user: ${userId}`);
+    const existingOwner = getUserByUsername(username);
+    if (existingOwner && existingOwner.id !== userId) setUsernameStmt.run(null, Date.now(), existingOwner.id);
+    else throw new Error(`Username "${username}" is already taken by another user.`);
     const updatedRow: UserRow = {
       ...existing,
       username,
       usernameSkippedAt: null,
       updatedAt: now,
     };
-
     setUserCache(userId, updatedRow);
-
     return updatedRow;
   });
 

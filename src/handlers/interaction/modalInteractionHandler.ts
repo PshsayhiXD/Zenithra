@@ -9,7 +9,7 @@ import { routeComponentInteraction } from "@handlers/interaction/router.js";
 import type { AddModalRecordOptions } from "@handlers/interaction/types/modalInteraction.js";
 import { createLogger } from "@utilities/logger.js";
 
-const log = createLogger("ModalInteraction");
+const logger = createLogger("ModalInteraction");
 
 export const addModalRecord = ({
   customId,
@@ -57,7 +57,7 @@ export const handleModalInteraction = async (
     });
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
-    log.error(error_, {
+    logger.error(error_, {
       customId: interaction.customId,
       userId: interaction.user.id,
       guildId: interaction.guildId ?? undefined,

@@ -4,12 +4,12 @@ import fs from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { createLogger } from "@utilities/logger.js";
 
-const log = createLogger("CommandLoader");
+const logger = createLogger("CommandLoader");
 const cmdsPath = path.join(__dirname, "legacyCommands");
 
-export const commands: Command[] = [];
+export const legacyCommands: Command[] = [];
 
-const isCommand = (value: unknown): value is Command => {
+const isLegacyCommand = (value: unknown): value is Command => {
   if (value === null || typeof value !== "object") return false;
   const object = value as Partial<Command>;
   return (
@@ -37,14 +37,15 @@ const getDefaultExport = (module_: unknown): unknown => {
   return levelOne.default ?? module_;
 };
 
-export const loadCommands = (loadedCommands: Command[]): Promise<void> => {
-  commands.length = 0;
-  commands.push(...loadedCommands);
-  log.info("Commands loaded", { count: commands.length });
-  return Promise.resolve();
+export const loadLegacyCommands = (loadedCommands: Command[]): void => {
+  legacyCommands.length = 0;
+  legacyCommands.push(...loadedCommands);
+  logger.info("Commands loaded", { count: legacyCommands.length });
 };
 
-export const readCommands = async (): Promise<Command[]> => {
+export const getLegacyCommands = (): Command[] => [...legacyCommands];
+
+export const readLegacyCommands = async (): Promise<Command[]> => {
   const cmds: Command[] = [];
   try {
     const files = await fs.readdir(cmdsPath, { recursive: true });
@@ -53,15 +54,15 @@ export const readCommands = async (): Promise<Command[]> => {
       const filePath = path.join(cmdsPath, file);
       const module_: unknown = await import(pathToFileURL(filePath).href);
       const resolved = getDefaultExport(module_);
-      if (!isCommand(resolved)) {
-        log.warn("Invalid command module skipped", { file });
+      if (!isLegacyCommand(resolved)) {
+        logger.warn("Invalid command module skipped", { file });
         continue;
       }
       cmds.push(resolved);
     }
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
-    log.warn("Failed to read commands directory", { error: error_.message });
+    logger.warn("Failed to read commands directory", { error: error_.message });
   }
 
   const names = new Map<string, Command>();
@@ -72,7 +73,7 @@ export const readCommands = async (): Promise<Command[]> => {
     const existingName = names.get(cmd.name);
     if (existingName !== undefined) {
       const newName = `${cmd.name}_${String(cmd.id)}`;
-      log.warn("Duplicate command name", {
+      logger.warn("Duplicate command name", {
         value: cmd.name,
         originalCommand: existingName.name,
         originalId: existingName.id,
@@ -87,7 +88,7 @@ export const readCommands = async (): Promise<Command[]> => {
       const existingAlias = aliases.get(alias);
       if (existingAlias !== undefined) {
         const newAlias = `${alias}_${cmd.name}`;
-        log.warn("Duplicate alias", {
+        logger.warn("Duplicate alias", {
           value: alias,
           originalCommand: existingAlias.name,
           originalId: existingAlias.id,
@@ -104,7 +105,7 @@ export const readCommands = async (): Promise<Command[]> => {
     const existingId = ids.get(cmd.id);
     if (existingId !== undefined) {
       const newId = Math.sqrt(cmd.id);
-      log.warn("Duplicate command id", {
+      logger.warn("Duplicate command id", {
         value: cmd.id,
         originalCommand: existingId.name,
         duplicateCommand: cmd.name,
@@ -114,6 +115,6 @@ export const readCommands = async (): Promise<Command[]> => {
     }
     ids.set(cmd.id, cmd);
   }
-  log.info("Commands read complete", { count: cmds.length });
+  logger.info("Commands read complete", { count: cmds.length });
   return cmds;
 };

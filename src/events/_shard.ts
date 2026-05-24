@@ -1,8 +1,8 @@
 import type { Shard } from "discord.js";
 import { createLogger } from "@utilities/logger.js";
 
-const log = createLogger("Shard");
+const logger = createLogger("Shard");
 
 export const onShardCreate = (shard: Shard): void => {
-  log.info("Shard spawned", { shardId: shard.id });
+  logger.info("Shard spawned", { shardId: shard.id });
 };

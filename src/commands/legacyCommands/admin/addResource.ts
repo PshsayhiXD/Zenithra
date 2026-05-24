@@ -1,7 +1,7 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { type CommandResult, defineLegacyCommand } from "@commands/types/command.js";
 import { PermissionsBitField } from "discord.js";
 
-export default {
+export default defineLegacyCommand({
   name: "addresource",
   id: 12,
   category: "admin",
@@ -52,7 +52,7 @@ export default {
     const resourceInput = args.slice(resourceStartIndex).join(" ");
     if (resourceInput === "") return [code.UserDefinedError, "Please provide a resource amount."];
     const amount = currency.parseCurrency(resourceInput);
-    if (amount === 0) return [code.UserDefinedError, "Invalid resource amount or type."];
+    if (amount.eq(0)) return [code.UserDefinedError, "Invalid resource amount or type."];
 
     const result = tables.Economy.addWallet(targetId, amount);
 
@@ -69,4 +69,4 @@ export default {
     await message.reply(payload);
     return code.Success;
   },
-} satisfies Command<"tables" | "components" | "code" | "currency">;
+});

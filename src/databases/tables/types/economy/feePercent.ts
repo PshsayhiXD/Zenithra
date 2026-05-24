@@ -1,1 +1,3 @@
-export type EconomyFeePercent = number;
+import type { Decimal } from "decimal.js";
+
+export type EconomyFeePercent = Decimal;

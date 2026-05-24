@@ -9,7 +9,8 @@ import type {
   StringSelectMenuBuilder,
   TextDisplayBuilder,
   TextInputBuilder,
-  UserSelectMenuBuilder
+  UserSelectMenuBuilder,
+  ButtonStyle,
 } from "discord.js";
 
 export type AnyContainerComponent =
@@ -25,9 +26,23 @@ export type AnyContainerComponent =
   | SectionBuilder
   | ActionRowBuilder;
 
+export interface ButtonDto {
+  id: string;
+  label?: string;
+  emoji?: string;
+  style: ButtonStyle;
+}
+
+export interface SectionDto {
+  text: string;
+  button?: ButtonDto;
+}
+
+export type ContainerComponentDto = SectionDto;
+
 export interface CreateContainerOptions {
   accentColor?: number | string;
   id?: string | number;
-  components?: AnyContainerComponent[];
+  components?: ContainerComponentDto[];
   autoSeparators?: boolean;
 }

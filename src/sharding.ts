@@ -5,7 +5,6 @@ import { createLogger } from "@utilities/logger.js";
 
 const logger = createLogger("Sharding");
 
-// eslint-disable-next-line unicorn/prefer-top-level-await
 void (async function bootShards(): Promise<void> {
   const token = process.env["DISCORD_BOT_TOKEN"];
   if (token === undefined || token === "") throw new Error("Missing DISCORD_BOT_TOKEN.");

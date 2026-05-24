@@ -5,7 +5,6 @@ import type {
   PermissionResolvable,
 } from "discord.js";
 import type {
-  CommandDependencies,
   DependencyKey,
   ResolvedDeps,
   CodeNumber,
@@ -30,6 +29,7 @@ export interface CommandContext<T extends DependencyKey = DependencyKey> {
   userAvatarUrl: string;
   guildId: string | null;
   args: string[];
+  flags: Record<string, string | boolean>;
   name: string;
   raw: string;
   deps: ResolvedDeps<T>;
@@ -55,9 +55,12 @@ export interface Command<T extends DependencyKey = DependencyKey> {
     required: boolean;
   }[];
   dependencies: T[];
+  flags?: string[];
   execute: (context: CommandContext<T>) => Promise<CommandResult>;
 }
 
-export type StaticDependencies = Omit<CommandDependencies, "message">;
+export const defineLegacyCommand = <const T extends DependencyKey = DependencyKey>(
+  command: Command<T>,
+): Command<T> => command;
 
 export type { DependencyKey, ResolvedDeps };

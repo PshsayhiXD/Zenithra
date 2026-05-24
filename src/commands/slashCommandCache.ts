@@ -20,14 +20,11 @@ export const readSlashCommandHashCache = (): SlashCommandHashCache => {
 };
 
 export const writeSlashCommandHashCache = (cache: SlashCommandHashCache): void => {
-  deleteGlobalSlashCommand();
-  const currentGuilds: GuildSlashCommand[] = getAllGuildSlashCommands();
-  for (const row of currentGuilds) {
-    deleteGuildSlashCommand(row.id);
-  }
   if (cache.global !== undefined && cache.global !== "") setGlobalSlashCommand(cache.global);
-  const entries = Object.entries(cache.guilds ?? {});
-  for (const [guildId, hashCache] of entries) {
-    setGuildSlashCommand(guildId, hashCache);
+  else deleteGlobalSlashCommand();
+  const currentGuilds = getAllGuildSlashCommands();
+  for (const row of currentGuilds) {
+    if (!(row.id in (cache.guilds ?? {}))) deleteGuildSlashCommand(row.id);
   }
+  for (const [guildId, hashCache] of Object.entries(cache.guilds ?? {})) setGuildSlashCommand(guildId, hashCache);
 };

@@ -10,8 +10,14 @@ export const FILEPATH = {
     // key, cert
     "./cert/localhost.pem",
     "./cert/localhost-key.pem"
-  ] as [string, string]
-};
+  ] as [string, string],
+  frontend: {
+    directory: "src/frontend",
+    indexHtml: "src/frontend/index.html",
+    bundledDirectory: "src/frontend/bundled",
+    publicDirectory: "src/frontend/public",
+  },
+} as const;
 const getForwardedValue = (value: string | string[] | undefined): string | undefined => {
   if (Array.isArray(value)) return value[0];
   if (typeof value !== "string") return undefined;

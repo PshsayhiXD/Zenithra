@@ -2,7 +2,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import type { ClientRegistrationResponse } from "@backend/domain/client/types.js";
 import { registerClient } from "@backend/services/client.service.js";
 import { readJsonBody } from "@backend/utils/body.js";
-import { sendJson } from "@backend/utils/http.js";
+import { sendJson } from "@backend/utils/response.js";
 import { REALTIME_PATH, resolvePublicBaseUrl } from "@backend/utils/config.js";
 
 export const registerClientRequest = async (

@@ -1,8 +1,8 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 import type { GuildChannels } from "@tables/types/guild/index.js";
 import { isTrackerKey, TRACKERS } from "@tables/types/guild/channels.js";
 
-export default {
+export default defineLegacyCommand({
   name: "setchannel",
   id: 1,
   category: "drednot.io",
@@ -62,6 +62,4 @@ export default {
     await message.reply(payload);
     return code.Success;
   },
-} satisfies Command<
-  "tables" | "components" | "code"
->;
+});

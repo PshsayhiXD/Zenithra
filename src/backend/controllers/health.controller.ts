@@ -1,5 +1,5 @@
 import type { ServerResponse } from "node:http";
-import { sendJson } from "@backend/utils/http.js";
+import { sendJson } from "@backend/utils/response.js";
 import { listCommands } from "@backend/services/command.service.js";
 import { BACKEND_HOST, BACKEND_PORT, REALTIME_PATH } from "@backend/utils/config.js";
 import { discoverRoutes } from "@backend/utils/routeDiscovery.js";

@@ -1,13 +1,11 @@
 import type { RouteHandler } from "@backend/types/router/route.js";
-import fs from "node:fs";
-import path from "node:path";
+import { readFrontendIndexHtml } from "@backend/utils/frontend.js";
 
 export const GET: RouteHandler = (request, response) => {
   void request;
   try {
-    const filePath = path.join(process.cwd(), "src/frontend/index.html");
-    const htmlContent = fs.readFileSync(filePath, "utf8");
-    response.writeHead(200, { "Content-Type": "text/html" });
+    const htmlContent = readFrontendIndexHtml();
+    response.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
     response.end(htmlContent);
   } catch (error: unknown) {
     response.writeHead(500, { "Content-Type": "text/plain" });

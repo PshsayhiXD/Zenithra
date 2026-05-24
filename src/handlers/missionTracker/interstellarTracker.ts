@@ -18,7 +18,7 @@ interface InterstellarMessage {
   event_state?: MissionTrackerState;
 }
 
-const log = createLogger("Interstellar");
+const logger = createLogger("Interstellar");
 
 const INTERSTELLAR_SERVER_MAP: Record<string, MissionServer> = {
   "psis-tracker": "persistent",
@@ -46,7 +46,6 @@ const toMissionServers = (
 
 class InterstellarTracker {
   private ws?: WebSocket;
-  private reconnectTimer: NodeJS.Timeout | null = null;
   private heartbeatTimer: NodeJS.Timeout | null = null;
   private alive = false;
   private lastSnapshot = "";
@@ -58,14 +57,20 @@ class InterstellarTracker {
   }
 
   private connect(): void {
-    if (this.ws?.readyState === WebSocket.OPEN) return;
+    if (
+      this.ws &&
+      (
+        this.ws.readyState === WebSocket.OPEN ||
+        this.ws.readyState === WebSocket.CONNECTING
+      )
+    ) return;
     const agent = new HttpsProxyAgent(
       `http://${PROXY.HOST}:${String(PROXY.PORT)}`,
     );
     this.ws = new WebSocket(MISSION.TRACKER.INTERSTELLAR_WS_URL, { agent });
     this.ws.on("open", () => {
       this.alive = true;
-      log.info("connected");
+      logger.info("connected");
       this.ws?.send(
         encode({
           type: 1,
@@ -80,6 +85,7 @@ class InterstellarTracker {
     });
 
     this.ws.on("message", (d: WebSocket.RawData): void => {
+      this.alive = true;
       const data = decode(d as Buffer) as InterstellarMessage;
       if (data.type !== 2 || data.event_state === undefined) return;
       const servers = toMissionServers(data.event_state);
@@ -92,12 +98,14 @@ class InterstellarTracker {
           >
           : {};
         const changes = Object.entries(servers)
-          .filter(([server, missionData]) => previous[server as MissionServer]?.mission !== missionData.mission)
+          .filter(([server, missionData]) =>
+            previous[server as MissionServer]?.mission !== missionData.mission
+          )
           .map(([server, missionData]) => ({
             server,
             mission: missionData.mission,
           }));
-        if (changes.length > 0) log.info("mission.update", { changes });
+        if (changes.length > 0) logger.info("mission.update", { changes });
         this.lastSnapshot = snapshot;
       }
       missionStore.setServers(servers);
@@ -110,15 +118,17 @@ class InterstellarTracker {
     this.ws.on("close", () => {
       this.cleanup();
       if (!this.stopped) {
-        log.warn("disconnected");
-        this.scheduleReconnect();
+        logger.warn("disconnected");
+        setTimeout(() => {
+          if (!this.stopped) this.connect();
+        }, MINUTE);
       }
     });
-
     this.ws.on("error", (error: unknown) => {
       const error_ =
         error instanceof Error ? error : new Error(String(error));
-      log.error(error_);
+      logger.error(error_);
+      this.ws?.terminate();
     });
   }
 
@@ -143,20 +153,8 @@ class InterstellarTracker {
     }
   }
 
-  private scheduleReconnect(): void {
-    if (this.reconnectTimer !== null) return;
-    this.reconnectTimer = setTimeout((): void => {
-      this.reconnectTimer = null;
-      this.connect();
-    }, 5000);
-  }
-
   stop(): void {
     this.stopped = true;
-    if (this.reconnectTimer !== null) {
-      clearTimeout(this.reconnectTimer);
-      this.reconnectTimer = null;
-    }
     this.cleanup();
     this.ws?.close();
   }

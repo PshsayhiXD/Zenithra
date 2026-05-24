@@ -6,7 +6,7 @@ import { buildPublicCombinedShips } from "@handlers/shipTracker/index.js";
 
 import { updateCache } from "@/client.js";
 import { loop, MINUTE } from "@utilities/time.js";
-import { createLogger } from "@utilities/logger.js";
+import { createLogger, Warning } from "@utilities/logger.js";
 
 import { registerSlashCommands } from "@commands/_registerSlashCommand.js";
 import { startMissionTracker } from "@services/missionTracker.js";
@@ -20,17 +20,14 @@ import {
 } from "@Rmigrations/executeMigrations.js";
 
 let hasStarted = false;
-const log = createLogger("Ready");
+const logger = createLogger("Ready");
 export const onClientReady = async (client: Client): Promise<void> => {
-  if (hasStarted) {
-    log.warn("Already started");
-    return;
-  }
+  if (hasStarted) throw new Warning("Already started", logger);
   hasStarted = true;
   const shardId = client.shard?.ids[0] ?? 0;
   const isFirstShard = shardId === 0;
 
-  log.info("Client ready", {
+  logger.info("Client ready", {
     shardId,
     userTag: client.user?.tag ?? null,
   });
@@ -39,19 +36,19 @@ export const onClientReady = async (client: Client): Promise<void> => {
 
   try {
     if (isFirstShard) {
-      log.info("Registering slash commands", { shardId });
+      logger.info("Registering slash commands", { shardId });
       await registerSlashCommands(client);
-      log.info("Slash commands registered", { shardId });
+      logger.info("Slash commands registered", { shardId });
       const migrationResult = await executeRuntimeMigrations(client);
-      log.info("Migration results", { shardId, migrationResult });
+      logger.info("Migration results", { shardId, migrationResult });
     }
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
-    log.error(error_, { shardId, phase: "slash_register" });
+    logger.error(error_, { shardId, phase: "slash_register" });
   }
 
   try {
-    log.info("Starting services", { shardId });
+    logger.info("Starting services", { shardId });
     client.user?.setPresence({ status: "idle" });
     updateCache();
     if (MISSION.TRACKER.USE_INTERSTELLAR) interstellarTracker.start();
@@ -64,7 +61,7 @@ export const onClientReady = async (client: Client): Promise<void> => {
         .slice(0, 7);
       const pvpEmbed = buildPvpEventEmbed(upcoming);
       await startPvpEventTracker(pvpEmbed);
-      log.info("PVP tracker initialized", {
+      logger.info("PVP tracker initialized", {
         shardId,
         upcomingCount: upcoming.length,
       });
@@ -73,7 +70,7 @@ export const onClientReady = async (client: Client): Promise<void> => {
     const eventEmbed = buildMissionTrackerEmbed(3);
     const shipPng = await buildPublicCombinedShips();
     await Promise.all([startMissionTracker(eventEmbed), startShipTracker(shipPng)]);
-    log.info("Initial services started", { shardId });
+    logger.info("Initial services started", { shardId });
     loop(async (): Promise<void> => {
       const newEventEmbed = buildMissionTrackerEmbed(3);
       const newShipPng = await buildPublicCombinedShips();
@@ -91,7 +88,7 @@ export const onClientReady = async (client: Client): Promise<void> => {
         const pvpEmbed = buildPvpEventEmbed(upcoming);
         await startPvpEventTracker(pvpEmbed);
 
-        log.info("PVP tracker initialized", {
+        logger.info("PVP tracker initialized", {
           shardId,
           upcomingCount: upcoming.length,
         });
@@ -99,6 +96,6 @@ export const onClientReady = async (client: Client): Promise<void> => {
     }, MINUTE * 5);
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
-    log.error(error_, { shardId, phase: "service_start" });
+    logger.error(error_, { shardId, phase: "service_start" });
   }
 };

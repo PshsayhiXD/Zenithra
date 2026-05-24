@@ -4,7 +4,7 @@ import { isRealtimeEnvelope, type ClientRegisterPayload, type PublishEventPayloa
 import { connectClientSession } from "@backend/services/client.service.js";
 import { getRealtimeBroker } from "@backend/realtime/broker.js";
 
-const log = createLogger("RealtimeMessage");
+const logger = createLogger("RealtimeMessage");
 
 const decodeRealtimeMessage = (data: RawData): string => {
   if (typeof data === "string") return data;
@@ -180,7 +180,7 @@ export const handleRealtimeMessage = (socket: WebSocket, data: RawData): void =>
     }
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
-    log.error(error_, { event: "messageError" });
+    logger.error(error_, { event: "messageError" });
     sendError(socket, error_.message);
   }
 };

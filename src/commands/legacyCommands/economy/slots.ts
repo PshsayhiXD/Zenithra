@@ -1,7 +1,8 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
 import { Decimal } from "decimal.js";
+import { randomInt } from "node:crypto";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "slots",
   id: 9,
   category: "economy",
@@ -12,7 +13,7 @@ export default {
   args: [
     {
       name: "amount",
-      description: "The amount of Dredcoins to bet",
+      description: "The amount of currency to bet",
       type: "number",
       required: true,
     },
@@ -23,13 +24,13 @@ export default {
     const { code, components, tables, currency } = deps;
 
     const amountRaw = currency.parseCurrency(args.join(" "));
-    if (amountRaw <= 0)
+    if (amountRaw.lte(0))
       return [code.UserDefinedError, "Please provide a valid bet amount."];
 
     const amount = amountRaw;
     const wallet = tables.Economy.getWallet(userId);
 
-    if (amount > wallet)
+    if (amount.gt(wallet))
       return [
         code.UserDefinedError,
         `You only have **${currency.formatCurrency(wallet)}** in your wallet.`,
@@ -37,32 +38,32 @@ export default {
 
     const symbols = ["🍒", "🍋", "🍇", "🍊", "💎", "🔔"];
 
-    const slot1 = symbols[Math.floor(Math.random() * symbols.length)];
-    const slot2 = symbols[Math.floor(Math.random() * symbols.length)];
-    const slot3 = symbols[Math.floor(Math.random() * symbols.length)];
+    const slot1 = symbols[randomInt(symbols.length)];
+    const slot2 = symbols[randomInt(symbols.length)];
+    const slot3 = symbols[randomInt(symbols.length)];
 
-    let win = 0;
-    let multiplier = 0;
+    let win = new Decimal(0);
+    let multiplier = new Decimal(0);
 
     if (slot1 === slot2 && slot2 === slot3) {
-      multiplier = 5;
-      win = new Decimal(amount).mul(multiplier).toNumber();
+      multiplier = new Decimal(5);
+      win = amount.mul(multiplier);
     } else if (slot1 === slot2 || slot2 === slot3 || slot1 === slot3) {
-      multiplier = 2;
-      win = new Decimal(amount).mul(multiplier).toNumber();
+      multiplier = new Decimal(2);
+      win = amount.mul(multiplier);
     }
 
-    if (win > 0) tables.Economy.addWallet(userId, new Decimal(win).sub(amount).toNumber());
-    else tables.Economy.addWallet(userId, -amount);
+    if (win.gt(0)) tables.Economy.addWallet(userId, win.minus(amount));
+    else tables.Economy.addWallet(userId, amount.neg());
     const resultString = `[ ${String(slot1)} | ${String(slot2)} | ${String(slot3)} ]`;
     const embed = components.createEmbed({
       title: "Slot Machine",
       description:
         `${resultString}\n\n${
-          win > 0
-            ? `You won **${currency.formatCurrency(win)}**! (${String(multiplier)}x)`
+          win.gt(0)
+            ? `You won **${currency.formatCurrency(win)}**! (${currency.decimalToString(multiplier)}x)`
             : `You lost **${currency.formatCurrency(amount)}**.`}`,
-      color: win > 0 ? "Green" : "Red",
+      color: win.gt(0) ? "Green" : "Red",
       options: {
         ...(message ? { message } : {}),
         timestamp: new Date()
@@ -74,4 +75,4 @@ export default {
 
     return code.Success;
   },
-} satisfies Command<"code" | "components" | "tables" | "config.CURRENCY" | "number" | "currency">;
+});

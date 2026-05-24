@@ -1,6 +1,6 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "coinflip",
   id: 16,
   category: "fun",
@@ -29,4 +29,4 @@ export default {
     if (isDrednot) responses?.push(embed.data.description ?? " ");
     return code.Success;
   },
-} satisfies Command<"code" | "components">;
+});

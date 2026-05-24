@@ -1,5 +1,5 @@
 import { ApplicationCommandOptionType } from "discord.js";
-import type { SlashCommand, SlashCommandResult } from "@commands/types/slashCommand.js";
+import { defineGuildSlashCommand, type SlashCommandResult } from "@commands/types/slashCommand.js";
 
 import { GUILD_CHANNEL_TYPES, type GuildChannels } from "@tables/types/guild/index.js";
 const channelTypeChoices = GUILD_CHANNEL_TYPES.map(k => ({
@@ -7,8 +7,7 @@ const channelTypeChoices = GUILD_CHANNEL_TYPES.map(k => ({
   value: k
 }));
 
-export default {
-  shouldRegister: true,
+export default defineGuildSlashCommand({
   name: "setchannel",
   id: 1,
   category: "drednot.io",
@@ -58,4 +57,4 @@ export default {
     });
     return code.Success;
   },
-} as SlashCommand<"tables" | "components" | "isGuildChannelType" | "code">;
+});

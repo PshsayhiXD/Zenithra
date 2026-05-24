@@ -1,7 +1,7 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 import type { Item } from "@modules/types/item.js";
 
-export default {
+export default defineLegacyCommand({
   name: "balance",
   id: 4,
   category: "economy",
@@ -63,4 +63,4 @@ export default {
     `);
     return code.Success;
   },
-} satisfies Command<"tables" | "components" | "number" | "config.CURRENCY" | "code" | "items" | "currency">;
+});

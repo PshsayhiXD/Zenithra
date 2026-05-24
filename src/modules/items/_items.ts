@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import { pathToFileURL } from "node:url";
 import { createLogger } from "@utilities/logger.js";
 
-const log = createLogger("ItemLoader");
+const logger = createLogger("ItemLoader");
 
 const items = new Map<string, Item>();
 const itemsById = new Map<number, Item>();
@@ -39,7 +39,7 @@ export const createItem = <T extends ItemDependencyKey>(
   execute?: ItemExecutor<T>
 ): void => {
   if (name === "") throw new Error("Missing name for item");
-  if (items.has(name)) log.warn("Duplicate item", { name });
+  if (items.has(name)) logger.warn("Duplicate item", { name });
 
   const item: Item<T> = {
     id: options.id ?? 0,
@@ -139,7 +139,7 @@ export const readItems = async (directory: string = __dirname, prefix = ""): Pro
       }
     }
   } catch (error: unknown) {
-    log.error(error as Error, { directory });
+    logger.error(error as Error, { directory });
   }
   return itemsList;
 };

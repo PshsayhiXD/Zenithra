@@ -5,13 +5,13 @@ import { disconnectClientSession } from "@backend/services/client.service.js";
 import { getRealtimeBroker } from "@backend/realtime/broker.js";
 import { handleRealtimeMessage } from "@backend/realtime/handlers/message.js";
 
-const log = createLogger("RealtimeConnection");
+const logger = createLogger("RealtimeConnection");
 
 export const handleRealtimeConnection = (socket: WebSocket, request: http.IncomingMessage): void => {
   const broker = getRealtimeBroker();
   const connection = broker.addConnection(socket, request.socket.remoteAddress ?? "unknown");
 
-  log.info(`Realtime client connected: ${connection.remoteAddress} (${connection.sessionId})`);
+  logger.info(`Realtime client connected: ${connection.remoteAddress} (${connection.sessionId})`);
 
   broker.send(socket, {
     type: "system.connected",
@@ -41,10 +41,10 @@ export const handleRealtimeConnection = (socket: WebSocket, request: http.Incomi
       }
     });
 
-    log.info(`Realtime client disconnected: ${connection.sessionId}`);
+    logger.info(`Realtime client disconnected: ${connection.sessionId}`);
   });
 
   socket.on("error", (error: Error): void => {
-    log.error(error, { event: "socketError", sessionId: connection.sessionId });
+    logger.error(error, { event: "socketError", sessionId: connection.sessionId });
   });
 };

@@ -58,3 +58,29 @@ export const getDefault = (module_: unknown): unknown => {
   }
   return module_;
 };
+
+export interface ParsedArguments {
+  positionals: string[];
+  flags: Record<string, string | boolean>;
+};
+
+export const parseArguments = (input: string[]): ParsedArguments => {
+  const positionals: string[] = [];
+  const flags: Record<string, string | boolean> = {};
+  for (const argument of input) {
+    if (!argument.startsWith("--")) {
+      positionals.push(argument);
+      continue;
+    }
+    const raw = argument.slice(2);
+    const eqIndex = raw.indexOf("=");
+    if (eqIndex === -1) {
+      flags[raw] = true;
+      continue;
+    }
+    const key = raw.slice(0, eqIndex);
+    const value = raw.slice(eqIndex + 1);
+    flags[key] = value;
+  }
+  return { positionals, flags };
+};

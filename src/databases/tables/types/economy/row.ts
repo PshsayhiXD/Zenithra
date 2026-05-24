@@ -11,3 +11,11 @@ export interface EconomyRow {
   bankCapacity: EconomyBankCapacity;
   updatedAt: EconomyUpdatedAt;
 }
+
+export interface EconomyDatabaseRow {
+  userId: EconomyUserId;
+  currency: string;
+  bank: string;
+  bankCapacity: string;
+  updatedAt: EconomyUpdatedAt;
+}

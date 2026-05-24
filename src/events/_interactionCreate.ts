@@ -2,7 +2,7 @@ import type { Interaction } from "discord.js";
 import handleInteraction from "@handlers/interaction/interactionHandler.js";
 import { createLogger } from "@utilities/logger.js";
 
-const log = createLogger("Interaction");
+const logger = createLogger("Interaction");
 
 export const onInteractionCreate = async (interaction: Interaction): Promise<void> => {
   try {
@@ -10,7 +10,7 @@ export const onInteractionCreate = async (interaction: Interaction): Promise<voi
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
 
-    log.error(error_, {
+    logger.error(error_, {
       interactionType: interaction.type,
       userId: interaction.user.id,
       guildId: interaction.guildId,
@@ -25,7 +25,7 @@ export const onInteractionCreate = async (interaction: Interaction): Promise<voi
       } catch (replyError: unknown) {
         const replyError_ = replyError instanceof Error ? replyError : new Error(String(replyError));
 
-        log.error(replyError_, {
+        logger.error(replyError_, {
           phase: "interaction_reply",
           userId: interaction.user.id,
           guildId: interaction.guildId,

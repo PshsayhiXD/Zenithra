@@ -5,14 +5,14 @@ import { BACKEND_HOST, BACKEND_PORT, toWebSocketBaseUrl, FILEPATH } from "@backe
 import { handleRequest } from "@backend/app.js";
 import { bindWebSocketServer } from "@backend/realtime/websocket.js";
 
-const log = createLogger("Backend");
+const logger = createLogger("Backend");
 
 let server: https.Server | undefined;
 
 export const startBackendServer = (): https.Server | null => {
   if (server !== undefined) return server;
   if (FILEPATH.certificate[0] === "" || FILEPATH.certificate[1] === "") {
-    log.error("Backend FILEPATH Invalid. Maybe try 'npm run mkcert' and try again");
+    logger.error("Backend FILEPATH Invalid. Maybe try 'npm run mkcert' and try again");
     return null;
   }
   server = https.createServer(
@@ -23,7 +23,7 @@ export const startBackendServer = (): https.Server | null => {
     (request, response) => {
       void handleRequest(request, response).catch((error: unknown) => {
         const error_ = error instanceof Error ? error : new Error(String(error));
-        log.error(error_, {
+        logger.error(error_, {
           event: "requestFailed"
         });
         if (response.headersSent) response.end();
@@ -43,12 +43,12 @@ export const startBackendServer = (): https.Server | null => {
 
   server.listen(BACKEND_PORT, BACKEND_HOST, (): void => {
     const httpsBaseUrl = `https://${BACKEND_HOST}:${String(BACKEND_PORT)}`;
-    log.info(`Backend listening on ${httpsBaseUrl}`);
-    log.info(`WebSocket listening on ${toWebSocketBaseUrl(httpsBaseUrl)}`);
+    logger.info(`Backend listening on ${httpsBaseUrl}`);
+    logger.info(`WebSocket listening on ${toWebSocketBaseUrl(httpsBaseUrl)}`);
   });
 
   server.on("error", (error: Error): void => {
-    log.error(error, {
+    logger.error(error, {
       event: "serverError"
     });
   });

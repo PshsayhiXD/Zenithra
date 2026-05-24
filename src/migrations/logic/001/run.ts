@@ -6,7 +6,7 @@ import {
 } from "@Rmigrations/logic/001/messages.js";
 import { createLogger } from "@utilities/logger.js";
 
-const log = createLogger("UsernameMigration");
+const logger = createLogger("UsernameMigration");
 
 export const sendUsernameMigrationDm = async (
   client: Client,
@@ -23,7 +23,7 @@ export const sendUsernameMigrationDm = async (
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
 
-    log.warn(error_.message, {
+    logger.warn(error_.message, {
       discordId,
       error: error_.message,
       phase: "send_dm",
@@ -42,7 +42,7 @@ export const addUsernames = async (client: Client): Promise<boolean> => {
     if (wasSent) sent += 1;
   }
 
-  log.info("Username migration run finished", {
+  logger.info("Username migration run finished", {
     attempted: users.length,
     sent,
   });

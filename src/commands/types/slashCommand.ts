@@ -5,7 +5,6 @@ import type {
 } from "discord.js";
 import type {
   CodeNumber,
-  CommandDependencies,
   DependencyKey,
   ResolvedDeps,
 } from "@dependencies";
@@ -83,6 +82,7 @@ export interface BaseSlashCommand<T extends DependencyKey = DependencyKey> {
 export interface GlobalSlashCommand<
   T extends DependencyKey = DependencyKey,
 > extends BaseSlashCommand<T> {
+  shouldRegister: boolean;
   dmPermission?: boolean;
   groupPermission?: boolean;
 }
@@ -97,10 +97,12 @@ export type SlashCommand<T extends DependencyKey = DependencyKey> =
   | GlobalSlashCommand<T>
   | GuildSlashCommand<T>;
 
-export const defineSlashCommand = <const T extends DependencyKey = DependencyKey>(
-  command: SlashCommand<T>,
-): SlashCommand<T> => command;
+export const defineGuildSlashCommand = <const T extends DependencyKey = DependencyKey>(
+  guildSlashCommand: GuildSlashCommand<T>,
+): GuildSlashCommand<T> => guildSlashCommand;
 
-export type StaticDependencies = Omit<CommandDependencies, "message">;
+export const defineGlobalSlashCommand = <const T extends DependencyKey = DependencyKey>(
+  globalSlashCommand: GlobalSlashCommand<T>,
+): GlobalSlashCommand<T> => globalSlashCommand
 
 export type { DependencyKey, ResolvedDeps };

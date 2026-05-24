@@ -1,6 +1,6 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "transfer",
   id: 10,
   category: "economy",
@@ -37,20 +37,20 @@ export default {
 
     const senderWallet = tables.Economy.getWallet(userId);
     const amount = currency.parseCurrency(args.join(" "));
-    if (amount <= 0) return [code.UserDefinedError, "Please provide a valid amount to transfer."];
+    if (amount.lte(0)) return [code.UserDefinedError, "Please provide a valid amount to transfer."];
 
-    if (senderWallet < amount) return [
+    if (senderWallet.lt(amount)) return [
         code.UserDefinedError,
         `You only have **${currency.formatCurrency(senderWallet)}** in your wallet.`,
       ];
 
-    tables.Economy.addWallet(userId, -amount);
+    tables.Economy.addWallet(userId, amount.neg());
     tables.Economy.addWallet(target.id, amount);
 
     const embed = components.createEmbed({
       title: "Transfer Successful",
       description:
-        `Successfully transferred **${currency.formatCurrency(amount)}** Dredcoins to **${target.tag}**.`,
+        `Successfully transferred **${currency.formatCurrency(amount)}** to **${target.tag}**.`,
       color: "Green",
       options: {
         ...(message ? { message } : {}),
@@ -61,4 +61,4 @@ export default {
     if (message) await message.reply({ embeds: [embed] });
     return code.Success;
   },
-} satisfies Command<"code" | "components" | "tables" | "currency">;
+});

@@ -1,7 +1,7 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 import type { Item } from "@modules/types/item.js";
 
-export default {
+export default defineLegacyCommand({
   name: "inventory",
   id: 8,
   category: "economy",
@@ -62,4 +62,4 @@ export default {
     await message.reply(payload);
     return code.Success;
   },
-} satisfies Command<"tables" | "components" | "items" | "code">;
+});

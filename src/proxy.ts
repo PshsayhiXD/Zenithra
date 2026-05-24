@@ -1,5 +1,5 @@
 import { PROXY } from "@configs/proxy.js";
-import { createLogger } from "@utilities/logger.js";
+import { createLogger, Warning } from "@utilities/logger.js";
 import http, { type IncomingMessage } from "node:http";
 import net, { type Socket } from "node:net";
 
@@ -39,13 +39,7 @@ server.on("error", (error: unknown): void => {
     error instanceof Error &&
     "code" in error &&
     error.code === "EADDRINUSE"
-  ) {
-    logger.warn("Proxy port already in use", {
-      host: PROXY.HOST,
-      port: PROXY.PORT,
-    });
-    return;
-  }
+  ) throw new Warning(`Proxy port already in use ${PROXY.HOST}:${String(PROXY.PORT)}`, logger);
   logger.error(error instanceof Error ? error : new Error(String(error)), { event: "ProxyListenError" });
 });
 server.listen(PROXY.PORT, PROXY.HOST, (): void => {

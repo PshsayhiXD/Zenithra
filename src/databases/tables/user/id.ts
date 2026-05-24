@@ -6,7 +6,6 @@ const userCache = new Map<UserId, UserRow>();
 export const getUser = (userId: UserId): UserRow | undefined => {
   const cached = userCache.get(userId);
   if (cached) return cached;
-
   const row = getUserStmt.get(userId) ?? undefined;
   if (row) userCache.set(userId, row);
   return row;

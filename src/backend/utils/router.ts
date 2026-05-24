@@ -3,6 +3,7 @@ import { readdir } from "node:fs/promises";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import type { RouteModule } from "@backend/types/router/route.js";
 import { pathToFileURL } from "node:url";
+import { checkRateLimit } from "@backend/utils/ratelimit.js";
 
 export interface RouteDiscoveryItem {
   method: string;
@@ -59,11 +60,11 @@ export const loadRoutes = async (directory: string, basePath = ""): Promise<void
 };
 
 export const getRouteDiscoveryItems = (): RouteDiscoveryItem[] => routes.flatMap((route) =>
-    Object.keys(route.module).map((method) => ({
-      method: method.toUpperCase(),
-      path: route.path,
-    }))
-  );
+  Object.keys(route.module).map((method) => ({
+    method: method.toUpperCase(),
+    path: route.path,
+  }))
+);
 
 export const matchAndHandleRoute = async (
   request: IncomingMessage,
@@ -77,6 +78,17 @@ export const matchAndHandleRoute = async (
       const handler = route.module[method];
 
       if (handler) {
+        const ip = request.socket.remoteAddress ?? "unknown";
+        const allowed = checkRateLimit(`${method}:${pathname}:${ip}`, 60, 60_000);
+        if (!allowed) {
+          response.writeHead(429, {
+            "Content-Type": "application/json",
+          });
+          response.end(JSON.stringify({
+            error: "Too many requests",
+          }));
+          return true;
+        }
         const parameters: Record<string, string> = {};
         for (let index = 0; index < route.paramNames.length; index++) {
           const key = route.paramNames[index];

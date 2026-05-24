@@ -1,7 +1,7 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
 import { Decimal } from "decimal.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "beg",
   id: 5,
   category: "economy",
@@ -10,12 +10,12 @@ export default {
   permission: {},
   args: [],
   cooldown: 10,
-  dependencies: ["tables", "components", "number", "config.CURRENCY", "code", "currency"],
+  dependencies: ["tables", "components", "number", "config.CURRENCY", "config.LEGACY_COMMANDS.BEG.BASE", "code", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, cmd, userId, responses, isDiscord, isDrednot } = context;
-    const { tables, components, code, currency } = deps;
+    const { tables, components, code, currency, "config.LEGACY_COMMANDS.BEG.BASE": base } = deps;
 
-    const random = new Decimal(Math.floor(Math.random() * 100) + 30).mul("1e-16").toNumber();
+    const random = base.mul(Decimal.random()).floor();
     const result = tables.Economy.addWallet(userId, random);
 
     const payload = {
@@ -38,4 +38,4 @@ export default {
     if (isDrednot) responses?.push(`New balance: **${currency.formatCurrency(result.currency)}**`);
     return code.Success;
   },
-} satisfies Command<"tables" | "components" | "number" | "config.CURRENCY" | "code" | "currency">;
+});

@@ -13,7 +13,7 @@ import type { Statement } from "better-sqlite3";
 const database = getDatabase();
 
 export const getUserStmt: Statement<[UserId], UserRow> = database.prepare(
-  "SELECT * FROM users WHERE id = ?",
+  "SELECT * FROM users WHERE id = ? LIMIT 1",
 );
 
 export const getAllUsersStmt: Statement<[], UserRow> = database.prepare(
@@ -30,7 +30,7 @@ export const getUsersMissingUsernameStmt: Statement<[], UserRow> = database.prep
 `);
 
 export const getUserByUsernameStmt: Statement<[string], UserRow> = database.prepare(
-  "SELECT * FROM users WHERE username = ?",
+  "SELECT * FROM users WHERE username = ? LIMIT 1",
 );
 
 export const upsertUserStmt: Statement<[UserId, UserCreatedAt, UserUpdatedAt]> = database.prepare(`

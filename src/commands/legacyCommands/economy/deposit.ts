@@ -1,6 +1,6 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "deposit",
   id: 7,
   category: "economy",
@@ -11,50 +11,75 @@ export default {
       name: "amount",
       description: "The amount to deposit, or 'all'.",
       type: "string",
-      required: true,
-    },
+      required: true
+    }
   ],
   permission: {},
   cooldown: 5,
-  dependencies: ["tables", "components", "config.CURRENCY", "code", "number", "currency"],
+  dependencies: [
+    "tables",
+    "components",
+    "config.CURRENCY.BASE",
+    "config.CURRENCY.FEE_PERCENT",
+    "code",
+    "currency"
+  ],
   execute: async (context): Promise<CommandResult> => {
     const { args, deps, cmd, userId, responses, message, isDiscord, isDrednot } = context;
-    const { tables, components, "config.CURRENCY": CURRENCY, code, currency } = deps;
+    const {
+      tables,
+      components,
+      "config.CURRENCY.BASE": base,
+      "config.CURRENCY.FEE_PERCENT": feePercent,
+      code,
+      currency
+    } = deps;
+
     const wallet = tables.Economy.getWallet(userId);
     const bank = tables.Economy.getBank(userId);
     const amount = currency.parseCurrency(args.join(" "));
-    if (amount <= 0)
+
+    if (amount.lte(0))
       return [code.UserDefinedError, "Please specify a valid amount to deposit."];
-    if (amount > wallet)
+    if (amount.gt(wallet))
       return [
         code.UserDefinedError,
-        `You only have **${currency.formatCurrency(wallet)}** in your wallet.`,
+        `You only have **${currency.formatCurrency(wallet)}** in your wallet.`
       ];
-    if (bank.bank + amount * (1 - CURRENCY.FEE_PERCENT) > bank.bankCapacity)
+
+    const feeAmount = amount.mul(feePercent).div(base).floor().mul(base);
+    const netDeposit = amount.minus(feeAmount);
+
+    if (bank.bank.plus(netDeposit).gt(bank.bankCapacity))
       return [
         code.UserDefinedError,
-        `Your bank capacity is only **${currency.formatCurrency(bank.bankCapacity)}**.`,
+        `Your bank capacity is only **${currency.formatCurrency(bank.bankCapacity)}**.`
       ];
 
-    const fee = CURRENCY.FEE_PERCENT * 100;
-    const result = tables.Economy.deposit(userId, amount);
-
+    const result = tables.Economy.deposit(userId, amount, feePercent);
+    const feeDisplay = currency.decimalToString(feePercent.mul(100));
     const payload = {
       embeds: [
         components.createEmbed({
           title: cmd.name,
           description:
-            `Deposited **${currency.formatCurrency(amount)}** (after ${String(fee)}% fee).\n` +
+            `Deposited **${currency.formatCurrency(amount)}** (after ${feeDisplay}% fee).\n` +
             `Wallet: **${currency.formatCurrency(result.currency)}**\n` +
             `Bank: **${currency.formatCurrency(result.bank)}**`,
           color: "Green",
-          options: { timestamp: new Date() },
-        }),
-      ],
+          options: {
+            timestamp: new Date()
+          }
+        })
+      ]
     };
+
     if (isDiscord && message) await message.reply(payload);
-    if (isDrednot) responses?.push(`Deposited **${currency.formatCurrency(amount)}** (after ${String(fee)}% fee).`);
+    if (isDrednot)
+      responses?.push(
+        `Deposited **${currency.formatCurrency(amount)}** (after ${feeDisplay}% fee).`
+      );
 
     return code.Success;
-  },
-} satisfies Command<"tables" | "components" | "config.CURRENCY" | "code" | "number" | "currency">;
+  }
+});

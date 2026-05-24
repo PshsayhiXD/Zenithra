@@ -9,7 +9,7 @@ import {
 import { routeComponentInteraction } from "@handlers/interaction/router.js";
 import { createLogger } from "@utilities/logger.js";
 
-const log = createLogger("ButtonInteraction");
+const logger = createLogger("ButtonInteraction");
 
 export const addButtonRecord = ({
   customId,
@@ -57,7 +57,7 @@ export const handleButtonInteraction = async (
     });
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
-    log.error(error_, {
+    logger.error(error_, {
       customId: interaction.customId,
       userId: interaction.user.id,
       guildId: interaction.guildId ?? undefined,

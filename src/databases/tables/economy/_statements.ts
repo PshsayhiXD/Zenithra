@@ -1,7 +1,5 @@
 import type {
-  EconomyBank,
-  EconomyCurrency,
-  EconomyRow,
+  EconomyDatabaseRow,
   EconomyStreak,
   EconomyStreakRow,
   EconomyUpdatedAt,
@@ -13,7 +11,7 @@ import { getDatabase } from "@databases/index.js";
 
 const database = getDatabase();
 
-export const getEconomyStmt: Statement<[EconomyUserId], EconomyRow> = database.prepare(
+export const getEconomyStmt: Statement<[EconomyUserId], EconomyDatabaseRow> = database.prepare(
   "SELECT * FROM economy WHERE userId = ?",
 );
 
@@ -33,7 +31,7 @@ export const upsertStreakStmt: Statement<
 `);
 
 export const upsertEconomyStmt: Statement<
-  [EconomyUserId, EconomyCurrency, EconomyUpdatedAt],
+  [EconomyUserId, string, EconomyUpdatedAt],
   RunResult
 > = database.prepare(`
   INSERT INTO economy (userId, ${CURRENCY.COLUMN_NAME}, updatedAt)
@@ -44,22 +42,22 @@ export const upsertEconomyStmt: Statement<
 `);
 
 export const updateBalancesStmt: Statement<
-  [EconomyCurrency, EconomyBank, EconomyUpdatedAt, EconomyUserId],
+  [string, string, EconomyUpdatedAt, EconomyUserId],
   RunResult
 > = database.prepare(`
   UPDATE economy SET
-    ${CURRENCY.COLUMN_NAME} = ${CURRENCY.COLUMN_NAME} + ?,
-    bank = bank + ?,
+    ${CURRENCY.COLUMN_NAME} = ?,
+    bank = ?,
     updatedAt = ?
   WHERE userId = ?
 `);
 
 export const updateWalletStmt: Statement<
-  [EconomyCurrency, EconomyUpdatedAt, EconomyUserId],
+  [string, EconomyUpdatedAt, EconomyUserId],
   RunResult
 > = database.prepare(`
   UPDATE economy SET
-    ${CURRENCY.COLUMN_NAME} = ${CURRENCY.COLUMN_NAME} + ?,
+    ${CURRENCY.COLUMN_NAME} = ?,
     updatedAt = ?
   WHERE userId = ?
 `);

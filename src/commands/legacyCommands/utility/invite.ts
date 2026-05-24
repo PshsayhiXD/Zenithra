@@ -1,6 +1,6 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "invite",
   id: 18,
   category: "utility",
@@ -14,7 +14,7 @@ export default {
     const { message, deps, responses, isDiscord, isDrednot } = context;
     const { env, components, code } = deps;
 
-    const invite = env["opt_discord_bot_invite_url"];
+    const invite = env["OPT_DISCORD_BOT_INVITE_URL"];
     if (invite === undefined || invite === "") return [code.InternalError, "Invite URL is not configured."];
     const payload = {
       embeds: [components.createEmbed({
@@ -31,4 +31,4 @@ export default {
     if (isDrednot) responses?.push(payload);
     return code.Success;
   },
-} as Command<"env" | "components" | "code">;
+});

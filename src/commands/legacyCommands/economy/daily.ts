@@ -1,6 +1,6 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "daily",
   id: 6,
   category: "economy",
@@ -9,17 +9,22 @@ export default {
   args: [],
   permission: {},
   cooldown: 86_400, // 24 hours
-  dependencies: ["code", "components", "tables", "currency"],
+  dependencies: ["code", "components", "tables", "currency", "config.LEGACY_COMMANDS.DAILY.BASE", "config.LEGACY_COMMANDS.DAILY.STREAK_INCREMENT"],
   execute: async (context): Promise<CommandResult> => {
     const { message, deps, userId, responses, isDiscord, isDrednot } = context;
-    const { code, components, tables, currency } = deps;
-    const amount = 500;
-
-    tables.Economy.addWallet(userId, amount);
+    const {
+      code, components, tables, currency,
+      "config.LEGACY_COMMANDS.DAILY.BASE": amount,
+      "config.LEGACY_COMMANDS.DAILY.STREAK_INCREMENT": increment
+    } = deps;
+    const streakRow = deps.tables.Economy.getStreak(userId);
+    const reward = increment(amount, streakRow.streak);
+    tables.Economy.addWallet(userId, reward);
+    tables.Economy.addStreak(userId);
 
     const embed = components.createEmbed({
       title: "Daily Reward",
-      description: `You have claimed your daily reward of **${currency.formatCurrency(amount)}**!`,
+      description: `You have claimed your daily reward of **${currency.formatCurrency(reward)}**!`,
       color: "Gold",
       options: {
         ...(message ? { message } : {}),
@@ -31,4 +36,4 @@ export default {
     if (isDrednot) responses?.push({ embeds: [embed] });
     return code.Success;
   },
-} satisfies Command<"code" | "components" | "tables" | "currency">;
+});

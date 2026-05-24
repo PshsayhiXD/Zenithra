@@ -3,7 +3,7 @@ import type { Database } from "better-sqlite3";
 import type * as tables from "@tables/index.js";
 import type * as databaseTypes from "@tables/types/index.js";
 import type { Components } from "@utilities/components/index.js";
-import { type Config } from "@configs";
+import type { Config } from "@configs";
 import type { number, currency } from "@utilities/index.js";
 import type { code } from "@commands/dependency/deps/code.js";
 import type { isGuildChannelType } from "@commands/dependency/deps/guild.js";
@@ -68,13 +68,12 @@ export interface CommandDependencies {
   eventTracker: typeof eventTracker;
   items: typeof items;
   currency: typeof currency;
+  commands: Record<number, unknown>;
   message: Message;
 }
 
-export type StaticDependencies = Omit<CommandDependencies, "message">;
-
-export type DependencyKey = DeepKeys<StaticDependencies>;
+export type DependencyKey = DeepKeys<Omit<CommandDependencies, "message">>;
 
 export type ResolvedDeps<Keys extends DependencyKey> = {
-  [K in Keys]: DeepValue<StaticDependencies, K>;
+  [K in Keys]: DeepValue<Omit<CommandDependencies, "message">, K>;
 };

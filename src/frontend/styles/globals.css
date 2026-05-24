@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-yin-bg: var(--yin-bg);
+  --color-yin-fg: var(--yin-fg);
+  --color-yin-muted: var(--yin-muted);
+  --color-yin-subtle: var(--yin-subtle);
+  --color-yin-border: var(--yin-border);
+  --color-yin-surface: var(--yin-surface);
+  --color-yin-surface-raised: var(--yin-surface-raised);
+  --color-yin-inverse: var(--yin-inverse);
+  --color-yin-inverse-fg: var(--yin-inverse-fg);
+  --font-sans: "Inter", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Cascadia Code", ui-monospace, monospace;
+}
+
+:root,
+[data-theme="light"] {
+  --yin-bg: #f7f7f7;
+  --yin-fg: #0a0a0a;
+  --yin-muted: #525252;
+  --yin-subtle: #e5e5e5;
+  --yin-border: #d4d4d4;
+  --yin-surface: #ffffff;
+  --yin-surface-raised: #f0f0f0;
+  --yin-inverse: #0a0a0a;
+  --yin-inverse-fg: #fafafa;
+  --yin-grid: rgb(0 0 0 / 0.05);
+  --yin-ring: rgb(0 0 0 / 0.08);
+  color-scheme: light;
+}
+
+[data-theme="dark"] {
+  --yin-bg: #0a0a0a;
+  --yin-fg: #f5f5f5;
+  --yin-muted: #a3a3a3;
+  --yin-subtle: #1f1f1f;
+  --yin-border: #2e2e2e;
+  --yin-surface: #111111;
+  --yin-surface-raised: #1a1a1a;
+  --yin-inverse: #f5f5f5;
+  --yin-inverse-fg: #0a0a0a;
+  --yin-grid: rgb(255 255 255 / 0.06);
+  --yin-ring: rgb(255 255 255 / 0.1);
+  color-scheme: dark;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-yin-bg text-yin-fg antialiased transition-colors duration-300;
+    font-feature-settings: "kern" 1, "liga" 1;
+  }
+
+  ::selection {
+    background: var(--yin-fg);
+    color: var(--yin-bg);
+  }
+}
+
+@layer utilities {
+  .yin-grid {
+    background-image:
+      linear-gradient(var(--yin-grid) 1px, transparent 1px),
+      linear-gradient(90deg, var(--yin-grid) 1px, transparent 1px);
+    background-size: 40px 40px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 0%, black 10%, transparent 70%);
+  }
+
+  .yin-card {
+    box-shadow:
+      0 0 0 1px var(--yin-border),
+      0 12px 40px var(--yin-ring);
+  }
+
+  .yin-headline {
+    letter-spacing: -0.03em;
+  }
+
+  .yin-section-alt {
+    background-color: var(--yin-surface);
+  }
+}

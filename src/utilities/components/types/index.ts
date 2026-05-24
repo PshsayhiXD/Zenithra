@@ -4,3 +4,4 @@ export type { CreateEmbedOptions } from "@utilities/components/types/embedCompon
 export type { ModalComponentOptions, ModalTextInputOptions } from "@utilities/components/types/modalComponent.js";
 export type { PaginationOptions } from "@utilities/components/types/paginationComponent.js";
 export type { SelectComponentOptions } from "@utilities/components/types/selectComponent.js";
+export type { ContainerPaginationUpdateContext, ContainerPaginationOptions, ContainerPaginationResult, ContainerPaginationIds } from "@utilities/components/types/containerPaginationComponent.js";

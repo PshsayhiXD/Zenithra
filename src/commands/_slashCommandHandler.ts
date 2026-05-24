@@ -7,7 +7,7 @@ import {
 } from "discord.js";
 import type { SlashCommandResult } from "@commands/types/slashCommand.js";
 
-import { COMMANDS } from "@configs/legacyCommands.js";
+import { SLASH_COMMANDS } from "@configs/slashCommands.js";
 import { getRemainingCooldown, setCooldown } from "@tables/cooldown/index.js";
 import { upsertGuild } from "@tables/guild/index.js";
 import { upsertUser } from "@tables/user/index.js";
@@ -18,7 +18,7 @@ import { slashCommands } from "@commands/_slashCommands.js";
 import { code, getDeps, type CodeNumber } from "@dependencies";
 import { formatCommandPermission, hasCommandPermission } from "@commands/shared.js";
 
-const log = createLogger("SlashHandler");
+const logger = createLogger("SlashHandler");
 
 const isErrorResult = (v: unknown): v is [CodeNumber, string] =>
   Array.isArray(v) && typeof v[0] === "number" && typeof v[1] === "string";
@@ -100,7 +100,7 @@ export const handleSlashCommand = async (interaction: ChatInputCommandInteractio
   try {
     const deps = getDeps(cmd.dependencies);
 
-    log.info("Executing slash command", {
+    logger.info("Executing slash command", {
       command: cmd.name,
       userId: interaction.user.id,
       userTag: interaction.user.tag,
@@ -118,7 +118,7 @@ export const handleSlashCommand = async (interaction: ChatInputCommandInteractio
       options,
     });
 
-    log.info("Executed slash command", {
+    logger.info("Executed slash command", {
       command: cmd.name,
       result,
     });
@@ -158,7 +158,7 @@ export const handleSlashCommand = async (interaction: ChatInputCommandInteractio
       return;
     }
 
-    log.warn("Slash command returned unrecognised result", {
+    logger.warn("Slash command returned unrecognised result", {
       command: cmd.name,
       result,
     });
@@ -166,7 +166,7 @@ export const handleSlashCommand = async (interaction: ChatInputCommandInteractio
   } catch (error: unknown) {
     const error_ = error instanceof Error ? error : new Error(String(error));
 
-    log.error(error_, {
+    logger.error(error_, {
       command: cmd.name,
       userId: interaction.user.id,
       guildId: interaction.guildId ?? null,
@@ -175,7 +175,7 @@ export const handleSlashCommand = async (interaction: ChatInputCommandInteractio
     await send({
       embeds: [
         createEmbed({
-          title: `${COMMANDS.ERROR_REACTION} Error`,
+          title: `${SLASH_COMMANDS.ERROR_REACTION} Error`,
           description: error_.message,
           color: "Red",
           options: { interaction, timestamp: new Date() },

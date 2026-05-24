@@ -8,7 +8,7 @@ import { serializeSlashCommand } from "@commands/slashCommandHelper.js";
 import { readSlashCommandHashCache, writeSlashCommandHashCache } from "@commands/slashCommandCache.js";
 import type { SlashCommand } from "@commands/types/slashCommand.js";
 
-const log = createLogger("Slash");
+const logger = createLogger("Slash");
 
 export const registerSlashCommands = async (client: Client): Promise<void> => {
   if (client.user === null) throw new Error("Client user is not ready.");
@@ -51,26 +51,26 @@ export const registerSlashCommands = async (client: Client): Promise<void> => {
   const globalHash = createHash(globalCommands);
 
   if (force || cache.global !== globalHash) {
-    log.info("Updating global commands", { count: globalCommands.length, force });
+    logger.info("Updating global commands", { count: globalCommands.length, force });
     await rest.put(Routes.applicationCommands(appId), { body: globalCommands });
     cache.global = globalHash;
     writeSlashCommandHashCache(cache);
-  } else log.info("Global commands unchanged");
+  } else logger.info("Global commands unchanged");
 
   for (const [guildId, guildCommands] of guildMap) {
     if (failedGuilds.has(guildId)) {
-      log.info("Skipping blacklisted guild", { guildId });
+      logger.info("Skipping blacklisted guild", { guildId });
       continue;
     }
 
     const guildHash = createHash(guildCommands);
 
     if (!force && cache.guilds[guildId] === guildHash) {
-      log.info("Guild unchanged", { guildId });
+      logger.info("Guild unchanged", { guildId });
       continue;
     }
 
-    log.info("Updating guild commands", {
+    logger.info("Updating guild commands", {
       guildId,
       count: guildCommands.length,
       force,
@@ -90,7 +90,7 @@ export const registerSlashCommands = async (client: Client): Promise<void> => {
         "code" in error &&
         (error.code === 50_001 || error.code === 10_004)
       ) {
-        log.warn("Removing invalid guild permanently", { guildId });
+        logger.warn("Removing invalid guild permanently", { guildId });
 
         failedGuilds.add(guildId);
 
@@ -102,7 +102,7 @@ export const registerSlashCommands = async (client: Client): Promise<void> => {
       }
 
       const error_ = error instanceof Error ? error : new Error(String(error));
-      log.error(error_, { guildId });
+      logger.error(error_, { guildId });
       throw error_;
     }
   }
@@ -112,7 +112,7 @@ export const registerSlashCommands = async (client: Client): Promise<void> => {
   for (const guildId of Object.keys(guilds)) {
     if (existingGuildIds.has(guildId)) continue;
 
-    log.info("Clearing removed guild scope", { guildId });
+    logger.info("Clearing removed guild scope", { guildId });
 
     try {
       await rest.put(Routes.applicationGuildCommands(appId, guildId), {
@@ -130,7 +130,7 @@ export const registerSlashCommands = async (client: Client): Promise<void> => {
         "code" in error &&
         (error.code === 50_001 || error.code === 10_004)
       ) {
-        log.warn("Removing invalid guild permanently", { guildId });
+        logger.warn("Removing invalid guild permanently", { guildId });
 
         const { [guildId]: _, ...restGuilds } = guilds;
         guilds = restGuilds;
@@ -140,7 +140,7 @@ export const registerSlashCommands = async (client: Client): Promise<void> => {
       }
 
       const error_ = error instanceof Error ? error : new Error(String(error));
-      log.error(error_, { guildId });
+      logger.error(error_, { guildId });
       throw error_;
     }
   }

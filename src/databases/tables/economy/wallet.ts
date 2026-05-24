@@ -5,25 +5,26 @@ import type {
 } from "@tables/types/economy/index.js";
 import { updateWalletStmt } from "@tables/economy/_statements.js";
 import { getEconomy, getOrCreateEconomy } from "@tables/economy/userId.js";
-import { normalizeAmount } from "@utilities/currency.js";
+import { decimalToString, isFiniteDecimal, snapToBase } from "@utilities/currency.js";
 
 const assertFiniteAmount = (
   amount: EconomyCurrency,
 ): void => {
-  if (!Number.isFinite(amount)) throw new TypeError("Amount must be a finite number.");
+  if (!isFiniteDecimal(amount)) throw new TypeError("Amount must be a finite Decimal.");
 };
 
 export const addWallet = (
   userId: EconomyUserId,
   amount: EconomyCurrency,
 ): EconomyRow => {
-  const normalized = normalizeAmount(amount);
+  const normalized = snapToBase(amount);
   assertFiniteAmount(normalized);
-  if (normalized === 0) throw new Error("Amount must not normalize to 0.");
-  getOrCreateEconomy(userId);
+  if (normalized.eq(0)) throw new Error("Amount must not normalize to 0.");
+  const current = getOrCreateEconomy(userId);
+  const nextWallet = current.currency.plus(normalized);
   const now = Date.now();
   updateWalletStmt.run(
-    normalized,
+    decimalToString(nextWallet),
     now,
     userId,
   );

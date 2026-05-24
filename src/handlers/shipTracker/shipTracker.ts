@@ -5,7 +5,7 @@ import type {
   ShipFromLink,
 } from "./type.js";
 
-const log = createLogger("ShipTracker");
+const logger = createLogger("ShipTracker");
 
 const getAnonKey = (): string => process.env["DREDNOT_ANONYMOUS_KEY"] ?? "";
 
@@ -19,7 +19,7 @@ export const getPublicPersistentShips = async (): Promise<PublicPersistentShips>
   });
   if (!response.ok) {
     const error = new Error(`Failed to fetch persistent ships: HTTP ${String(response.status)}`);
-    log.error(error, { phase: "getPublicPersistentShips" });
+    logger.error(error, { phase: "getPublicPersistentShips" });
     throw error;
   }
   return response.json() as Promise<PublicPersistentShips>;
@@ -31,7 +31,7 @@ export const getPublicEphemeralShips = async (): Promise<PublicEphemeralShips> =
   });
   if (!response.ok) {
     const error = new Error(`Failed to fetch ephemeral ships: HTTP ${String(response.status)}`);
-    log.error(error, { phase: "getPublicEphemeralShips" });
+    logger.error(error, { phase: "getPublicEphemeralShips" });
     throw error;
   }
   return response.json() as Promise<PublicEphemeralShips>;
@@ -57,7 +57,7 @@ export const getShipFromLink = async (
     if (!shipName || shipName === "Deep Space Airships") return { valid: false };
     return { valid: true, shipName, shipImage: ogImage };
   } catch (error: unknown) {
-    log.error(
+    logger.error(
       error instanceof Error ? error : new Error(String(error)),
       { phase: "getShipFromLink", link },
     );

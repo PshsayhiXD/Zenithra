@@ -3,7 +3,7 @@ import { Decimal } from "decimal.js";
 const BASE = new Decimal("1e-16");
 
 export const CURRENCY = {
-  FEE_PERCENT: 0.05, // 5%
+  FEE_PERCENT: new Decimal("0.05"), // 5%
   COLUMN_NAME: "currency",
   BASE,
   units: {

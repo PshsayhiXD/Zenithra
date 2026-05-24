@@ -2,9 +2,9 @@ import {
   ApplicationCommandOptionType,
   MessageFlags,
 } from "discord.js";
-import type { SlashCommand, SlashCommandResult } from "@commands/types/slashCommand.js";
+import { defineGlobalSlashCommand, type SlashCommandResult } from "@commands/types/slashCommand.js";
 
-export default {
+export default defineGlobalSlashCommand({
   shouldRegister: true,
   name: "missiontimer",
   id: 3,
@@ -49,4 +49,4 @@ export default {
       return [code.UserDefinedError, errorMessage];
     }
   },
-} as SlashCommand<"eventTracker" | "code">;
+});

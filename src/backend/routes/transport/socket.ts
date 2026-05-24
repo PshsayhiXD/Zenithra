@@ -1,5 +1,5 @@
 import type { RouteHandler } from "@backend/types/router/route.js";
-import { sendJson } from "@backend/utils/http.js";
+import { sendJson } from "@backend/utils/response.js";
 
 export const GET: RouteHandler = (request, response) => {
   void request;

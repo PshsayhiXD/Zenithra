@@ -1,6 +1,6 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "8ball",
   id: 13,
   category: "fun",
@@ -51,4 +51,4 @@ export default {
     if (isDrednot) responses?.push(`${question}. ${response}`);
     return code.Success;
   },
-} satisfies Command<"code" | "components">;
+});

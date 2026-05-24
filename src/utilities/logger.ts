@@ -98,4 +98,15 @@ const wrap = (inst: pino.Logger): Logger => {
 
 export const createLogger = (prefix: string): Logger => wrap(base.child({ prefix }));
 
-export const logger = createLogger("app");
+export class Failed extends Error {
+  constructor(message: string, logInstance: Logger) {
+    super(message);
+    logInstance.error(message);
+  }
+}
+export class Warning extends Error {
+  constructor(message: string, logInstance: Logger) {
+    super(message);
+    logInstance.warn(message);
+  }
+}

@@ -1,6 +1,7 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { Decimal } from "decimal.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "compress",
   id: 23,
   category: "economy",
@@ -22,14 +23,16 @@ export default {
     }
   ],
   cooldown: 5,
-  dependencies: ["tables", "components", "number", "code", "items"],
+  dependencies: ["tables", "components", "number", "code", "items", "config.CURRENCY"],
   execute: async (context): Promise<CommandResult> => {
     const { args, deps, userId, responses, message, isDiscord, isDrednot } = context;
-    const { tables, components, number, code } = deps;
+    const { tables, components, number, code, "config.CURRENCY": currencyConfig } = deps;
     const resource = args[0]?.toLowerCase();
-    const count = Math.max(1, Number.parseInt(args[1] ?? "1"));
+    const parsedCount = Number.parseInt(args[1] ?? "1");
 
-    if (Number.isNaN(count)) return [code.UserDefinedError, "Please provide a valid amount."];
+    if (Number.isNaN(parsedCount)) return [code.UserDefinedError, "Please provide a valid amount."];
+    let count = parsedCount;
+    if (count < 1) count = 1;
 
     const tiers = [
       { id: "explosive", name: "Explosive", nextId: "currency.metal", nextName: "Metal", ratio: 10, isLiquid: true },
@@ -46,14 +49,16 @@ export default {
 
     const needed = count * tier.ratio;
 
-    const current = tier.isLiquid === true
-      ? tables.Economy.getWallet(userId)
-      : tables.Inventory.getUserItem(userId, tier.id)?.quantity ?? 0;
-
-    if (current < needed) return [code.UserDefinedError, `You need **${number.formatNumber(needed)}** ${tier.name} to compress **${String(count)}** times!`];
-
-    if (tier.isLiquid === true) tables.Economy.addWallet(userId, -needed);
-    else tables.Inventory.removeItem(userId, tier.id, needed);
+    if (tier.isLiquid === true) {
+      const liquidNeeded = new Decimal(needed).mul(currencyConfig.BASE);
+      const current = tables.Economy.getWallet(userId);
+      if (current.lt(liquidNeeded)) return [code.UserDefinedError, `You need **${number.formatNumber(needed)}** ${tier.name} to compress **${String(count)}** times!`];
+      tables.Economy.addWallet(userId, liquidNeeded.neg());
+    } else {
+      const current = tables.Inventory.getUserItem(userId, tier.id)?.quantity ?? 0;
+      if (current < needed) return [code.UserDefinedError, `You need **${number.formatNumber(needed)}** ${tier.name} to compress **${String(count)}** times!`];
+      tables.Inventory.removeItem(userId, tier.id, needed);
+    }
 
     tables.Inventory.addItem(userId, tier.nextId, count);
 
@@ -70,4 +75,4 @@ export default {
 
     return code.Success;
   }
-} satisfies Command<"tables" | "components" | "number" | "code" | "items">;
+});

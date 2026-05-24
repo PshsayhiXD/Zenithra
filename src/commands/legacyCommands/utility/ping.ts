@@ -1,6 +1,6 @@
-import type { Command, CommandResult } from "@commands/types/command.js";
+import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
 
-export default {
+export default defineLegacyCommand({
   name: "ping",
   id: 19,
   category: "utility",
@@ -30,4 +30,4 @@ export default {
 
     return code.Success;
   }
-} satisfies Command<"code">;
+});

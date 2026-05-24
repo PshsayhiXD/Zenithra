@@ -1,5 +1,5 @@
 UPDATE economy 
 SET 
-  currency = currency * 1.0e-16,
-  bank = bank * 1.0e-16
-WHERE currency > 0 OR bank > 0;
+  currency = printf('%.16f', CAST(currency AS REAL) * 0.0000000000000001),
+  bank = printf('%.16f', CAST(bank AS REAL) * 0.0000000000000001)
+WHERE CAST(currency AS NUMERIC) > 0 OR CAST(bank AS NUMERIC) > 0;

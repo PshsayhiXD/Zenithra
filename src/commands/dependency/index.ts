@@ -12,15 +12,16 @@ import { isGuildChannelType } from "@commands/dependency/deps/guild.js";
 import { pvpEvent } from "@commands/dependency/deps/pvp.js";
 import { eventTracker } from "@commands/dependency/deps/eventTracker.js";
 import { items } from "@commands/dependency/deps/items.js";
+import { legacyCommands } from "@commands/_legacyCommands.js";
 
 import type {
-  StaticDependencies,
+  CommandDependencies,
   DependencyKey,
   DeepValue,
 } from "@commands/types/dependency.js";
 import { resolveDependency } from "@commands/dependency/resolver.js";
 
-export const availableDependencies: StaticDependencies = {
+export const availableDependencies: Omit<CommandDependencies, "message"> = {
   components,
   db: database,
   dbTypes: databaseTypes_,
@@ -34,18 +35,20 @@ export const availableDependencies: StaticDependencies = {
   pvpEvent,
   eventTracker,
   items,
+  get commands() {
+    return Object.fromEntries(legacyCommands.map((c) => [c.id, c]));
+  },
 };
 
 export const getDependency = <K extends DependencyKey>(
   key: K,
-): DeepValue<StaticDependencies, K> => resolveDependency(availableDependencies, key);
+): DeepValue<Omit<CommandDependencies, "message">, K> => resolveDependency(availableDependencies, key);
 
 export type {
   DeepKeys,
   DeepValue,
   ResolvedDeps,
   CommandDependencies,
-  StaticDependencies,
   DependencyKey,
 } from "@commands/types/dependency.js";
 
