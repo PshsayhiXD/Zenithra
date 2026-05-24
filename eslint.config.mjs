@@ -1,14 +1,23 @@
 // @ts-check
 import js from "@eslint/js";
+import { defineConfig } from "eslint/config";
 import tseslint from "typescript-eslint";
 import unicorn from "eslint-plugin-unicorn";
 import importX from "eslint-plugin-import-x";
 import globals from "globals";
 
-/** @type {import('@typescript-eslint/utils').TSESLint.FlatConfig.ConfigFile} */ // @ts-ignore
-export default [
+export default defineConfig(
   {
-    ignores: ["dist/", "node_modules/", "data/", "assets/", ".cache/", "_test.ts"],
+    ignores: [
+      "dist/",
+      "node_modules/",
+      "data/",
+      "assets/",
+      ".cache/",
+      "_test.ts",
+      "src/frontend/bundled/",
+      "drednot-client/bundled",
+    ],
   },
   {
     linterOptions: {
@@ -17,22 +26,22 @@ export default [
     },
   },
   js.configs.recommended,
-  ...tseslint.configs.strictTypeChecked,
-  ...tseslint.configs.stylisticTypeChecked,
   unicorn.configs.recommended,
+  tseslint.configs.strictTypeChecked,
+  tseslint.configs.stylisticTypeChecked,
   {
-    files: ["src/**/*.ts", "drednot-client/*.mjs"],
+    files: ["src/**/*.ts", "drednot-client/**/*.ts"],
     languageOptions: {
       globals: {
         ...globals.node,
       },
       parser: tseslint.parser,
       parserOptions: {
-        project: ["./tsconfig.json", "./drednot-client/tsconfig.json"],
-        // @ts-ignore
+        project: ["./tsconfig.json"],
         tsconfigRootDir: process.cwd(),
         noWarnOnMultipleProjects: true,
       },
+      sourceType: "module",
     },
     plugins: {
       unicorn,
@@ -41,12 +50,53 @@ export default [
     settings: {
       "import-x/resolver": {
         typescript: {
-          project: ["./tsconfig.json", "./drednot-client/tsconfig.json"],
+          project: ["./tsconfig.json"],
         },
         node: {
           extensions: [".js", ".ts"],
         },
       },
+    },
+  },
+  {
+    files: ["src/frontend/**/*.{ts,tsx}", "src/frontend/esbuild.mjs"],
+    languageOptions: {
+      globals: {
+        ...globals.browser,
+        ...globals.node,
+      },
+      parser: tseslint.parser,
+      parserOptions: {
+        project: ["./src/frontend/tsconfig.json"],
+        tsconfigRootDir: process.cwd(),
+        noWarnOnMultipleProjects: true,
+      },
+      sourceType: "module",
+    },
+    plugins: {
+      unicorn,
+      "import-x": importX,
+    },
+    settings: {
+      "import-x/resolver": {
+        typescript: {
+          project: ["./src/frontend/tsconfig.json"],
+        },
+        node: {
+          extensions: [".js", ".ts", ".tsx"],
+        },
+      },
+    },
+    rules: {
+      "unicorn/filename-case": ["error", { case: "camelCase" }],
+      "import-x/extensions": "off",
+      "import-x/no-unresolved": "off",
+      "@typescript-eslint/explicit-function-return-type": "off",
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "func-style": "off",
+      "@typescript-eslint/consistent-type-definitions": "off",
+      "unicorn/prevent-abbreviations": "off",
+      "no-console": "off",
     },
   },
   {
@@ -58,10 +108,10 @@ export default [
       parser: tseslint.parser,
       parserOptions: {
         project: ["./drednot-client/tsconfig.json"],
-        // @ts-ignore
         tsconfigRootDir: process.cwd(),
         noWarnOnMultipleProjects: true,
       },
+      sourceType: "module",
     },
     plugins: {
       unicorn,
@@ -79,7 +129,17 @@ export default [
     },
   },
   {
-    files: ["src/**/*.ts", "drednot-client/**/*.ts", "drednot-client/*.mjs"],
+    files: ["**/*.js", "**/*.mjs"],
+    extends: [tseslint.configs.disableTypeChecked],
+    languageOptions: {
+      globals: {
+        ...globals.node,
+      },
+      sourceType: "module",
+    },
+  },
+  {
+    files: ["src/**/*.ts", "drednot-client/**/*.ts"],
     rules: {
       "import-x/extensions": [
         "error",
@@ -97,7 +157,7 @@ export default [
       "import-x/no-useless-path-segments": "error",
       "import-x/first": "error",
       "import-x/no-mutable-exports": "error",
-
+      "import-x/no-cycle": "error",
       "unicorn/filename-case": ["error", { case: "camelCase" }],
       "unicorn/no-null": "off",
       "unicorn/prefer-spread": "off",
@@ -107,7 +167,6 @@ export default [
       "unicorn/prefer-module": "off",
       "unicorn/prefer-string-replace-all": "off",
       "unicorn/prefer-global-this": "off",
-
       "unicorn/better-regex": "error",
       "unicorn/consistent-function-scoping": "error",
       "unicorn/isolated-functions": "error",
@@ -121,7 +180,7 @@ export default [
       "unicorn/prefer-simple-condition-first": "error",
       "unicorn/no-abusive-eslint-disable": "error",
       "unicorn/no-process-exit": "off",
-
+      "unicorn/prefer-top-level-await": "off",
       "object-shorthand": ["error", "always"],
       "arrow-body-style": ["error", "as-needed"],
       "prefer-template": "error",
@@ -139,15 +198,7 @@ export default [
       "no-unreachable": "error",
       "no-implicit-coercion": "error",
       "no-return-await": "error",
-      "no-unused-vars": "off",
-      "quotes": [
-        "error",
-        "double",
-        {
-          avoidEscape: true,
-          allowTemplateLiterals: false,
-        },
-      ],
+      "quotes": ["error", "double"],
       "func-style": ["error", "expression", { allowArrowFunctions: true }],
       "no-restricted-syntax": [
         "error",
@@ -168,7 +219,6 @@ export default [
       "no-useless-return": "error",
       "no-else-return": ["error", { allowElseIf: false }],
       "no-empty": ["error", { allowEmptyCatch: false }],
-
       "@typescript-eslint/no-shadow": "error",
       "@typescript-eslint/no-useless-constructor": "error",
       "@typescript-eslint/no-unused-vars": [
@@ -219,7 +269,6 @@ export default [
           allowIndexSignaturePropertyAccess: true,
         },
       ],
-      //"@typescript-eslint/no-empty-function": "error",
       "@typescript-eslint/switch-exhaustiveness-check": "error",
       "@typescript-eslint/no-unnecessary-boolean-literal-compare": "error",
       "@typescript-eslint/prefer-return-this-type": "error",
@@ -236,4 +285,4 @@ export default [
       "unicorn/filename-case": "off",
     },
   },
-];
+);
