@@ -42,6 +42,7 @@ const validateTarget = (
     const target = getUser(arguments_[0]);
     if (target === undefined) return [ItemCode.notFound, `Player "${arguments_[0]}" not found.`];
   }
+  if (targetType === "event" && (arguments_[0] === "")) return [ItemCode.cannotUse, "Please provide an event to target."];
   return undefined;
 };
 
