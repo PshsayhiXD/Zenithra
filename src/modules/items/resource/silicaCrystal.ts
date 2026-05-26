@@ -10,5 +10,5 @@ export default defineItem({
   description: "A rare and shiny currency. 100 can be compressed into Hyper Rubber.",
   price: 100_000,
   usable: false,
-  dependencies: ["code"],
+  dependencies: [],
 });

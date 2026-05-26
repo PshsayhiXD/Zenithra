@@ -10,5 +10,5 @@ export default defineItem({
   description: "The rarest currency in the universe.",
   price: 1_000_000_000,
   usable: false,
-  dependencies: ["code"],
+  dependencies: [],
 });

@@ -10,5 +10,5 @@ export default defineItem({
   description: "10 Compressed Explosives compressed together. 100 can be compressed into Silica Crystals.",
   price: 1000,
   usable: false,
-  dependencies: ["code"],
+  dependencies: [],
 });
