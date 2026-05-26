@@ -10,7 +10,7 @@ import { createLogger } from "@utilities/logger.js";
 
 const logger = createLogger("ItemLoader");
 
-const items = new Map<string, BaseItem>();
+export const items = new Map<string, BaseItem>();
 const itemsById = new Map<number, BaseItem>();
 const itemsByName = new Map<string, BaseItem>();
 
@@ -32,12 +32,9 @@ const registerItem = <T extends ItemDependencyKey>(
   key: string,
   item: Item<T>
 ): void => {
-  items.set(key, item as BaseItem);
-  if (item.id !== 0) itemsById.set(item.id, item as BaseItem);
-  itemsByName.set(
-    key.toLowerCase(),
-    item as BaseItem
-  );
+  items.set(key, item as unknown as BaseItem);
+  if (item.id !== 0) itemsById.set(item.id, item as unknown as BaseItem);
+  itemsByName.set(key.toLowerCase(), item as unknown as BaseItem);
 };
 
 const getDefaultExport = (
@@ -87,7 +84,6 @@ export const getItem = (
   query: string | number
 ): BaseItem | undefined => {
   const number_ = Number(query);
-
   if (!Number.isNaN(number_)) {
     const byId = itemsById.get(number_);
     if (byId)

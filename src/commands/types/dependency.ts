@@ -9,6 +9,7 @@ import type { code } from "@commands/dependency/deps/code.js";
 import type { isGuildChannelType } from "@commands/dependency/deps/guild.js";
 import type { pvpEvent } from "@commands/dependency/deps/pvp.js";
 import type { eventTracker } from "@commands/dependency/deps/eventTracker.js";
+import type { BaseItem } from "@modules/types/item.js";
 
 type Primitive =
   | string
@@ -53,7 +54,7 @@ export type DeepValue<T, Path extends string> =
       ? T[Path]
       : never;
 
-export interface CommandDependencies {
+export interface DependenciesType {
   components: Components;
   db: Database;
   tables: typeof tables;
@@ -68,10 +69,13 @@ export interface CommandDependencies {
   currency: typeof currency;
   commands: Record<number, unknown>;
   message: Message;
+  module: {
+    items: Map<string, BaseItem>,
+  }
 }
 
-export type DependencyKey = DeepKeys<Omit<CommandDependencies, "message">>;
+export type DependencyKey = DeepKeys<Omit<DependenciesType, "message">>;
 
 export type ResolvedDeps<Keys extends DependencyKey> = {
-  [K in Keys]: DeepValue<Omit<CommandDependencies, "message">, K>;
+  [K in Keys]: DeepValue<Omit<DependenciesType, "message">, K>;
 };

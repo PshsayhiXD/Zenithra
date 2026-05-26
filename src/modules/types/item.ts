@@ -23,7 +23,7 @@ export interface BaseItem {
   durability?: number;
   maxDurability?: number;
   dependencies: ItemDependencyKey[];
-  use?: unknown;
+  use?: ItemExecutor;
 }
 
 export interface ItemContext<T extends ItemDependencyKey = ItemDependencyKey> {
