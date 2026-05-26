@@ -4,6 +4,8 @@ import { CURRENCY } from "@configs/currency.js";
 import { MISSION } from "@configs/mission.js";
 import { PROXY } from "@configs/proxy.js";
 import { USERNAME } from "@configs/username.js";
+import { RARITIES } from "@configs/rarities.js";
+import { EMOJIS } from "@configs/emojis.js";
 
 export interface Config {
   MISSION: typeof MISSION;
@@ -12,6 +14,8 @@ export interface Config {
   SLASH_COMMANDS: typeof SLASH_COMMANDS;
   CURRENCY: typeof CURRENCY;
   USERNAME: typeof USERNAME;
+  RARITIES: typeof RARITIES;
+  EMOJIS: typeof EMOJIS;
 }
 
 const config = {
@@ -21,6 +25,8 @@ const config = {
   SLASH_COMMANDS,
   CURRENCY,
   USERNAME,
+  RARITIES,
+  EMOJIS,
 } as const satisfies Config;
 
 export default config;
