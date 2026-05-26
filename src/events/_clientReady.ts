@@ -17,7 +17,7 @@ import { interstellarTracker } from "@handlers/missionTracker/interstellarTracke
 import {
   executeRuntimeMigrations,
   registerRuntimeMigrations,
-} from "@Rmigrations/executeMigrations.js";
+} from "@/migrations/migrate.js";
 
 let hasStarted = false;
 const logger = createLogger("Ready");
