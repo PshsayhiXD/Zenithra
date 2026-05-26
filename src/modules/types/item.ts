@@ -30,7 +30,7 @@ export type ItemResult =
   | CodeNumber
   | [number, string];
 
-export type ItemTargetType = "self" | "item" | "player";
+export type ItemTargetType = "self" | "item" | "player" | "event";
 
 export interface BaseItem {
   /** Unique numeric ID. 0 means unregistered. */
