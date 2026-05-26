@@ -1,5 +1,4 @@
 import { defineLegacyCommand, type CommandResult } from "@commands/types/command.js";
-import type { Item } from "@modules/types/item.js";
 
 export default defineLegacyCommand({
   name: "balance",
@@ -10,38 +9,12 @@ export default defineLegacyCommand({
   args: [],
   aliases: [],
   cooldown: 10,
-  dependencies: ["tables", "components", "number", "config.CURRENCY", "code", "items", "currency"],
+  dependencies: ["tables", "components", "config.CURRENCY", "code", "currency"],
   execute: async (context): Promise<CommandResult> => {
     const { deps, userId, username, responses, message, isDiscord, isDrednot } = context;
-    const { tables, components, number, code, items, currency } = deps;
-    const getItem = items.getItem as (query: string | number) => Item | undefined;
+    const { tables, components, code, currency } = deps;
     const wallet = tables.Economy.getWallet(userId);
     const bank = tables.Economy.getBank(userId);
-
-    const currencyItems = [
-      "currency.fluxCrystal",
-      "currency.hyperRubber",
-      "currency.silicaCrystal",
-      "currency.compressedMetal",
-      "currency.metal",
-      "currency.compressedExplosive",
-      "currency.explosive",
-      "currency.lootbox",
-    ];
-
-    const inventory = tables.Inventory.getUserInventory(userId);
-    const heldCurrency = currencyItems
-      .map(itemId => {
-        const entry = inventory.find(index => index.itemId === itemId);
-        if (!entry || entry.quantity <= 0) return null;
-        const item = getItem(itemId);
-        return `**${item?.name ?? itemId}**: ${number.formatNumber(entry.quantity)}`;
-      })
-      .filter(Boolean);
-
-    const itemsSection = heldCurrency.length > 0
-      ? `\n\n**Currency Items:**\n${heldCurrency.join("\n")}`
-      : "";
 
     const payload = {
       embeds: [
@@ -50,7 +23,6 @@ export default defineLegacyCommand({
           description: `
             **Wallet:** ${currency.formatCurrency(wallet)}
             **Bank:** ${currency.formatCurrency(bank.bank)} / ${currency.formatCurrency(bank.bankCapacity)}
-            ${itemsSection}
           `.trim(),
           color: "Green",
           options: { timestamp: new Date() },
