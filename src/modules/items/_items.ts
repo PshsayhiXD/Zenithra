@@ -36,7 +36,6 @@ const registerItem = <T extends ItemDependencyKey>(
   if (item.id !== 0) itemsById.set(item.id, item as unknown as BaseItem);
   itemsByName.set(key.toLowerCase(), item as unknown as BaseItem);
 };
-
 const getDefaultExport = (
   module_: unknown
 ): unknown => {
@@ -113,7 +112,6 @@ export const getItem = (
     undefined
   );
 };
-
 export const getAllItems = (): BaseItem[] => [...items.values()];
 
 export const loadItems = (
@@ -124,7 +122,6 @@ export const loadItems = (
   itemsByName.clear();
   for (const item of loadedItems) registerItem(item.name, item);
 };
-
 export const readItems = async (
   directory: string = __dirname,
   prefix = ""

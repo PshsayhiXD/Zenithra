@@ -2,6 +2,28 @@ import type { CodeNumber } from "@dependencies";
 import type { DependencyKey, ResolvedDeps } from "@commands/types/dependency.js";
 import type { RarityKey } from "@configs/rarities.js";
 
+export const RepairCode = {
+  success: 1,
+  notFound: 2,
+  notRepairable: 3,
+  alreadyFull: 4,
+  missingMaterial: 5,
+  invalidRecipe: 6,
+} as const;
+
+export type RepairResult =
+  | typeof RepairCode[keyof typeof RepairCode]
+  | [typeof RepairCode[keyof typeof RepairCode], string];
+
+/** [itemId, quantity, repairAmount] */
+export type RepairMaterial = [string, number, number];
+
+/** A group of material options — player picks one from this group. */
+export type RepairGroup = RepairMaterial[];
+
+/** Full repair cost — one item must be chosen from each group. */
+export type RepairCost = RepairGroup[];
+
 export type ItemDependencyKey = DependencyKey;
 
 export type ItemResult =
@@ -20,6 +42,19 @@ export interface BaseItem {
   name: string;
   category: string;
   description: string;
+  /**
+   * Repair cost for this item.
+   * Outer array: each entry is a required material group - one item must be chosen from each group.
+   * Inner array: the options within that group (player picks one).
+   * Each option: [itemId, quantity, repairAmount].
+   *
+   * @example
+   * repairCost: [
+   *   [["comp_iron", 2, 10], ["comp_metal", 2, 10]],  // group 1: pick comp_iron OR comp_metal
+   *   [["res_flux_crystals", 1, 50]],                  // group 2: must use flux (only option)
+   * ]
+   */
+  repairCost?: RepairCost;
   /** Base buy price. */
   price: number;
   /** Whether the item can be used via the use command. */
@@ -65,10 +100,12 @@ export interface ItemContext<T extends ItemDependencyKey = ItemDependencyKey> {
   deps: ResolvedDeps<T>;
 }
 
+/** Result of item execution. */
 export type ItemExecutor<T extends ItemDependencyKey = ItemDependencyKey> = (
   context: ItemContext<T>
 ) => Promise<ItemResult>;
 
+/** Full item definition. */
 export interface Item<T extends ItemDependencyKey = ItemDependencyKey> extends Omit<BaseItem, "dependencies" | "use"> {
   dependencies: T[];
   use?: ItemExecutor<T>;
