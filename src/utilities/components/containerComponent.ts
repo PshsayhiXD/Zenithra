@@ -10,7 +10,7 @@ import type {
   CreateContainerOptions,
   SectionDto
 } from "@utilities/components/types/containerComponent.js";
-import { hashText } from "@utilities/crypto.js";
+import { hashText } from "@utilities/hash.js";
 
 const resolveId = (id: string | number): number =>
   typeof id === "number" ? id : hashText(id);
