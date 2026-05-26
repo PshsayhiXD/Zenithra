@@ -1,16 +1,14 @@
-import { defineItem, type ItemResult } from "@modules/types/item.js";
+import { defineItem } from "@modules/types/item.js";
+import { EMOJIS } from "@configs/emojis.js";
 
 export default defineItem({
   id: 2,
   name: "Compressed Metal",
-  category: "currency",
-  icon: "<:comp_iron:1502673596638564562>",
+  category: "resource",
+  icon: EMOJIS.comp_metal,
+  rarity: "none",
   description: "10 Compressed Explosives compressed together. 100 can be compressed into Silica Crystals.",
   price: 1000,
   usable: false,
   dependencies: ["code"],
-  use: async ({ deps }): Promise<ItemResult> => {
-    await Promise.resolve();
-    return deps.code.Success;
-  },
 });

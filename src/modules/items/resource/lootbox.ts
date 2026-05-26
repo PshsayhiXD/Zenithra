@@ -1,10 +1,12 @@
 import { defineItem, type ItemResult } from "@modules/types/item.js";
+import { EMOJIS } from "@configs/emojis.js";
 
 export default defineItem({
   id: 6,
   name: "Eliminate Loot Box",
-  category: "currency",
-  icon: "<:loot_box:1502673621309718678>",
+  category: "resource",
+  icon: EMOJIS.elim_loot_box,
+  rarity: "none",
   description: "A loot box that contains Hyper Rubber and Silica Crystals.",
   price: 500_000,
   usable: true,

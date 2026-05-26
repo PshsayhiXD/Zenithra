@@ -61,6 +61,7 @@ export const createItem = <T extends ItemDependencyKey>(
   if (name === "") throw new Error("Missing name for item");
   if (items.has(name)) logger.warn("Duplicate item", { name });
 
+  // Update this as the BaseItem updated
   const item: Item<T> = {
     id: options.id ?? 0,
     name: options.name ?? name,
@@ -69,9 +70,27 @@ export const createItem = <T extends ItemDependencyKey>(
     price: options.price ?? 0,
     usable: options.usable ?? false,
     dependencies: options.dependencies ?? [],
+    rarity: options.rarity ?? "none",
+    // durability system
     ...(options.durability === undefined ? {} : { durability: options.durability }),
     ...(options.maxDurability === undefined ? {} : { maxDurability: options.maxDurability }),
+    // charge system
+    ...(options.charges === undefined ? {} : { charges: options.charges }),
+    // repair
+    ...(options.repairAmount === undefined ? {} : { repairAmount: options.repairAmount }),
+    // usage
+    ...(options.cooldown === undefined ? {} : { cooldown: options.cooldown }),
+    ...(options.targetType === undefined ? {} : { targetType: options.targetType }),
     ...(options.use === undefined ? {} : { use: options.use }),
+    // progression
+    ...(options.rarity === undefined ? {} : { rarity: options.rarity }),
+    ...(options.weight === undefined ? {} : { weight: options.weight }),
+    // crafting
+    ...(options.craftable === undefined ? {} : { craftable: options.craftable }),
+    ...(options.ingredients === undefined ? {} : { ingredients: options.ingredients }),
+    // salvage
+    ...(options.salvageable === undefined ? {} : { salvageable: options.salvageable }),
+    ...(options.salvageYield === undefined ? {} : { salvageYield: options.salvageYield }),
   };
 
   if (options.iconPath !== undefined) item.iconPath = options.iconPath;
@@ -86,14 +105,11 @@ export const getItem = (
   const number_ = Number(query);
   if (!Number.isNaN(number_)) {
     const byId = itemsById.get(number_);
-    if (byId)
-      return byId;
+    if (byId) return byId;
   }
   return (
     items.get(query.toString()) ??
-    itemsByName.get(
-      query.toString().toLowerCase()
-    ) ??
+    itemsByName.get(query.toString().toLowerCase()) ??
     undefined
   );
 };
@@ -115,10 +131,7 @@ export const readItems = async (
 ): Promise<Item[]> => {
   const itemsList: Item[] = [];
   try {
-    const entries =
-      await fs.readdir(directory, {
-        withFileTypes: true,
-      });
+    const entries = await fs.readdir(directory, { withFileTypes: true });
     for (const entry of entries) {
       if (entry.name === "index" || entry.name === "inventory" || entry.name.startsWith("_")) continue;
       const fullPath = path.join(directory, entry.name);
@@ -137,10 +150,7 @@ export const readItems = async (
         continue;
       }
       if (resolved === null || typeof resolved !== "object") continue;
-      const created = createItem(
-        itemName,
-        resolved as Item
-      );
+      const created = createItem(itemName, resolved as Item);
       itemsList.push(created);
     }
   } catch (error: unknown) {

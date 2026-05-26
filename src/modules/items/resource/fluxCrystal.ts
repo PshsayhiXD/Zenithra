@@ -1,16 +1,14 @@
-import { defineItem, type ItemResult } from "@modules/types/item.js";
+import { defineItem } from "@modules/types/item.js";
+import { EMOJIS } from "@configs/emojis.js";
 
 export default defineItem({
   id: 4,
   name: "Flux Crystal",
-  category: "currency",
-  icon: "<:res_flux_crystals:1502673687160291450>",
+  category: "resource",
+  icon: EMOJIS.res_flux_crystals,
+  rarity: "none",
   description: "The rarest currency in the universe.",
   price: 1_000_000_000,
   usable: false,
   dependencies: ["code"],
-  use: async ({ deps }): Promise<ItemResult> => {
-    await Promise.resolve();
-    return deps.code.Success;
-  },
 });
