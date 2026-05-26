@@ -1,6 +1,6 @@
-import type { Item, ItemResult } from "@modules/types/item.js";
+import { defineItem, type ItemResult } from "@modules/types/item.js";
 
-export default {
+export default defineItem({
   id: 8,
   name: "Silica Crystal",
   category: "currency",
@@ -13,4 +13,4 @@ export default {
     await Promise.resolve();
     return deps.code.Success;
   },
-} satisfies Partial<Item<"code">>;
+});

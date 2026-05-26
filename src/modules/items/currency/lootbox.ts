@@ -1,6 +1,6 @@
-import type { Item, ItemResult } from "@modules/types/item.js";
+import { defineItem, type ItemResult } from "@modules/types/item.js";
 
-export default {
+export default defineItem({
   id: 6,
   name: "Eliminate Loot Box",
   category: "currency",
@@ -28,4 +28,4 @@ export default {
 
     return code.Success;
   },
-} satisfies Partial<Item>;
+});
