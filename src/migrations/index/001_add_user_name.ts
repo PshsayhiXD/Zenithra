@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/filename-case */
 import type { MigrationDefinition } from "@Rmigrations/shared/types.js";
 import { addUsernames } from "@Rmigrations/logic/001/run.js";
 import { registerUsernameMigrationHandlers } from "@Rmigrations/logic/001/registerHandlers.js";

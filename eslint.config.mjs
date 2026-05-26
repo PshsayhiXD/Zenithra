@@ -280,7 +280,9 @@ export default defineConfig(
     },
   },
   {
-    files: ["src/migration/migrations/[0-9][0-9][0-9]_*.ts"],
+    files: [
+      "src/migrations/index/[0-9][0-9][0-9]_*.ts"
+    ],
     rules: {
       "unicorn/filename-case": "off",
     },
