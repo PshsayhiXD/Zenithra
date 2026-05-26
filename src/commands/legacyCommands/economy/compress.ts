@@ -23,7 +23,7 @@ export default defineLegacyCommand({
     }
   ],
   cooldown: 5,
-  dependencies: ["tables", "components", "number", "code", "items", "config.CURRENCY"],
+  dependencies: ["tables", "components", "number", "code", "config.CURRENCY"],
   execute: async (context): Promise<CommandResult> => {
     const { args, deps, userId, responses, message, isDiscord, isDrednot } = context;
     const { tables, components, number, code, "config.CURRENCY": currencyConfig } = deps;
