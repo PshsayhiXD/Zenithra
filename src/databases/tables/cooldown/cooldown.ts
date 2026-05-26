@@ -1,5 +1,5 @@
 import type {
-  CooldownCommand,
+  CooldownNamespace,
   CooldownDurationMs,
   CooldownExpiresAt,
   CooldownPrunedCount,
@@ -8,23 +8,24 @@ import type {
 import { clearCooldown, getCooldown } from "@tables/cooldown/userId.js";
 import { pruneExpiredStmt, setCooldownStmt } from "@tables/cooldown/_statements.js";
 
-export const getRemainingCooldown = (userId: CooldownUserId, command: CooldownCommand): CooldownDurationMs => {
-  const row = getCooldown(userId, command);
+export const getRemainingCooldown = (userId: CooldownUserId, namespace: CooldownNamespace): CooldownDurationMs => {
+  const row = getCooldown(userId, namespace);
   if (!row) return 0;
   const remaining: CooldownDurationMs = row.expiresAt - Date.now();
   if (remaining <= 0) {
-    clearCooldown(userId, command);
+    clearCooldown(userId, namespace);
     return 0;
   }
   return remaining;
 };
 
-export const hasCooldown = (userId: CooldownUserId, command: CooldownCommand): boolean => getRemainingCooldown(userId, command) > 0;
+export const hasCooldown = (userId: CooldownUserId, namespace: CooldownNamespace): boolean =>
+  getRemainingCooldown(userId, namespace) > 0;
 
-export const setCooldown = (userId: CooldownUserId, command: CooldownCommand, durationMs: CooldownDurationMs): CooldownExpiresAt => {
+export const setCooldown = (userId: CooldownUserId, namespace: CooldownNamespace, durationMs: CooldownDurationMs): CooldownExpiresAt => {
   if (!Number.isFinite(durationMs) || durationMs <= 0) throw new Error("Cooldown duration must be greater than 0.");
   const expiresAt: CooldownExpiresAt = Date.now() + Math.floor(durationMs);
-  setCooldownStmt.run(userId, command, expiresAt);
+  setCooldownStmt.run(userId, namespace, expiresAt);
   return expiresAt;
 };
 

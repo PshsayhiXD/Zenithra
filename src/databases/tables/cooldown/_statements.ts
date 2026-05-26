@@ -1,7 +1,7 @@
 import type { Statement } from "better-sqlite3";
 import { getDatabase } from "@getDatabase";
 import type {
-  CooldownCommand,
+  CooldownNamespace,
   CooldownExpiresAt,
   CooldownRow,
   CooldownUserId,
@@ -10,26 +10,26 @@ import type {
 const database = getDatabase();
 
 export const getCooldownStmt: Statement<
-  [CooldownUserId, CooldownCommand],
+  [CooldownUserId, CooldownNamespace],
   CooldownRow
 > = database.prepare(
-  "SELECT * FROM cooldowns WHERE userId = ? AND command = ?",
+  "SELECT * FROM cooldowns WHERE userId = ? AND namespace = ?",
 );
 
 export const setCooldownStmt: Statement<
-  [CooldownUserId, CooldownCommand, CooldownExpiresAt]
+  [CooldownUserId, CooldownNamespace, CooldownExpiresAt]
 > = database.prepare(`
-  INSERT INTO cooldowns (userId, command, expiresAt)
+  INSERT INTO cooldowns (userId, namespace, expiresAt)
   VALUES (?, ?, ?)
-  ON CONFLICT (userId, command) DO UPDATE SET expiresAt = excluded.expiresAt
+  ON CONFLICT (userId, namespace) DO UPDATE SET expiresAt = excluded.expiresAt
 `);
 
-export const deleteCooldownStmt: Statement<[CooldownUserId, CooldownCommand]> =
-  database.prepare("DELETE FROM cooldowns WHERE userId = ? AND command = ?");
+export const deleteCooldownStmt: Statement<[CooldownUserId, CooldownNamespace]> =
+  database.prepare("DELETE FROM cooldowns WHERE userId = ? AND namespace = ?");
 
 export const pruneExpiredStmt: Statement<
   [CooldownExpiresAt],
   {
     changes: number;
   }
-> = database.prepare("DELETE FROM cooldowns WHERE expiresAt <= ?");
+> = database.prepare("DELETE FROM namespace WHERE expiresAt <= ?");
