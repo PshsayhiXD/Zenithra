@@ -21,8 +21,7 @@ export default defineLegacyCommand({
   args: [],
   permission: {},
   dependencies: ["commands", "components", "code", "config.LEGACY_COMMANDS.HELP.PAGE_SIZE"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, deps, isDiscord, isDrednot, responses } = context;
+  execute: async ({ message, deps, isDiscord, isDrednot, responses }): Promise<CommandResult> => {
     const { commands: cmdMap, code, components, "config.LEGACY_COMMANDS.HELP.PAGE_SIZE": pageSize } = deps;
     const map = cmdMap as Record<number, Command>;
     const sorted = Object.values(map).sort((a, b) => a.name.localeCompare(b.name));

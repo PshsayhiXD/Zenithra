@@ -10,8 +10,7 @@ export default defineLegacyCommand({
   aliases: [],
   cooldown: 10,
   dependencies: ["tables", "components", "config.CURRENCY", "code", "currency"],
-  execute: async (context): Promise<CommandResult> => {
-    const { deps, userId, username, responses, message, isDiscord, isDrednot } = context;
+  execute: async ({ deps, userId, username, responses, message, isDiscord, isDrednot }): Promise<CommandResult> => {
     const { tables, components, code, currency } = deps;
     const wallet = tables.Economy.getWallet(userId);
     const bank = tables.Economy.getBank(userId);

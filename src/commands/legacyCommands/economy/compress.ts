@@ -23,10 +23,9 @@ export default defineLegacyCommand({
     }
   ],
   cooldown: 5,
-  dependencies: ["tables", "components", "number", "code", "config.CURRENCY"],
-  execute: async (context): Promise<CommandResult> => {
-    const { args, deps, userId, responses, message, isDiscord, isDrednot } = context;
-    const { tables, components, number, code, "config.CURRENCY": currencyConfig } = deps;
+  dependencies: ["tables", "components", "number", "code", "config.CURRENCY", "module.items"],
+  execute: async ({ args, deps, userId, responses, message, isDiscord, isDrednot }): Promise<CommandResult> => {
+    const { tables, components, number, code, "config.CURRENCY": currencyConfig, "module.items": items } = deps;
     const resource = args[0]?.toLowerCase();
     const parsedCount = Number.parseInt(args[1] ?? "1");
 
@@ -44,8 +43,10 @@ export default defineLegacyCommand({
     ];
 
     const tier = tiers.find(t => t.id === resource || t.id.split(".")[1]?.toLowerCase() === resource);
+    if (tier === undefined) return [code.UserDefinedError, "Invalid resource. Valid: explosive, metal, compressedexplosive, compressedmetal, silica, rubber."];
 
-    if (!tier) return [code.UserDefinedError, "Invalid resource. Valid: explosive, metal, compressedexplosive, compressedmetal, silica, rubber."];
+    const nextItem = items.get(tier.nextId);
+    if (nextItem === undefined) return [code.UserDefinedError, `Next tier item "${tier.nextId}" not found.`];
 
     const needed = count * tier.ratio;
 
@@ -55,12 +56,21 @@ export default defineLegacyCommand({
       if (current.lt(liquidNeeded)) return [code.UserDefinedError, `You need **${number.formatNumber(needed)}** ${tier.name} to compress **${String(count)}** times!`];
       tables.Economy.addWallet(userId, liquidNeeded.neg());
     } else {
-      const current = tables.Inventory.getUserItem(userId, tier.id)?.quantity ?? 0;
-      if (current < needed) return [code.UserDefinedError, `You need **${number.formatNumber(needed)}** ${tier.name} to compress **${String(count)}** times!`];
-      tables.Inventory.removeItem(userId, tier.id, needed);
+      const slots = tables.Inventory.getUserItemSlots(userId, tier.id);
+      let total = 0;
+      for (const slot of slots) total += slot.quantity;
+      if (total < needed) return [code.UserDefinedError, `You need **${number.formatNumber(needed)}** ${tier.name} to compress **${String(count)}** times!`];
+
+      let remaining = needed;
+      for (const slot of slots) {
+        if (remaining <= 0) break;
+        const take = Math.min(slot.quantity, remaining);
+        tables.Inventory.removeItem(userId, slot.hashId, take);
+        remaining -= take;
+      }
     }
 
-    tables.Inventory.addItem(userId, tier.nextId, count);
+    tables.Inventory.addItem(userId, nextItem, count);
 
     const payload = {
       embeds: [components.createEmbed({

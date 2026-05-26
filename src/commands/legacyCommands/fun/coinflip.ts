@@ -10,8 +10,7 @@ export default defineLegacyCommand({
   permission: {},
   args: [],
   dependencies: ["code", "components"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, deps, responses, isDiscord, isDrednot } = context;
+  execute: async ({ message, deps, responses, isDiscord, isDrednot }): Promise<CommandResult> => {
     const { code, components } = deps;
     const result = Math.random() < 0.5 ? "Heads" : "Tails";
 

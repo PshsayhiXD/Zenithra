@@ -10,8 +10,7 @@ export default defineLegacyCommand({
   args: [],
   permission: {},
   dependencies: ["code", "components"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, deps, isDiscord } = context;
+  execute: async ({ message, deps, isDiscord }): Promise<CommandResult> => {
     const { code, components } = deps;
 
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];

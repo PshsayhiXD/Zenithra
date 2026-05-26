@@ -17,8 +17,7 @@ export default defineLegacyCommand({
   ],
   cooldown: 3,
   dependencies: ["code", "components"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, args, deps, responses, isDiscord, isDrednot } = context;
+  execute: async ({ message, args, deps, responses, isDiscord, isDrednot }): Promise<CommandResult> => {
     const { code, components } = deps;
     const firstArgument = args[0];
     if (firstArgument === undefined) return [code.UserDefinedError, "Please provide a valid number of sides (greater than 1)."];

@@ -10,8 +10,7 @@ export default defineLegacyCommand({
   args: [],
   permission: {},
   dependencies: ["code"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, deps, responses, isDiscord, isDrednot } = context;
+  execute: async ({ message, deps, responses, isDiscord, isDrednot }): Promise<CommandResult> => {
     const { code } = deps;
 
     if (isDiscord) {

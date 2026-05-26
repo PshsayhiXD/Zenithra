@@ -17,8 +17,7 @@ export default defineLegacyCommand({
   ],
   permission: {},
   dependencies: ["code", "components"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, args, deps, responses, isDiscord, isDrednot } = context;
+  execute: async ({ message, args, deps, responses, isDiscord, isDrednot }): Promise<CommandResult> => {
     const { code, components } = deps;
     if (args.length === 0) return [code.UserDefinedError, "Please ask a question!"];
 

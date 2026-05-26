@@ -20,8 +20,7 @@ export default defineLegacyCommand({
   cooldown: 10,
   description: "Sets the current mission name while preserving the timer and location. (Admins only)",
   dependencies: ["eventTracker", "components", "code"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, args, deps, isDiscord } = context;
+  execute: async ({ message, args, deps, isDiscord }): Promise<CommandResult> => {
     const { eventTracker, components, code } = deps;
     const { missionStore } = eventTracker;
 

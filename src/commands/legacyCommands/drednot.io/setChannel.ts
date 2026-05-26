@@ -25,8 +25,7 @@ export default defineLegacyCommand({
   cooldown: 10,
   description: "Sets the channel for event tracker messages.",
   dependencies: ["tables", "components", "code"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, args, deps, cmd, isDiscord } = context;
+  execute: async ({ message, args, deps, cmd, isDiscord }): Promise<CommandResult> => {
     const { tables, components, code } = deps;
 
     if (!isDiscord) return [code.UserDefinedError, "This command currently only supports Discord."];

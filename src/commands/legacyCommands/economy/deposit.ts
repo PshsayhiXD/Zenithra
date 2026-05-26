@@ -24,8 +24,7 @@ export default defineLegacyCommand({
     "code",
     "currency"
   ],
-  execute: async (context): Promise<CommandResult> => {
-    const { args, deps, cmd, userId, responses, message, isDiscord, isDrednot } = context;
+  execute: async ({ args, deps, cmd, userId, responses, message, isDiscord, isDrednot }): Promise<CommandResult> => {
     const {
       tables,
       components,

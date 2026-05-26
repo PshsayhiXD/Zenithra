@@ -17,8 +17,7 @@ export default defineLegacyCommand({
   ],
   cooldown: 5,
   dependencies: ["tables", "components", "number", "code", "currency"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, args, deps, cmd, userId, responses, isDiscord, isDrednot } = context;
+  execute: async ({ message, args, deps, cmd, userId, responses, isDiscord, isDrednot }): Promise<CommandResult> => {
     const { tables, components, code, currency } = deps;
     const bank = tables.Economy.getBank(userId).bank;
     const amount = currency.parseCurrency(args.join(" "));

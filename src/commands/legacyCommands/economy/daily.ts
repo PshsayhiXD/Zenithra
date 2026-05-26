@@ -10,8 +10,7 @@ export default defineLegacyCommand({
   permission: {},
   cooldown: 86_400, // 24 hours
   dependencies: ["code", "components", "tables", "currency", "config.LEGACY_COMMANDS.DAILY.BASE", "config.LEGACY_COMMANDS.DAILY.STREAK_INCREMENT"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, deps, userId, responses, isDiscord, isDrednot } = context;
+  execute: async ({ message, deps, userId, responses, isDiscord, isDrednot }): Promise<CommandResult> => {
     const {
       code, components, tables, currency,
       "config.LEGACY_COMMANDS.DAILY.BASE": amount,

@@ -11,8 +11,7 @@ export default defineLegacyCommand({
   args: [],
   cooldown: 10,
   dependencies: ["tables", "components", "number", "config.CURRENCY", "config.LEGACY_COMMANDS.BEG.BASE", "code", "currency"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, deps, cmd, userId, responses, isDiscord, isDrednot } = context;
+  execute: async ({ message, deps, cmd, userId, responses, isDiscord, isDrednot }): Promise<CommandResult> => {
     const { tables, components, code, currency, "config.LEGACY_COMMANDS.BEG.BASE": base } = deps;
 
     const random = base.mul(Decimal.random()).floor();

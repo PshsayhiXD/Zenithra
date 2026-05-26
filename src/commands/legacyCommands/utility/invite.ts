@@ -10,8 +10,7 @@ export default defineLegacyCommand({
   args: [],
   cooldown: 5,
   dependencies: ["env", "components", "code"],
-  execute: async (context): Promise<CommandResult> => {
-    const { message, deps, responses, isDiscord, isDrednot } = context;
+  execute: async ({ message, deps, responses, isDiscord, isDrednot }): Promise<CommandResult> => {
     const { env, components, code } = deps;
 
     const invite = env["OPT_DISCORD_BOT_INVITE_URL"];
