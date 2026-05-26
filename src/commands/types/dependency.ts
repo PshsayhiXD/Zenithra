@@ -9,7 +9,6 @@ import type { code } from "@commands/dependency/deps/code.js";
 import type { isGuildChannelType } from "@commands/dependency/deps/guild.js";
 import type { pvpEvent } from "@commands/dependency/deps/pvp.js";
 import type { eventTracker } from "@commands/dependency/deps/eventTracker.js";
-import type { items } from "@commands/dependency/deps/items.js";
 
 type Primitive =
   | string
@@ -66,7 +65,6 @@ export interface CommandDependencies {
   isGuildChannelType: typeof isGuildChannelType;
   pvpEvent: typeof pvpEvent;
   eventTracker: typeof eventTracker;
-  items: typeof items;
   currency: typeof currency;
   commands: Record<number, unknown>;
   message: Message;

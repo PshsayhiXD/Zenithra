@@ -7,5 +7,5 @@ export {
 } from "@modules/items/_items.js";
 
 export {
-    useItem
+  useItem
 } from "@modules/items/itemHandler.js";

@@ -11,7 +11,6 @@ import { code } from "@commands/dependency/deps/code.js";
 import { isGuildChannelType } from "@commands/dependency/deps/guild.js";
 import { pvpEvent } from "@commands/dependency/deps/pvp.js";
 import { eventTracker } from "@commands/dependency/deps/eventTracker.js";
-import { items } from "@commands/dependency/deps/items.js";
 import { legacyCommands } from "@commands/_legacyCommands.js";
 
 import type {
@@ -34,7 +33,6 @@ export const availableDependencies: Omit<CommandDependencies, "message"> = {
   isGuildChannelType,
   pvpEvent,
   eventTracker,
-  items,
   get commands() {
     return Object.fromEntries(legacyCommands.map((c) => [c.id, c]));
   },
