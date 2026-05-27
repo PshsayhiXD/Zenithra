@@ -1,5 +1,7 @@
+import type { ItemIdValue } from "@modules/items/_ids.js";
+
 /** [itemId, quantity], one ingredient option */
-export type IngredientOption = [string, number];
+export type IngredientOption = [ItemIdValue, number];
 
 /** A group of ingredient options, player picks one from this group. */
 export type IngredientGroup = IngredientOption[];

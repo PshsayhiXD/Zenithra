@@ -39,11 +39,11 @@ export const addItem = (
   quantity: InventoryQuantity = 1,
   metadata = ""
 ): number => {
-  const hashId = hashText(userId + item.name + metadata);
+  const hashId = hashText(userId + String(item.id) + metadata);
   addItemStmt.run(
     hashId,
     userId,
-    item.name,
+    item.id,
     quantity,
     metadata,
     item.durability ?? null,

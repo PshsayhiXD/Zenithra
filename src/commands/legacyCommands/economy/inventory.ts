@@ -20,8 +20,8 @@ export default defineLegacyCommand({
     if (inv.length > 0) {
       const description = inv
         .map((entry) => {
-          const item = items.get(entry.itemId);
-          const name = item === undefined ? `Unknown Item (${entry.itemId})` : item.name;
+          const item = items.get(String(entry.itemId));
+          const name = item === undefined ? `Unknown Item (${String(entry.itemId)})` : item.name;
           return `**${name}** x${String(entry.quantity)}`;
         })
         .join("\n");

@@ -4,10 +4,10 @@ import type {
   ApplicationCommandOptionType as OptionType,
 } from "discord.js";
 import type {
-  CodeNumber,
   DependencyKey,
   ResolvedDeps,
 } from "@dependencies";
+import type { CodeNumber } from "@deps/code.js";
 
 export interface CommandPermission {
   discord?: PermissionResolvable | PermissionResolvable[];

@@ -7,10 +7,10 @@ import type {
 import type {
   DependencyKey,
   ResolvedDeps,
-  CodeNumber,
 } from "@dependencies";
+import type { CodeNumber } from "@deps/code.js";
 
-export { CodeNumber };
+export type { CodeNumber };
 
 export interface CommandPermission {
   discord?: PermissionResolvable | PermissionResolvable[];

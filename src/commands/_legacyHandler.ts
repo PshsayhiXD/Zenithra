@@ -3,7 +3,8 @@ import type { CommandResult } from "@commands/types/command.js";
 
 import { createEmbed } from "@utilities/components/embedComponent.js";
 import { legacyCommands } from "@commands/_legacyCommands.js";
-import { code, getDeps, type CodeNumber } from "@dependencies";
+import { code, type CodeNumber } from "@deps/code.js";
+import { getDeps } from "@dependency/getDeps.js";
 import { formatCommandPermission, hasCommandPermission, parseArguments } from "@commands/shared.js";
 import { createLogger } from "@utilities/logger.js";
 import { getRemainingCooldown, setCooldown } from "@tables/cooldown/index.js";

@@ -4,6 +4,7 @@ import {
   type RepairResult,
   RepairCode
 } from "@modules/types/item.js";
+import type { ItemIdValue } from "@modules/items/_ids.js";
 import { getItem } from "@modules/items/getItem.js";
 import { getUserItemSlots } from "@tables/inventory/inventory.js";
 import { createLogger } from "@utilities/logger.js";
@@ -21,17 +22,17 @@ export type ValidateMaterialResult =
 export const validateMaterial = (
   userId: string,
   group: RepairGroup,
-  chosenItemId: string
+  chosenItemId: ItemIdValue
 ): ValidateMaterialResult => {
   const option = group.find(([itemId]) => itemId === chosenItemId);
   if (option === undefined)
-    return { ok: false, error: [RepairCode.invalidRecipe, `"${chosenItemId}" is not a valid option for this repair group.`] };
+    return { ok: false, error: [RepairCode.invalidRecipe, `"${String(chosenItemId)}" is not a valid option for this repair group.`] };
 
   const [itemId, quantity] = option;
   const target = getItem(itemId);
   if (target === undefined) {
-    logger.warn(`repairCost item "${itemId}" not found`);
-    return { ok: false, error: [RepairCode.invalidRecipe, `Repair material "${itemId}" does not exist.`] };
+    logger.warn(`repairCost item "${String(itemId)}" not found`);
+    return { ok: false, error: [RepairCode.invalidRecipe, `Repair material "${String(itemId)}" does not exist.`] };
   }
 
   const slots = getUserItemSlots(userId, itemId);

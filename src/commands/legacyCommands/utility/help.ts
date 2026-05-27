@@ -13,7 +13,7 @@ const formatArguments = (cmd: Command): string =>
 
 export default defineLegacyCommand({
   name: "help",
-  id: 25,
+  id: 23,
   category: "utility",
   description: "Show a list of commands and view details",
   aliases: ["commands", "h"],

@@ -3,6 +3,7 @@ import {
   type RepairResult,
   RepairCode
 } from "@modules/types/item.js";
+import type { ItemIdValue } from "@modules/items/_ids.js";
 import { getItem } from "@modules/items/getItem.js";
 import {
   getUserItemSlots,
@@ -29,7 +30,7 @@ import { validateMaterial } from "@modules/items/_validateMaterial.js";
 export const repairItem = (
   userId: string,
   hashId: number,
-  chosenMaterials: string[]
+  chosenMaterials: ItemIdValue[]
 ): RepairResult => {
   const inventoryItem = getUserItemByHash(userId, hashId);
   if (inventoryItem === undefined) return [RepairCode.notFound, "Item slot not found."];

@@ -1,1 +1,1 @@
-export type InventoryItemId = string;
+export type InventoryItemId = number;

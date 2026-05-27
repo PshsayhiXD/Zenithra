@@ -24,7 +24,7 @@ export const getCraftCost = (itemId: string, quantity = 1): ResolvedIngredientGr
     for (const [ingredientId, ingredientQuantity] of group) {
       const ingredient = getItem(ingredientId);
       if (ingredient === undefined) {
-        logger.warn(`ingredient "${ingredientId}" not found`, { item: item.name });
+        logger.warn(`ingredient "${String(ingredientId)}" not found`, { item: item.name });
         continue;
       }
       options.push({ item: ingredient, quantity: ingredientQuantity * quantity });

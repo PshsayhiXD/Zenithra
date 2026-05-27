@@ -3,6 +3,7 @@ import {
   type ItemResult,
   ItemCode,
 } from "@modules/types/item.js";
+import type { ItemIdValue } from "@modules/items/_ids.js";
 import { getItem } from "@modules/items/getItem.js";
 import { getDeps } from "@commands/dependency/getDeps.js";
 import {
@@ -31,7 +32,7 @@ import { validateTarget } from "@modules/items/_validateTarget.js";
  */
 export const useItem = async (
   userId: string,
-  itemId: string,
+  itemId: ItemIdValue,
   quantity = 1,
   arguments_: string[] = [],
   hashId?: number
@@ -63,7 +64,7 @@ export const useItem = async (
   if (inventoryItem === undefined) return [ItemCode.notFound, "Slot not found."];
 
   if (item.cooldown !== undefined) {
-    const namespace = `itemUse:${itemId}`;
+    const namespace = `itemUse:${String(itemId)}`;
     if (hasCooldown(userId, namespace)) return [ItemCode.cannotUse, `${item.name} is on cooldown.`];
   }
 
@@ -98,7 +99,7 @@ export const useItem = async (
   if (code !== ItemCode.success) return result;
 
   if (item.cooldown !== undefined)
-    setCooldown(userId, `itemUse:${itemId}`, item.cooldown * 1000);
+    setCooldown(userId, `itemUse:${String(itemId)}`, item.cooldown * 1000);
 
   if (item.charges !== undefined) {
     const charges = (inventoryItem.charges ?? item.charges) - 1;

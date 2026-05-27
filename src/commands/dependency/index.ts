@@ -7,21 +7,23 @@ import {
   currency as currencyUtility,
   components,
 } from "@dependency/core.js";
-import { code } from "@commands/dependency/deps/code.js";
-import { isGuildChannelType } from "@commands/dependency/deps/guild.js";
-import { pvpEvent } from "@commands/dependency/deps/pvp.js";
-import { eventTracker } from "@commands/dependency/deps/eventTracker.js";
-import { legacyCommands } from "@commands/_legacyCommands.js";
-import { items } from "@modules/items/_registry.js";
+import type { Leaf } from "@commands/types/_leaf.js";
+// dependencies
+import { code } from "@dependency/deps/code.js";
+import { isGuildChannelType } from "@dependency/deps/guild.js";
+import { pvpEvent } from "@dependency/deps/pvp.js";
+import { eventTracker } from "@dependency/deps/eventTracker.js";
+import { legacyCommands } from "@dependency/deps/legacyCommands.js";
+import { unpackModule } from "@dependency/deps/unpackModule.js";
+import { items } from "@dependency/deps/items.js";
+import { ItemId } from "@dependency/deps/itemId.js";
+import { ItemModule } from "@dependency/deps/itemModule.js";
 
 import type {
   DependenciesType,
-  DependencyKey,
-  DeepValue,
 } from "@commands/types/dependency.js";
-import { resolveDependency } from "@commands/dependency/resolver.js";
 
-export const availableDependencies: Omit<DependenciesType, "message"> = {
+export const availableDependencies: DependenciesType = {
   components,
   db: database,
   dbTypes: databaseTypes_,
@@ -33,18 +35,17 @@ export const availableDependencies: Omit<DependenciesType, "message"> = {
   code,
   isGuildChannelType,
   pvpEvent,
+  unpackModule,
   module: {
     items,
+    item: ItemModule as unknown as Leaf<typeof ItemModule>,
+    ItemId,
   },
   eventTracker,
   get commands() {
     return Object.fromEntries(legacyCommands.map((c) => [c.id, c]));
   },
 };
-
-export const getDependency = <K extends DependencyKey>(
-  key: K,
-): DeepValue<Omit<DependenciesType, "message">, K> => resolveDependency(availableDependencies, key);
 
 export type {
   DeepKeys,
@@ -55,10 +56,3 @@ export type {
 } from "@commands/types/dependency.js";
 
 export { resolveDependency } from "@dependency/resolver.js";
-
-export * from "@dependency/core.js";
-export * from "@dependency/deps/code.js";
-export * from "@dependency/deps/guild.js";
-export * from "@dependency/deps/pvp.js";
-export * from "@dependency/deps/eventTracker.js";
-export * from "@dependency/deps/items.js";

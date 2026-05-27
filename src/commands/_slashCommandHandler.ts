@@ -15,7 +15,8 @@ import { msTo } from "@utilities/time.js";
 import { createLogger } from "@utilities/logger.js";
 import { createEmbed } from "@utilities/components/embedComponent.js";
 import { slashCommands } from "@commands/_slashCommands.js";
-import { code, getDeps, type CodeNumber } from "@dependencies";
+import { code, type CodeNumber } from "@deps/code.js";
+import { getDeps } from "@dependency/getDeps.js";
 import { formatCommandPermission, hasCommandPermission } from "@commands/shared.js";
 
 const logger = createLogger("SlashHandler");

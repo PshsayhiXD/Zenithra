@@ -1,7 +1,8 @@
-import type { CodeNumber } from "@dependencies";
+import type { CodeNumber } from "@deps/code.js";
 import type { DependencyKey, ResolvedDeps } from "@commands/types/dependency.js";
 import type { RarityKey } from "@configs/rarities.js";
 import type { Ingredients } from "@modules/types/crafting.js";
+import type { ItemIdValue } from "@modules/items/_ids.js";
 
 export const RepairCode = {
   success: 1,
@@ -17,7 +18,7 @@ export type RepairResult =
   | [typeof RepairCode[keyof typeof RepairCode], string];
 
 /** [itemId, quantity, repairAmount] */
-export type RepairMaterial = [string, number, number];
+export type RepairMaterial = [ItemIdValue, number, number];
 
 /** A group of material options, player picks one from this group. */
 export type RepairGroup = RepairMaterial[];
@@ -91,7 +92,7 @@ export interface BaseItem {
   /** Whether this item can be broken down into parts. */
   salvageable?: boolean;
   /** Items yielded when this item is salvaged. Each entry is [itemId, minQuantity, maxQuantity]. */
-  salvageYield?: [string, number, number][];
+  salvageYield?: [ItemIdValue, number, number][];
   dependencies: ItemDependencyKey[];
   use?: ItemExecutor;
 }

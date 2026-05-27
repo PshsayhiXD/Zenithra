@@ -17,17 +17,17 @@ type ValidateIngredientResult =
 export const validateIngredient = (
   userId: string,
   group: IngredientGroup,
-  chosenItemId: string
+  chosenItemId: number
 ): ValidateIngredientResult => {
   const option = group.find(([itemId]) => itemId === chosenItemId);
   if (option === undefined)
-    return { ok: false, error: [CraftCode.invalidIngredient, `"${chosenItemId}" is not a valid option for this ingredient group.`] };
+    return { ok: false, error: [CraftCode.invalidIngredient, `"${String(chosenItemId)}" is not a valid option for this ingredient group.`] };
 
   const [itemId, quantity] = option;
   const ingredient = getItem(itemId);
   if (ingredient === undefined) {
-    logger.warn(`ingredient "${itemId}" not found`);
-    return { ok: false, error: [CraftCode.invalidIngredient, `Ingredient "${itemId}" does not exist.`] };
+    logger.warn(`ingredient "${String(itemId)}" not found`);
+    return { ok: false, error: [CraftCode.invalidIngredient, `Ingredient "${String(itemId)}" does not exist.`] };
   }
 
   const slots = getUserItemSlots(userId, itemId);

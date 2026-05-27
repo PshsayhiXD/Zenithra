@@ -1,1 +1,1 @@
-export * as items from "@modules/items/index.js";
+export { items } from "@modules/items/index.js";

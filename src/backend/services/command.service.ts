@@ -12,7 +12,7 @@ import {
 import { resolveUserIdentity } from "@backend/controllers/chat.controller.js";
 import { getRemainingCooldown, setCooldown } from "@tables/cooldown/index.js";
 import { upsertUser } from "@tables/user/index.js";
-import { code } from "@dependencies";
+import { code } from "@deps/code.js";
 import { sendJson } from "@backend/utils/response.js";
 import { readJsonBody } from "@backend/utils/body.js";
 

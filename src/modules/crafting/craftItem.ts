@@ -3,6 +3,7 @@ import {
   type CraftResult,
   CraftCode
 } from "@modules/types/crafting.js";
+import type { ItemIdValue } from "@modules/items/_ids.js";
 import { getItem } from "@modules/items/getItem.js";
 import { getUserItemSlots, addItem, removeItem } from "@tables/inventory/inventory.js";
 import { validateIngredient } from "@modules/crafting/_validateIngredient.js";
@@ -24,7 +25,7 @@ export const craftItem = (
   userId: string,
   itemId: string,
   quantity = 1,
-  chosenIngredients: string[]
+  chosenIngredients: ItemIdValue[]
 ): CraftResult => {
   const item = getItem(itemId);
   if (item === undefined) return [CraftCode.notFound, "Item not found."];

@@ -26,6 +26,7 @@
 
       "@dependencies": ["./src/commands/dependencies.ts"],
       "@dependency/*": ["./src/commands/dependency/*"],
+      "@deps/*": ["./src/commands/dependency/deps/*"],
       "@modules/*": ["./src/modules/*"],
 
       "@databases/*": ["./src/databases/*"],
@@ -37,7 +38,10 @@
       "@backend/*": ["./src/backend/*"],
 
       // drednot client
-      "@DClient/*": ["./drednot-client/*"]
+      "@DClient/*": ["./drednot-client/*"],
+
+      // module aliases
+      "@_iids": ["./src/modules/items/_ids.ts"],
     }
   },
   "include": ["src/**/*.ts"],

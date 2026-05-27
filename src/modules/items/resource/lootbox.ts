@@ -10,6 +10,7 @@ export default defineItem({
   description: "A loot box that contains Hyper Rubber and Silica Crystals.",
   price: 500_000,
   usable: true,
+  craftable: false,
   dependencies: ["tables", "code", "module.items"],
   // eslint-disable-next-line @typescript-eslint/require-await
   use: async ({ userId, quantity = 1, deps }): Promise<ItemResult> => {

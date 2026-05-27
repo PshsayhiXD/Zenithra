@@ -1,4 +1,3 @@
-import type { Message } from "discord.js";
 import type { Database } from "better-sqlite3";
 import type * as tables from "@tables/index.js";
 import type * as databaseTypes from "@tables/types/index.js";
@@ -10,49 +9,13 @@ import type { isGuildChannelType } from "@commands/dependency/deps/guild.js";
 import type { pvpEvent } from "@commands/dependency/deps/pvp.js";
 import type { eventTracker } from "@commands/dependency/deps/eventTracker.js";
 import type { BaseItem } from "@modules/types/item.js";
+import type { ItemId } from "@modules/items/_ids.js";
+import type * as ItemModule from "@modules/items/index.js";
+import type { Leaf } from "@commands/types/_leaf.js";
+import type { DeepKeys, DeepValue } from "@commands/types/_deepKeys.js";
+import type { UnpackModule } from "@dependency/deps/unpackModule.js";
 
-type Primitive =
-  | string
-  | number
-  | boolean
-  | bigint
-  | symbol
-  | null
-  | undefined;
-
-type Previous = [never, 0, 1, 2, 3, 4, 5];
-
-type IsPlainObject<T> =
-  T extends Primitive ? false
-  : T extends (...arguments_: never[]) => unknown ? false
-  : T extends readonly unknown[] ? false
-  : T extends object ? true
-  : false;
-
-export type DeepKeys<
-  T,
-  D extends number = 5,
-  Seen = never
-> =
-  [D] extends [never]
-    ? never
-    : T extends Seen
-      ? never
-      : {
-          [K in keyof T & string]:
-            IsPlainObject<T[K]> extends true
-              ? K | `${K}.${DeepKeys<T[K], Previous[D], Seen | T>}`
-              : K;
-        }[keyof T & string];
-
-export type DeepValue<T, Path extends string> =
-  Path extends `${infer K}.${infer Rest}`
-    ? K extends keyof T
-      ? DeepValue<T[K], Rest>
-      : never
-    : Path extends keyof T
-      ? T[Path]
-      : never;
+export type { DeepKeys, DeepValue };
 
 export interface DependenciesType {
   components: Components;
@@ -68,14 +31,16 @@ export interface DependenciesType {
   eventTracker: typeof eventTracker;
   currency: typeof currency;
   commands: Record<number, unknown>;
-  message: Message;
+  unpackModule: UnpackModule;
   module: {
-    items: Map<string, BaseItem>,
+    items: Map<string, BaseItem>;
+    ItemId: typeof ItemId;
+    item: Leaf<typeof ItemModule>;
   }
 }
 
-export type DependencyKey = DeepKeys<Omit<DependenciesType, "message">>;
+export type DependencyKey = DeepKeys<DependenciesType>;
 
 export type ResolvedDeps<Keys extends DependencyKey> = {
-  [K in Keys]: DeepValue<Omit<DependenciesType, "message">, K>;
+  [K in Keys]: DeepValue<DependenciesType, K>;
 };
