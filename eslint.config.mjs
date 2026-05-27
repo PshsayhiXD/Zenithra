@@ -281,7 +281,8 @@ export default defineConfig(
   },
   {
     files: [
-      "src/migrations/index/[0-9][0-9][0-9]_*.ts"
+      "src/migrations/index/[0-9][0-9][0-9]_*.ts",
+      "script/*.mjs"
     ],
     rules: {
       "unicorn/filename-case": "off",
