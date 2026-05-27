@@ -12,7 +12,7 @@ import { isGuildChannelType } from "@commands/dependency/deps/guild.js";
 import { pvpEvent } from "@commands/dependency/deps/pvp.js";
 import { eventTracker } from "@commands/dependency/deps/eventTracker.js";
 import { legacyCommands } from "@commands/_legacyCommands.js";
-import { items } from "@modules/items/_items.js";
+import { items } from "@modules/items/_registry.js";
 
 import type {
   DependenciesType,

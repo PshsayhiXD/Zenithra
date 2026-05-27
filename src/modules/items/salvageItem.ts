@@ -1,5 +1,5 @@
 import type { BaseItem } from "@modules/types/item.js";
-import { getItem } from "@modules/items/_items.js";
+import { getItem } from "@modules/items/getItem.js";
 import { addItem } from "@tables/inventory/inventory.js";
 
 /**

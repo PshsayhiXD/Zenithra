@@ -12,7 +12,7 @@ import {
   updateCharges,
 } from "@tables/inventory/inventory.js";
 import { hasCooldown, setCooldown } from "@tables/cooldown/cooldown.js";
-import { salvageItem } from "@modules/items/salvage.js";
+import { salvageItem } from "@/modules/items/salvageItem.js";
 import { validateTarget } from "@modules/items/_validateTarget.js";
 
 /**

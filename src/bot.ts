@@ -107,7 +107,7 @@ void (async function boot(): Promise<void> {
   logger.bot.info(`Loaded ${String(slashCmds.global.length)} global slash commands`);
   logger.bot.info(`Loaded ${String(slashCmds.guild.length)} guild slash commands`);
 
-  const { readItems, loadItems } = await import("./modules/items/_items.js");
+  const { readItems, loadItems } = await import("./modules/items/loadItems.js");
   const itemsList = await readItems();
   loadItems(itemsList);
   logger.bot.info("Loaded items registry");
