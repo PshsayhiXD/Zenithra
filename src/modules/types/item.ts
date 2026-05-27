@@ -1,6 +1,7 @@
 import type { CodeNumber } from "@dependencies";
 import type { DependencyKey, ResolvedDeps } from "@commands/types/dependency.js";
 import type { RarityKey } from "@configs/rarities.js";
+import type { Ingredients } from "@modules/types/crafting.js";
 
 export const RepairCode = {
   success: 1,
@@ -18,10 +19,10 @@ export type RepairResult =
 /** [itemId, quantity, repairAmount] */
 export type RepairMaterial = [string, number, number];
 
-/** A group of material options — player picks one from this group. */
+/** A group of material options, player picks one from this group. */
 export type RepairGroup = RepairMaterial[];
 
-/** Full repair cost — one item must be chosen from each group. */
+/** Full repair cost, one item must be chosen from each group. */
 export type RepairCost = RepairGroup[];
 
 export type ItemDependencyKey = DependencyKey;
@@ -75,9 +76,18 @@ export interface BaseItem {
   /** What this item targets when used. Affects how `args` is interpreted in the executor. */
   targetType?: ItemTargetType;
   /** Whether this item can be produced via the crafting system. */
-  craftable?: boolean;
-  /** Item keys required to craft this item. */
-  ingredients?: string[];
+  craftable: boolean;
+  /** Item keys required to craft this item.
+   * craft iron_scrap:
+   * group 1: pick iron_scrap OR exp (3x)
+   * group 2: must use silica (1x)
+   * @example
+   * ingredients: [
+   *   [["iron", 3], ["exp", 3]],
+   *   [["silica", 1]],
+   * ]
+  */
+  ingredients?: Ingredients;
   /** Whether this item can be broken down into parts. */
   salvageable?: boolean;
   /** Items yielded when this item is salvaged. Each entry is [itemId, minQuantity, maxQuantity]. */
