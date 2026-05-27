@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
 
+// !! REQUIRE to build first, then run this file.
 const ITEMS_DIR = path.resolve("dist/modules/items");
 const OUTPUT = path.resolve("src/modules/items/_ids.ts");
 
