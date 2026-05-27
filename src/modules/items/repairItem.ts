@@ -1,52 +1,16 @@
 import {
-  type RepairGroup,
   type RepairMaterial,
   type RepairResult,
   RepairCode
 } from "@modules/types/item.js";
-import { getItem } from "@modules/items/_items.js";
+import { getItem } from "@modules/items/getItem.js";
 import {
   getUserItemSlots,
   getUserItemByHash,
   removeItem,
   updateDurability,
 } from "@tables/inventory/inventory.js";
-import { createLogger } from "@utilities/logger.js";
-
-const logger = createLogger("RepairItem");
-
-type ValidateMaterialResult =
-  | { ok: true; material: RepairMaterial }
-  | { ok: false; error: RepairResult };
-
-/**
- * Validates that the user has the chosen material and the material exists.
- * Returns the material entry if valid, or an error result.
- */
-const validateMaterial = (
-  userId: string,
-  group: RepairGroup,
-  chosenItemId: string
-): ValidateMaterialResult => {
-  const option = group.find(([itemId]) => itemId === chosenItemId);
-  if (option === undefined)
-    return { ok: false, error: [RepairCode.invalidRecipe, `"${chosenItemId}" is not a valid option for this repair group.`] };
-
-  const [itemId, quantity] = option;
-  const target = getItem(itemId);
-  if (target === undefined) {
-    logger.warn(`repairCost item "${itemId}" not found`);
-    return { ok: false, error: [RepairCode.invalidRecipe, `Repair material "${itemId}" does not exist.`] };
-  }
-
-  const slots = getUserItemSlots(userId, itemId);
-  let total = 0;
-  for (const slot of slots) total += slot.quantity;
-  if (total < quantity)
-    return { ok: false, error: [RepairCode.missingMaterial, `You need ${String(quantity)}x ${target.name} to repair.`] };
-
-  return { ok: true, material: option };
-};
+import { validateMaterial } from "@modules/items/_validateMaterial.js";
 
 /**
  * Repairs a durable item using chosen materials from each repair group.
@@ -60,7 +24,7 @@ const validateMaterial = (
  * //   [["comp_iron", 2, 10], ["comp_metal", 2, 10]],  // group 0: pick one
  * //   [["res_flux_crystals", 1, 50]],                 // group 1: only option
  * // ]
- * await repairItem(userId, hashId, ["comp_iron", "res_flux_crystals"]);
+ * repairItem(userId, hashId, ["comp_iron", "res_flux_crystals"]);
  */
 export const repairItem = (
   userId: string,
@@ -111,6 +75,5 @@ export const repairItem = (
 
   const newDurability = Math.min(currentDurability + totalRepair, item.maxDurability);
   updateDurability(userId, hashId, newDurability);
-
   return RepairCode.success;
 };

@@ -1,10 +1,9 @@
 import {
   type ItemContext,
   type ItemResult,
-  type ItemTargetType,
   ItemCode,
 } from "@modules/types/item.js";
-import { getItem } from "@modules/items/_items.js";
+import { getItem } from "@modules/items/getItem.js";
 import { getDeps } from "@commands/dependency/getDeps.js";
 import {
   getUserItemSlots,
@@ -13,38 +12,8 @@ import {
   updateCharges,
 } from "@tables/inventory/inventory.js";
 import { hasCooldown, setCooldown } from "@tables/cooldown/cooldown.js";
-import { getUser } from "@tables/user/id.js";
 import { salvageItem } from "@modules/items/salvage.js";
-
-/**
- * Validates the target argument based on the item's targetType.
- * Returns an ItemResult error if invalid, or undefined if valid.
- *
- * - "self"   no target needed, always valid
- * - "item"   args[0] must be a valid item key
- * - "player" args[0] must be a known userId
- */
-const validateTarget = (
-  targetType: ItemTargetType | undefined,
-  arguments_: string[]
-): ItemResult | undefined => {
-  if (targetType === undefined || targetType === "self") return undefined;
-  if (arguments_[0] === undefined || arguments_[0] === "")
-    return [ItemCode.cannotUse, targetType === "item"
-      ? "Please provide an item to target."
-      : "Please provide a player to target."
-    ];
-  if (targetType === "item") {
-    const target = getItem(arguments_[0]);
-    if (target === undefined) return [ItemCode.notFound, `Item "${arguments_[0]}" not found.`];
-  }
-  if (targetType === "player") {
-    const target = getUser(arguments_[0]);
-    if (target === undefined) return [ItemCode.notFound, `Player "${arguments_[0]}" not found.`];
-  }
-  if (targetType === "event" && (arguments_[0] === "")) return [ItemCode.cannotUse, "Please provide an event to target."];
-  return undefined;
-};
+import { validateTarget } from "@modules/items/_validateTarget.js";
 
 /**
  * @param hashId
@@ -113,6 +82,7 @@ export const useItem = async (
 
   const targetError = validateTarget(item.targetType, arguments_);
   if (targetError !== undefined) return targetError;
+
   const isSelf = item.targetType === undefined || item.targetType === "self";
   const context: ItemContext = {
     userId,
@@ -139,12 +109,15 @@ export const useItem = async (
 
   if (item.maxDurability !== undefined) {
     const durability = (inventoryItem.durability ?? item.maxDurability) - 1;
-    if (durability <= 0) removeItem(userId, inventoryItem.hashId, 1);
-    else updateDurability(userId, inventoryItem.hashId, durability);
+    if (durability <= 0) {
+      removeItem(userId, inventoryItem.hashId, 1);
+      salvageItem(userId, item);
+    } else {
+      updateDurability(userId, inventoryItem.hashId, durability);
+    }
     return result;
   }
 
   removeItem(userId, inventoryItem.hashId, quantity);
-
   return result;
 };
