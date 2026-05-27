@@ -1,13 +1,13 @@
-import fs from "fs/promises";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-async function getFiles(dir) {
-  const entries = await fs.readdir(dir, { withFileTypes: true });
+async function getFiles(directory) {
+  const entries = await fs.readdir(directory, { withFileTypes: true });
   let files = [];
   for (const entry of entries) {
-    const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) files = files.concat(await getFiles(full));
+    const full = path.join(directory, entry.name);
+    if (entry.isDirectory()) files.push(...(await getFiles(full)));
     else files.push(full);
   }
   return files;
@@ -15,8 +15,8 @@ async function getFiles(dir) {
 
 function chunk(files, size) {
   const out = [];
-  for (let i = 0; i < files.length; i += size)
-    out.push(files.slice(i, i + size));
+  for (let index = 0; index < files.length; index += size)
+    out.push(files.slice(index, index + size));
   return out;
 }
 
@@ -30,14 +30,13 @@ const bases = [
 ];
 
 let files = [];
-for (const base of bases)
-  files = files.concat(await getFiles(base));
+for (const base of bases) files.push(...(await getFiles(base)));
 const batches = chunk(files, 100);
 let totalLines = 0;
 for (const batch of batches) {
   const results = await Promise.all(
-    batch.map(async (file) => {
-      const content = await fs.readFile(file, "utf-8");
+    batch.map(async file => {
+      const content = await fs.readFile(file, "utf8");
       return content.split("\n").length;
     }),
   );

@@ -1,28 +1,28 @@
-import fs from "fs/promises";
-import path from "path";
-import { fileURLToPath } from "url";
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
 
-function chunk(arr, size) {
+function chunk(array, size) {
   const out = [];
-  for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+  for (let index = 0; index < array.length; index += size) out.push(array.slice(index, index + size));
   return out;
 }
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const migrationsDir = path.join(__dirname, "../src/databases/migrations");
-const entries = await fs.readdir(migrationsDir, { withFileTypes: true });
+const migrationsDirection = path.join(__dirname, "../src/databases/migrations");
+const entries = await fs.readdir(migrationsDirection, { withFileTypes: true });
 const files = entries
-  .filter((e) => e.isFile() && e.name.endsWith(".sql"))
-  .map((e) => e.name)
-  .sort()
-  .map((name) => path.join(migrationsDir, name));
+  .filter((entry) => entry.isFile() && entry.name.endsWith(".sql"))
+  .map((entry) => entry.name)
+  .toSorted()
+  .map((name) => path.join(migrationsDirection, name));
 const batches = chunk(files, 10);
 for (const batch of batches) {
   const results = await Promise.all(
     batch.map(async (filePath) => {
-      const content = await fs.readFile(filePath, "utf-8");
+      const content = await fs.readFile(filePath, "utf8");
       const cleaned = content
         .split("\n")
         .filter((line) => line.trim() !== "")

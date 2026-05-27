@@ -5,22 +5,22 @@ const rm = (target) => {
   if (fs.existsSync(target)) fs.rmSync(target, { recursive: true, force: true });
 };
 
-const mkdir = (dir) => {
-  fs.mkdirSync(dir, { recursive: true });
+const mkdir = (directory) => {
+  fs.mkdirSync(directory, { recursive: true });
 };
 
-const copySqlDir = (srcDir, destDir) => {
-  mkdir(destDir);
-  for (const file of fs.readdirSync(srcDir)) {
-    const src = path.join(srcDir, file);
-    const dest = path.join(destDir, file);
-    const stat = fs.statSync(src);
+const copySqlDirectory = (sourceDirectory, destinationDirectory) => {
+  mkdir(destinationDirectory);
+  for (const file of fs.readdirSync(sourceDirectory)) {
+    const source = path.join(sourceDirectory, file);
+    const destination = path.join(destinationDirectory, file);
+    const stat = fs.statSync(source);
     if (stat.isDirectory()) {
-      copySqlDir(src, dest);
+      copySqlDirectory(source, destination);
       continue;
     }
     if (!file.endsWith(".sql")) continue;
-    fs.copyFileSync(src, dest);
+    fs.copyFileSync(source, destination);
   }
 };
 
@@ -28,4 +28,4 @@ mkdir("dist/databases");
 
 rm("dist/databases/migrations");
 
-copySqlDir("src/databases/migrations", "dist/databases/migrations");
+copySqlDirectory("src/databases/migrations", "dist/databases/migrations");
