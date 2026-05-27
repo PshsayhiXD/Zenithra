@@ -92,7 +92,7 @@ export interface ItemContext<T extends ItemDependencyKey = ItemDependencyKey> {
   item: Item<T>;
   /** Number of the item being used. Defaults to 1. */
   quantity?: number;
-  /** Resolved targets. Empty for "self", item/player keys for others. */
+  /** Resolved targets, Empty for "self" guaranteed non-empty for "item", "player", "event". */
   onTarget: string[];
   /** Extra arguments passed by the user e.g. quantity, options. */
   args: string[];
