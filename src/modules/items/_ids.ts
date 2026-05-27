@@ -6,9 +6,10 @@ export const ItemId = {
   explosive: 3,
   flux_crystal: 4,
   hyper_rubber: 5,
-  lootbox: 6,
+  eliminate_loot_box: 6,
   metal: 7,
   silica_crystal: 8,
+  wrench: 9,
 } as const;
 
 export type ItemIdKey = keyof typeof ItemId;
