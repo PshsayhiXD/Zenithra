@@ -10,5 +10,6 @@ export default defineItem({
   description: "A very rare and bouncy currency. 100 can be compressed into Flux Crystals.",
   price: 10_000_000,
   usable: false,
+  craftable: false,
   dependencies: [],
 });

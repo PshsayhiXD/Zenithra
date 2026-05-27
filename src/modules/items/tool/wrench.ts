@@ -9,6 +9,7 @@ export default defineItem({
   rarity: "common",
   description: "A basic griefing tool.",
   price: 80,
-  maxDurability: 20,
+  craftable: true,
+  ingredients: [[["iron", 8]]],
   dependencies: [],
 });

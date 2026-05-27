@@ -10,5 +10,6 @@ export default defineItem({
   description: "The cheapest currency. 10 can be compressed into Metal.",
   price: 1,
   usable: false,
+  craftable: false,
   dependencies: [],
 });

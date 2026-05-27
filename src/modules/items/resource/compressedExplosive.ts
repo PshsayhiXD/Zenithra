@@ -10,5 +10,6 @@ export default defineItem({
   description: "10 Metal compressed together. 10 can be compressed into Compressed Metal.",
   price: 100,
   usable: false,
+  craftable: false,
   dependencies: [],
 });

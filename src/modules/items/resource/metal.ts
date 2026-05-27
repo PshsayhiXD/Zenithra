@@ -10,5 +10,6 @@ export default defineItem({
   description: "A solid currency. 10 can be compressed into Compressed Explosives.",
   price: 10,
   usable: false,
+  craftable: false,
   dependencies: [],
 });
