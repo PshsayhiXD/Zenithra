@@ -1,4 +1,4 @@
-import { getItem } from "@modules/items/_items.js";
+import { getItem } from "@modules/items/getItem.js";
 import type { BaseItem } from "@modules/types/item.js";
 import { createLogger } from "@utilities/logger.js";
 

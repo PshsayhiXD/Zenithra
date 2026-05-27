@@ -1,4 +1,4 @@
-import { getItem } from "@modules/items/_items.js";
+import { getItem } from "@modules/items/getItem.js";
 import { getUserItemSlots } from "@tables/inventory/inventory.js";
 
 /**

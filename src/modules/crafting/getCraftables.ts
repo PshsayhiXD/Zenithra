@@ -1,4 +1,4 @@
-import { getAllItems } from "@modules/items/_items.js";
+import { getAllItems } from "@modules/items/getItem.js";
 import type { BaseItem } from "@modules/types/item.js";
 import { canCraft } from "@modules/crafting/canCraft.js";
 

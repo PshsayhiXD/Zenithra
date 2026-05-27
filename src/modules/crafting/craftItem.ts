@@ -3,7 +3,7 @@ import {
   type CraftResult,
   CraftCode
 } from "@modules/types/crafting.js";
-import { getItem } from "@modules/items/_items.js";
+import { getItem } from "@modules/items/getItem.js";
 import { getUserItemSlots, addItem, removeItem } from "@tables/inventory/inventory.js";
 import { validateIngredient } from "@modules/crafting/_validateIngredient.js";
 
