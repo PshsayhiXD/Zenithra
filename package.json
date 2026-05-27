@@ -11,6 +11,7 @@
     "build:frontend": "node src/frontend/esbuild.mjs",
     "build:frontend:dev": "node src/frontend/esbuild.mjs --dev",
     "build:frontend:watch": "node src/frontend/esbuild.mjs --watch --dev",
+    "build:itemIds": "node script/buildItemIds.mjs",
 
     "start": "npm run start:shard && npm run start:server",
     "start:bot": "node dist/bot.js",
